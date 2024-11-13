@@ -14,4 +14,4 @@ class Location(SQLModel, table=True):
     name: str = Field(index=True, unique=True)
 
     job_ads: List[JobAd] = Relationship(back_populates="location")
-    resumes: List[Resume] = Relationship(back_populates="location")
+    resumes: List[Resume] | None = Relationship(back_populates="location")

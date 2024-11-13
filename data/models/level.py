@@ -10,7 +10,7 @@ class Level(SQLModel, table=True):
     id: int = Field(primary_key=True, index=True)
     level: int = Field(index=True, unique=True)
 
-    skills: List[Skill] = Relationship(back_populates="levels", link_model="SkillLevel")
+    skills: List[Skill] | None = Relationship(back_populates="levels", link_model="SkillLevel")
 
 
   

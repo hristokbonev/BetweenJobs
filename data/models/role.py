@@ -13,5 +13,5 @@ class Role(SQLModel, table=True):
     name: str = Field(unique=True, index=True)
 
 
-    users: List["User"] = Relationship(back_populates="roles", link_model="CompanyUserRole")
-    companies: List["Company"] = Relationship(back_populates="roles", link_model="CompanyUserRole")
+    users: List["User"] | None = Relationship(back_populates="roles", link_model="CompanyUserRole")
+    companies: List["Company"] | None = Relationship(back_populates="roles", link_model="CompanyUserRole")
