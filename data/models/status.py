@@ -1,5 +1,6 @@
 from typing import List
 from data.models.resume import Resume
+from data.models.job_ad import JobAd
 from sqlmodel import SQLModel, Field
 from sqlmodel import Relationship
 
@@ -11,4 +12,4 @@ class Status(SQLModel, table=True):
     name: str = Field(unique=True, index=True)
     
     resumes: List[Resume] = Relationship(back_populates="status")
-    job_ads: List[Resume] = Relationship(back_populates="status")
+    job_ads: List[JobAd] = Relationship(back_populates="status")
