@@ -1,14 +1,17 @@
 from sqlmodel import SQLModel, Field
 from typing import List
-from data.models.moderator import Moderators
 from sqlmodel import Relationship
+from data.models.company import Company
+from data.models.user import User
 
 
 
-class Roles(SQLModel, table=True):
+class Role(SQLModel, table=True):
     __tablename__ = "Roles"
 
     id: int = Field(primary_key=True, index=True)
     name: str = Field(unique=True, index=True)
 
-    moderators: List[Moderators] = Relationship(back_populates="role")
+
+    users: List["User"] = Relationship(back_populates="roles", link_model="CompanyUserRole")
+    companies: List["Company"] = Relationship(back_populates="roles", link_model="CompanyUserRole")

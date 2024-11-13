@@ -6,7 +6,7 @@ import csv
 from data.database import engine
 from sqlmodel import Session
 from data.models.user import Users
-from confic import DATABASE_URL
+from config import DATABASE_URL
 
  
 

@@ -1,32 +1,32 @@
 from datetime import datetime
-from typing import Optional
 from sqlmodel import Relationship
 from sqlmodel import SQLModel, Field
 from datetime import date
 from typing import List
-from data.models.jobAd import JobAds
-from data.models.resume import Resumes
-from data.models.moderator import Moderators
+from data.models.resume import Resume
+from data.models.company import Company
+from data.models.role import Role
 
 
-class Users(SQLModel, table=True):
+class User(SQLModel, table=True):
     __tablename__ = "Users"
 
     id: int = Field(primary_key=True, index=True)
     created_at: datetime = Field(default_factory=datetime.now)
     username: str = Field(unique=True, index=True)
     password: str
-    first_name: str = Field(default=None)
-    last_name: str = Field(default=None)
+    first_name: str = Field
+    last_name: str = Field
     is_admin: bool = Field(default=False)
     date_of_birth: date
     email: str = Field(unique=True, index=True)
     employer_id: int = Field(default=None, foreign_key="Companies.id")
 
-    job_ads: List["JobAds"] = Relationship(back_populates="user")
-    resumes: List["Resumes"] = Relationship(back_populates="user")
-    moderators: List["Moderators"] = Relationship(back_populates="user")
+    roles: List["Role"] = Relationship(back_populates="users", link_model="CompanyUserRole")
+    companies: List["Company"] = Relationship(back_populates="users", link_model="CompanyUserRole")
+    companies_authored: List["Company"] = Relationship(back_populates="author")
+    resumes: List[Resume] = Relationship(back_populates="user")
     
-  
+    
 
 

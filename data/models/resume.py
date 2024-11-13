@@ -1,13 +1,17 @@
 from sqlmodel import SQLModel, Field
 from typing import List
-from data.models.jobAd import JobAds
-from data.models.user import Users
-from data.models.match import Matches
+from data.models.employment_type import EmploymentType
+from data.models.job_ad import JobAd
+from data.models.skill import Skill
+from data.models.user import User
 from sqlmodel import Relationship
+from data.models.location import Location
+from data.models.education import Education
+from data.models.status import Status
 
 
 
-class Resumes(SQLModel, table=True):
+class Resume(SQLModel, table=True):
     __tablename__ = "Resumes"
 
     user_id: int = Field(foreign_key="Users.id")
@@ -16,12 +20,15 @@ class Resumes(SQLModel, table=True):
     title: str = Field(index=True)
     education_id: int = Field(index=True, default=None, foreign_key="Education.id")
     job_description: str = Field(index=True, default=None)
-    skills_id: int = Field(foreign_key="Skills.id", default=None)
     location_id: int = Field(index=True, default=None, foreign_key="Locations.id")
     status_id: int = Field(index=True, foreign_key="Statuses.id")
     employment_type_id: int = Field(foreign_key="EmploymentTypes.id", index=True)
     id: int = Field(primary_key=True, index=True)
 
-    user: Users = Relationship(back_populates="resumes")
-    job_ads: List[JobAds] = Relationship(back_populates="applicants")
-    matches: List["Matches"] = Relationship(back_populates="resume")
+    user: User = Relationship(back_populates="resumes")
+    job_ads: List[JobAd] = Relationship(back_populates="applicants", link_model="resumes")
+    employment_type: EmploymentType = Relationship(back_populates="resumes")
+    location: Location = Relationship(back_populates="resumes")
+    education: Education = Relationship(back_populates="resumes")
+    status: Status = Relationship(back_populates="resumes")
+    skills: List["Skill"] = Relationship(back_populates="resumes", link_model="ResumeSkill")
