@@ -1,25 +1,42 @@
 from datetime import datetime
-from typing import Optional
-from sqlmodel import Relationship
-from sqlmodel import SQLModel, Field
+from pydantic import BaseModel
 
 
-class Users(SQLModel, table=True):
+class Users(BaseModel):
     __tablename__ = "users"
 
-    id: int = Field(default=None, primary_key=True, index=True)
-    created_at: Optional[datetime] = Field(default_factory=datetime.now)
-    username : str = Field(unique=True, index=True)
-    password : str = Field()
-    first_name : str = Field()
-    last_name : str = Field()
-    is_admin : bool = Field(default=False)
-    date_of_birth : str = Field()
-    email : str = Field(unique=True, index=True)
+    id: int | None = None
+    # created_at: Optional[datetime] = Field(default_factory=datetime.now)
+    username : str
+    # password : str = Field()
+    first_name : str
+    last_name : str
+    is_admin : bool
+    date_of_birth : datetime
+    email : str
 
-    job_ads: Relationship = Relationship(back_populates="users")
-    resumes: Relationship = Relationship(back_populates="users")
+    # job_ads: Relationship = Relationship(back_populates="users")
+    # resumes: Relationship = Relationship(back_populates="users")
+
+    @classmethod
+    def from_query_str(cls, id, username, first_name, last_name, is_admin, date_of_birth, email):
+        return cls(
+            id=id,
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
+            is_admin=is_admin,
+            date_of_birth=date_of_birth,
+            email=email
+        )
     
-  
+class UserRegistrationRequest(BaseModel):
+    username: str
+    password: str
+    first_name: str
+    last_name: str
+    date_of_birth: datetime
+    email: str
+
 
 
