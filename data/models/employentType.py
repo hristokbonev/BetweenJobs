@@ -1,11 +1,13 @@
 from sqlmodel import SQLModel, Field
+from typing import List
+from data.models.jobAd import JobAds
+from sqlmodel import Relationship
 
 
+class EmploymentTypes(SQLModel, table=True):
+    __tablename__ = "Employment"
 
-class EmploymentType(SQLModel, table=True):
-    __tablename__ = "employment"
+    id: int = Field(primary_key=True, index=True)
+    name: str = Field(index=True, unique=True, nullable=False)
 
-    id : int = Field(primary_key=True, index=True)
-    employment : str = Field(index=True)
-
- 
+    job_ads: List[JobAds] = Relationship(back_populates="employment_type")
