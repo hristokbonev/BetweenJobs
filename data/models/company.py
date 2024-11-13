@@ -17,7 +17,7 @@ class Company(SQLModel, table=True):
     author_id: int = Field(nullable=False, index=True, foreign_key="Users.id")
 
     roles: List[Role] | None = Relationship(back_populates="companies", link_model="CompanyUserRole")
-    users: List[User] | None = Relationship(back_populates="companies", link_model="CompanyUserRole")
+    members: List[User] | None = Relationship(back_populates="companies", link_model="CompanyUserRole")
     author: User = Relationship(back_populates="companies_authored")
     job_ads: List[JobAd] | None = Relationship(back_populates="company")
     
