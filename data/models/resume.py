@@ -26,7 +26,7 @@ class Resume(SQLModel, table=True):
     id: int = Field(primary_key=True, index=True)
 
     user: User = Relationship(back_populates="resumes")
-    job_ads: List[JobAd] = Relationship(back_populates="applicants", link_model="resumes")
+    job_ads: List[JobAd] = Relationship(back_populates="applicants", link_model="Match")
     employment_type: EmploymentType = Relationship(back_populates="resumes")
     location: Location = Relationship(back_populates="resumes")
     education: Education = Relationship(back_populates="resumes")

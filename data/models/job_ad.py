@@ -9,7 +9,6 @@ from data.models.location import Location
 from data.models.skill import Skill
 from data.models.resume import Resume
 
-
 class JobAd(SQLModel, table=True):
     __tablename__ = "JobAds"
 
@@ -30,4 +29,4 @@ class JobAd(SQLModel, table=True):
     location: Location = Relationship(back_populates="job_ads")
     employment_type: EmploymentType = Relationship(back_populates="job_ads")
     skills: List["Skill"] = Relationship(back_populates="job_ads", link_model="JobAdSkill")
-    resumes: List["Resume"] = Relationship(back_populates="job_ads", link_model="JobAdResume")
+    resumes: List["Resume"] = Relationship(back_populates="job_ads", link_model="Match")
