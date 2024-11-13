@@ -11,6 +11,6 @@ class Education(SQLModel, table=True):
     id: int = Field(primary_key=True, index=True)
     degree_level: str = Field(index=True, unique=True, nullable=False)
 
-    job_ads: List[Resume] = Relationship(back_populates="education")
-    resumes: List[Resume] = Relationship(back_populates="education")
+    job_ads: List[Resume] | None = Relationship(back_populates="education")
+    resumes: List[Resume] | None = Relationship(back_populates="education")
     

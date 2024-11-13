@@ -25,8 +25,8 @@ class JobAd(SQLModel, table=True):
     location_id: int = Field(foreign_key="Locations.id", index=True)
 
     company: Company = Relationship(back_populates="job_ads")
-    education: Education = Relationship(back_populates="job_ads")
+    education: Education | None = Relationship(back_populates="job_ads")
     location: Location = Relationship(back_populates="job_ads")
     employment_type: EmploymentType = Relationship(back_populates="job_ads")
-    skills: List["Skill"] = Relationship(back_populates="job_ads", link_model="JobAdSkill")
-    resumes: List["Resume"] = Relationship(back_populates="job_ads", link_model="Match")
+    skills: List["Skill"] | None = Relationship(back_populates="job_ads", link_model="JobAdSkill")
+    resumes: List["Resume"] | None = Relationship(back_populates="job_ads", link_model="Match")

@@ -11,5 +11,5 @@ class Status(SQLModel, table=True):
     id: int = Field(primary_key=True, index=True)
     name: str = Field(unique=True, index=True)
     
-    resumes: List[Resume] = Relationship(back_populates="status")
-    job_ads: List[JobAd] = Relationship(back_populates="status")
+    resumes: List[Resume] | None = Relationship(back_populates="status")
+    job_ads: List[JobAd] | None = Relationship(back_populates="status")

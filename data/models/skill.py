@@ -13,6 +13,6 @@ class Skill(SQLModel, table=True):
     name: str = Field(unique=True, index=True)
     skill_level_id: int = Field(foreign_key="SkillLevels.id")
 
-    levels: List[Level] = Relationship(back_populates="skills", link_model="SkillLevel")
-    job_ads: List[JobAd] = Relationship(back_populates="skills", link_model="JobAdSkill")
-    resumes: List[Resume] = Relationship(back_populates="skills", link_model="ResumeSkill")
+    levels: List[Level] | None = Relationship(back_populates="skills", link_model="SkillLevel")
+    job_ads: List[JobAd] | None = Relationship(back_populates="skills", link_model="JobAdSkill")
+    resumes: List[Resume] | None = Relationship(back_populates="skills", link_model="ResumeSkill")

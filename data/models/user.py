@@ -22,10 +22,10 @@ class User(SQLModel, table=True):
     email: str = Field(unique=True, index=True)
     employer_id: int = Field(default=None, foreign_key="Companies.id")
 
-    roles: List["Role"] = Relationship(back_populates="users", link_model="CompanyUserRole")
-    companies: List["Company"] = Relationship(back_populates="users", link_model="CompanyUserRole")
-    companies_authored: List["Company"] = Relationship(back_populates="author")
-    resumes: List[Resume] = Relationship(back_populates="user")
+    roles: List["Role"] | None = Relationship(back_populates="users", link_model="CompanyUserRole")
+    companies: List["Company"] | None = Relationship(back_populates="users", link_model="CompanyUserRole")
+    companies_authored: List["Company"] | None = Relationship(back_populates="author")
+    resumes: List[Resume] | None = Relationship(back_populates="user")
     
     
 
