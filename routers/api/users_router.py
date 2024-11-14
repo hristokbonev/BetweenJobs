@@ -1,10 +1,17 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-from data.models.user import User
+from fastapi import APIRouter
+from data.models.models import User
+from sqlmodel import Session, select
 from data.database import get_session
+from fastapi import Depends
 
 router = APIRouter()
 
-@router.get("/users/")
-def get_users(db: Session = Depends(get_session)):
-    return db.query(User).all()
+# Endpoint to get a user and their companies
+@router.get("/users/{user_id}")
+def get_user_companies(user_id: int, session: Session = Depends(get_session)):
+    statement = select(User).where(User.id == user_id)
+    user = session.exec(statement).first()
+    
+    if user:
+        return {"user": user}
+   

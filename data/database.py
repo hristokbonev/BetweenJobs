@@ -24,7 +24,6 @@ def start_db():
     yield
     engine.dispose()
 
-# Alternative method to get DB session
 def get_db():
     db = Session()
     try:
