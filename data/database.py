@@ -4,9 +4,8 @@ from supabase import create_client
 
 load_dotenv()
 
-key = os.getenv("DB_KEY")
+key = os.getenv("SUPABASE_KEY")
+url = os.getenv("SUPABASE_URL")
 
-DATABASE_URL = "https://xjlwrdolhwpgdikznbcs.supabase.co"
-
-supabase = create_client(DATABASE_URL, key)
+supabase = create_client(url, key)
 
