@@ -1,37 +1,21 @@
 from fastapi import FastAPI
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from config import DATABASE_URL
-from dotenv import load_dotenv
-from data.database import engine
-from data.models.user import User
 from contextlib import asynccontextmanager
+from dotenv import load_dotenv
+from data.database import create_db
+import uvicorn
+from routers.api.users_router import router as users_router
 
 load_dotenv()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-
-    engine = create_engine(DATABASE_URL, echo=True)
-    User.metadata.create_all(bind=engine)
+    create_db()
     yield
-    
     print("Shutting down...")
 
 app = FastAPI(lifespan=lifespan)
 
-
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
+app.include_router(users_router)
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host='localhost', port=8000)
+    uvicorn.run(app, host="localhost", port=8000)
