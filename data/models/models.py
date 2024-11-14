@@ -57,19 +57,11 @@ class User(SQLModel, table=True):
     resumes: List["Resume"] = Relationship(back_populates="user")
 
 
-class SkillLevel(SQLModel, table=True):
-    __tablename__ = "SkillsLevels"
-
-    skill_id: int = Field(primary_key=True, index=True, foreign_key="Skills.id")
-    level_id: int = Field(primary_key=True, index=True, foreign_key="Levels.id")
-
-
 class JobAdSkill(SQLModel, table=True):
     __tablename__ = "JobAdsSkills"
 
     jobad_id: int = Field(foreign_key="JobAds.id", primary_key=True)
     skill_id: int = Field(foreign_key="Skills.id", primary_key=True)
-
 
 
 class ResumeSkill(SQLModel, table=True):
@@ -84,8 +76,8 @@ class Skill(SQLModel, table=True):
 
     id: int = Field(primary_key=True)
     name: str = Field(unique=True, index=True)
+    is_scalable: bool = Field(default=False, index=True)
 
-    levels: List["Level"] = Relationship(back_populates="skills", link_model=SkillLevel)
     job_ads: List["JobAd"] = Relationship(back_populates="skills", link_model=JobAdSkill)
     resumes: List["Resume"] = Relationship(back_populates="skills", link_model=ResumeSkill)
 
@@ -146,8 +138,6 @@ class Level(SQLModel, table=True):
 
     id: int = Field(primary_key=True, index=True)
     level: int = Field(index=True, unique=True)
-
-    skills: List["Skill"] = Relationship(back_populates="levels", link_model=SkillLevel)
 
 
 class JobAd(SQLModel, table=True):
