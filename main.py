@@ -5,16 +5,9 @@ from config import DATABASE_URL
 from dotenv import load_dotenv
 from data.database import engine
 from data.models.user import User
-
-load_dotenv()
-
-app = FastAPI()
-
-from fastapi import FastAPI
-from sqlalchemy import create_engine
 from contextlib import asynccontextmanager
 
-app = FastAPI()
+load_dotenv()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -28,10 +21,9 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 
-# Session management function (using SQLAlchemy session)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Dependency for database session
+
 def get_db():
     db = SessionLocal()
     try:
@@ -39,10 +31,6 @@ def get_db():
     finally:
         db.close()
 
-# Example route to interact with the database
-@app.get("/")
-async def read_root():
-    return {"message": "Welcome to the FastAPI app!"}
 
 if __name__ == "__main__":
     import uvicorn
