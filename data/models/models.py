@@ -1,6 +1,7 @@
 from sqlmodel import SQLModel, Field, Relationship
 from datetime import datetime, date
 from typing import List, Optional
+from sqlalchemy import func
 
 
 class Status(SQLModel, table=True):
@@ -21,8 +22,23 @@ class CompanyUserRole(SQLModel, table=True):
     role_id: int = Field(foreign_key="Roles.id", primary_key=True)
 
 
+class Company(SQLModel, table=True):
+    __tablename__ = "Companies"
+
+    id: int = Field(primary_key=True, index=True)
+    created_at: datetime = Field(nullable=False, default=func.now())
+    name: str = Field(index=True, nullable=False)
+    description: Optional[str] = Field(default=None)
+    author_id: int = Field(foreign_key="Users.id")
+    
+    members: List["User"] = Relationship(back_populates="companies", link_model=CompanyUserRole)
+    roles: List["Role"] = Relationship(back_populates="companies", link_model=CompanyUserRole)
+    job_ads: List["JobAd"] = Relationship(back_populates="company")
+    author: "User" = Relationship(back_populates="companies_authored")
+
+
 class User(SQLModel, table=True):
-    __tablename__ = "Users"
+    __tablename__ = "Users" 
 
     id: int = Field(primary_key=True, index=True)
     created_at: datetime = Field(default_factory=datetime.now)
@@ -33,7 +49,7 @@ class User(SQLModel, table=True):
     is_admin: bool = Field(default=False)
     date_of_birth: date
     email: str = Field(unique=True, index=True)
-    employer_id: Optional[int] = Field(default=None, foreign_key="Companies.id")
+    employer_id: Optional[int] = Field(default=None)
 
     roles: List["Role"] = Relationship(back_populates="users", link_model=CompanyUserRole)
     companies: List["Company"] = Relationship(back_populates="members", link_model=CompanyUserRole)
@@ -47,9 +63,6 @@ class SkillLevel(SQLModel, table=True):
     skill_id: int = Field(primary_key=True, index=True, foreign_key="Skills.id")
     level_id: int = Field(primary_key=True, index=True, foreign_key="Levels.id")
 
-    skill: "Skill" = Relationship(back_populates="levels")
-    level: "Level" = Relationship(back_populates="skills")
-
 
 class JobAdSkill(SQLModel, table=True):
     __tablename__ = "JobAdsSkills"
@@ -57,8 +70,6 @@ class JobAdSkill(SQLModel, table=True):
     jobad_id: int = Field(foreign_key="JobAds.id", primary_key=True)
     skill_id: int = Field(foreign_key="Skills.id", primary_key=True)
 
-    job_ad: "JobAd" = Relationship(back_populates="skills")
-    skill: "Skill" = Relationship(back_populates="job_ads")
 
 
 class ResumeSkill(SQLModel, table=True):
@@ -66,9 +77,6 @@ class ResumeSkill(SQLModel, table=True):
 
     resume_id: int = Field(foreign_key="Resumes.id", primary_key=True)
     skill_id: int = Field(foreign_key="Skills.id", primary_key=True)
-
-    resume: "Resume" = Relationship(back_populates="skills")
-    skill: "Skill" = Relationship(back_populates="resumes")
 
 
 class Skill(SQLModel, table=True):
@@ -88,8 +96,8 @@ class Role(SQLModel, table=True):
     id: int = Field(primary_key=True, index=True)
     name: str = Field(unique=True, index=True)
 
-    users: List["User"] = Relationship(back_populates="roles", link_model="CompanyUserRole")
-    companies: List["Company"] = Relationship(back_populates="roles", link_model="CompanyUserRole")
+    users: List["User"] = Relationship(back_populates="roles", link_model=CompanyUserRole)
+    companies: List["Company"] = Relationship(back_populates="roles", link_model=CompanyUserRole)
 
 
 class Match(SQLModel, table=True):
@@ -98,8 +106,6 @@ class Match(SQLModel, table=True):
     resume_id: int = Field(foreign_key="Resumes.id", primary_key=True)
     jobad_id: int = Field(foreign_key="JobAds.id", primary_key=True)
 
-    resume: "Resume" = Relationship(back_populates="matches")
-    job_ad: "JobAd" = Relationship(back_populates="matches")
 
 
 class Resume(SQLModel, table=True):
@@ -157,12 +163,14 @@ class JobAd(SQLModel, table=True):
     salary: Optional[float] = Field(default=None, index=True)
     employment_type_id: Optional[int] = Field(foreign_key="EmploymentTypes.id", default=None, index=True)
     location_id: Optional[int] = Field(foreign_key="Locations.id", index=True)
+    status_id: int = Field(foreign_key="Statuses.id", index=True)
 
     company: "Company" = Relationship(back_populates="job_ads")
     education: "Education" = Relationship(back_populates="job_ads")
     location: "Location" = Relationship(back_populates="job_ads")
     employment_type: "EmploymentType" = Relationship(back_populates="job_ads")
     skills: List["Skill"] = Relationship(back_populates="job_ads", link_model=JobAdSkill)
+    status: "Status" = Relationship(back_populates="job_ads")
     resumes: List["Resume"] = Relationship(back_populates="job_ads", link_model=Match)
 
 
@@ -184,17 +192,3 @@ class Education(SQLModel, table=True):
 
     job_ads: List["JobAd"] = Relationship(back_populates="education")
     resumes: List["Resume"] = Relationship(back_populates="education")
-
-
-class Company(SQLModel, table=True):
-    __tablename__ = "Companies"
-
-    id: int = Field(primary_key=True, index=True)
-    created_at: datetime = Field(nullable=False, server_default="now()")
-    name: str = Field(index=True, nullable=False)
-    description: Optional[str] = Field(default=None)
-    author_id: int = Field(foreign_key="Users.id")
-    
-    members: List["User"] = Relationship(back_populates="companies", link_model=CompanyUserRole)
-    job_ads: List["JobAd"] = Relationship(back_populates="company")
-    author: "User" = Relationship(back_populates="companies_authored")
