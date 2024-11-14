@@ -2,7 +2,7 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
-class Users(BaseModel):
+class UsersResponse(BaseModel):
 
     id: int | None = None
     # created_at: Optional[datetime] = Field(default_factory=datetime.now)

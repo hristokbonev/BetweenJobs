@@ -1,11 +1,34 @@
 import os
-from dotenv import load_dotenv
-from supabase import create_client
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlmodel import SQLModel
 
-load_dotenv()
 
-key = os.getenv("SUPABASE_KEY")
-url = os.getenv("SUPABASE_URL")
+# Database engine setup
+DATABASE_URL = os.getenv('SUPABASE_URL')
+engine = create_engine(DATABASE_URL, echo=True)
 
-supabase = create_client(url, key)
+# Session setup
+Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+# Function to create all tables
+def create_db():
+    SQLModel.metadata.create_all(bind=engine)
+
+# Dependency to get the DB session
+def get_session():
+    with Session() as session:
+        yield session
+
+# Optional: Function to dispose engine after use
+def start_db():
+    SQLModel.metadata.create_all(bind=engine)
+    yield
+    engine.dispose()
+
+def get_db():
+    db = Session()
+    try:
+        yield db
+    finally:
+        db.close()
