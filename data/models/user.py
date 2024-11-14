@@ -3,7 +3,6 @@ from pydantic import BaseModel
 
 
 class Users(BaseModel):
-    __tablename__ = "users"
 
     id: int | None = None
     # created_at: Optional[datetime] = Field(default_factory=datetime.now)
@@ -15,8 +14,6 @@ class Users(BaseModel):
     date_of_birth : datetime
     email : str
 
-    # job_ads: Relationship = Relationship(back_populates="users")
-    # resumes: Relationship = Relationship(back_populates="users")
 
     @classmethod
     def from_query_str(cls, id, username, first_name, last_name, is_admin, date_of_birth, email):
