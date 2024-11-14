@@ -1,6 +1,5 @@
 from sqlmodel import SQLModel, Field
 
-
 class CompanyUserRole(SQLModel, table=True):
     __tablename__ = "CompaniesUsersRoles"
 

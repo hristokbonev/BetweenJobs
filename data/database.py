@@ -1,37 +1,32 @@
-from sqlmodel import SQLModel
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-
+from sqlmodel import SQLModel
 from config import DATABASE_URL
- 
- 
-SQLModel = declarative_base()
- 
+
+# Database engine setup
 engine = create_engine(DATABASE_URL, echo=True)
 
-def create_database():
+# Session setup
+Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Function to create all tables
+def create_db():
     SQLModel.metadata.create_all(bind=engine)
 
- 
-session_local = sessionmaker(
-    autocommit=False, 
-    autoflush=False, 
-    bind=engine
-)
- 
-# import your sql alchemy models here
- 
- 
-# def get_db():
-#     db = session_local()
-#     try:
-#         yield db
-#     finally:
-#         db.close()
- 
- 
-# def create_uuid_extension():
-#     with engine.connect() as connection:
-#         with connection.begin():
-#             connection.execute(text('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'))
+# Dependency to get the DB session
+def get_session():
+    with Session() as session:
+        yield session
+
+# Optional: Function to dispose engine after use
+def start_db():
+    SQLModel.metadata.create_all(bind=engine)
+    yield
+    engine.dispose()
+
+def get_db():
+    db = Session()
+    try:
+        yield db
+    finally:
+        db.close()
