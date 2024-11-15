@@ -27,8 +27,8 @@ def create_user(user: UserRegistrationRequest, session: Session):
     # Hash the password securely
     user.password = base64.b64encode(user.password.encode('utf-8')).decode('utf-8')
 
+    # Create a new User object (SQLModel model) from the UserRegistrationRequest object (Pydantic model)
     new_user = User(**user.model_dump())
-
 
     # Add and commit the new user to the session
     session.add(new_user)
