@@ -16,7 +16,7 @@ def view_user_by_id(user_id: int, session: Session):
 
     statement = select(User).where(User.id == user_id)
     user = session.execute(statement).scalars().first()
-    
+
     return user if user else None
 
 
@@ -27,14 +27,7 @@ def create_user(user: UserRegistrationRequest, session: Session):
     # Hash the password securely
     user.password = base64.b64encode(user.password.encode('utf-8')).decode('utf-8')
 
-    new_user = User(
-        username=user.username,
-        password=user.password,
-        first_name=user.first_name,
-        last_name=user.last_name,
-        date_of_birth=user.date_of_birth,
-        email=user.email
-    )
+    new_user = User(**user.model_dump())
 
 
     # Add and commit the new user to the session
