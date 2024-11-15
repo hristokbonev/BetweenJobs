@@ -1,5 +1,5 @@
 from datetime import date
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, EmailStr
 
 
 class UsersResponse(BaseModel):
@@ -20,11 +20,11 @@ class UsersResponse(BaseModel):
     
 class UserRegistrationRequest(BaseModel):
     username: str
-    password: str
+    password: str = Field(min=4,)
     first_name: str
     last_name: str
     date_of_birth: date
-    email: str
+    email: EmailStr
 
     class Config:
         orm_mode = True
