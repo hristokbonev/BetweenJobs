@@ -19,10 +19,10 @@ def show_users(session: Session = Depends(get_session)):
 
 
 @router.post('/register', response_model=UsersResponse)
-def register_user(new_usr: UserRegistrationRequest, session: Session = Depends(get_session)):
+def register_user(reg_form: UserRegistrationRequest, session: Session = Depends(get_session)):
 
     try:
-        return us.create_user(new_usr, session)
+        return us.create_user(reg_form=reg_form, session=session)
     
     except ValueError:
         return NotFoundException(detail='User could not be created')
