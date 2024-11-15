@@ -1,7 +1,16 @@
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
 from users.user_router import users_router
+from data.database import create_db
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    create_db()
+    yield
+    print("Shutting down...")
+
+app = FastAPI(lifespan=lifespan)
 
 app.include_router(users_router)
 

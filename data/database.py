@@ -1,11 +1,9 @@
-import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlmodel import SQLModel
-
+from data.config import DATABASE_URL
 
 # Database engine setup
-DATABASE_URL = os.getenv('SUPABASE_URL')
 engine = create_engine(DATABASE_URL, echo=True)
 
 # Session setup
