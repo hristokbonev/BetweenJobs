@@ -1,12 +1,32 @@
+from fastapi import HTTPException
 from sqlmodel import Session, select
-
-from companies.company_models import CreateCompanyRequest
-from data.db_models import Company, CompanyUserRole, User
+from typing import Optional
+from companies.company_models import CreateCompanyRequest, UpdateCompanyRequest
+from data.db_models import Company, CompanyUserRole, User, JobAd
 from users.user_models import UsersResponse
 
 
-def view_companies(session: Session):
-    statement = select(Company)
+def view_companies(session: Session, name: Optional[str] = None, job_ad_title: Optional[str] = None):
+    statement = select(Company).join(JobAd, isouter=True)
+
+    if name and job_ad_title:
+        # Explicit join and filter for both conditions
+        statement = (
+            select(Company)
+            .join(JobAd, Company.id == JobAd.company_id)
+            .filter(Company.name.ilike(f"%{name}%"), JobAd.title.ilike(f"%{job_ad_title}%"))
+        )
+    elif name:
+        # Filter only on company name
+        statement = statement.filter(Company.name.ilike(f'%{name}%'))
+    elif job_ad_title:
+        # Explicit join and filter on job_ad_title only
+        statement = (
+            select(Company)
+            .join(JobAd, Company.id == JobAd.company_id)
+            .where(JobAd.title.ilike(f"%{job_ad_title}%"))
+        )
+
     companies = session.execute(statement).scalars().all()
 
     return companies if companies else None
@@ -31,10 +51,36 @@ def view_company_by_id(comp_id: int, session: Session):
 
 
 def create_company(data: CreateCompanyRequest, session: Session):
+    # Insert new company data
     new_company = Company(**data.model_dump())
-
     session.add(new_company)
     session.commit()
-    new_role = CompanyUserRole()
+    # Insert new user role relation with new company id
+    new_role = CompanyUserRole(
+        company_id=new_company.id,
+        user_id=new_company.author_id,
+        role_id=1  # Assuming 1 is the ID for the desired role
+    )
+    session.add(new_role)
+    session.commit()
+    # display response to client
     response = view_company_by_id(new_company.id, session)
     return response
+
+
+def change_company(target_id: int, data: UpdateCompanyRequest, session: Session):
+    statement = select(Company).where(Company.id == target_id)
+    target_company = session.execute(statement).scalars().first()
+    if not target_company:
+        raise HTTPException(status_code=404, detail="Company not found.")
+
+    if data.name:
+        target_company.name = data.name
+    if data.description:
+        target_company.description = data.description
+    if data.author_id:
+        target_company.author_id = data.author_id
+
+    session.commit()
+
+    return target_company
