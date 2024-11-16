@@ -38,3 +38,4 @@ class UpdateCompanyRequest(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     author_id: Optional[int] = None
+

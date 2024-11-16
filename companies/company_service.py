@@ -84,3 +84,30 @@ def change_company(target_id: int, data: UpdateCompanyRequest, session: Session)
     session.commit()
 
     return target_company
+
+
+def delete_company(target_id: int, session: Session):
+    # Find the company record and delete it
+    statement = select(Company).where(Company.id == target_id)
+    target_company = session.execute(statement).scalars().first()
+    if not target_company:
+        raise HTTPException(status_code=404, detail="Company not found.")
+
+    # Find related company roles and delete them all
+    query_roles = select(CompanyUserRole).where(CompanyUserRole.company_id == target_id)
+    related_roles = session.execute(query_roles).scalars().all()
+    for role in related_roles:
+        session.delete(role)
+        session.commit()
+
+    # Find related job ads for the company and delete them all
+    query_jobs = select(JobAd).where(JobAd.company_id == target_id)
+    related_jobs = session.execute(query_jobs).scalars().all()
+    for job in related_jobs:
+        session.delete(job)
+        session.commit()
+
+    session.delete(target_company)
+
+    session.commit()
+    return {"message": f"Company with ID {target_id} and all related data was deleted!"}

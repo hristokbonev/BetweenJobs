@@ -3,8 +3,7 @@ from sqlmodel import Session
 from companies.company_models import CompanyResponse, CreateCompanyRequest, UpdateCompanyRequest
 from data.database import get_session
 from companies import company_service as cs
-from typing import List, Optional
-from users.user_models import UsersResponse
+from typing import List, Optional, Dict
 
 
 companies_router = APIRouter(prefix='/api/companies', tags=["Companies"])
@@ -63,3 +62,8 @@ def modify_company_by_id(comp_id: int, data: UpdateCompanyRequest, session: Sess
         raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=f'Server error: {str(e)}')
+
+
+@companies_router.delete('/{comp_id}', response_model=Dict[str, str])
+def delete_company_by_id(company_id: int, session: Session = Depends(get_session)):
+    return cs.delete_company(target_id=company_id, session=session)
