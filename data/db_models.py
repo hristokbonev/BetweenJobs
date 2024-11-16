@@ -4,6 +4,16 @@ from typing import List, Optional
 from sqlalchemy import func
 
 
+class Location(SQLModel, table=True):
+    __tablename__ = "Locations"
+
+    id: int = Field(primary_key=True, index=True)
+    name: str = Field(index=True, unique=True)
+
+    job_ads: List["JobAd"] = Relationship(back_populates="location")
+    resumes: List["Resume"] = Relationship(back_populates="location")
+
+
 class Status(SQLModel, table=True):
     __tablename__ = "Statuses"
 
@@ -119,24 +129,14 @@ class Resume(SQLModel, table=True):
     status_id: int = Field(index=True, foreign_key="Statuses.id")
     employment_type_id: int = Field(foreign_key="EmploymentTypes.id", index=True)
     id: int = Field(primary_key=True, index=True)
-
     user: "User" = Relationship(back_populates="resumes")
     job_ads: List["JobAd"] = Relationship(back_populates="resumes", link_model=Match)
     skills: List["Skill"] = Relationship(back_populates="resumes", link_model=ResumeSkill)
     education: "Education" = Relationship(back_populates="resumes")
-    location: "Location" = Relationship(back_populates="resumes")
+    
+    location: Optional[Location] = Relationship(back_populates="resumes")
     status: "Status" = Relationship(back_populates="resumes")
     employment_type: "EmploymentType" = Relationship(back_populates="resumes")
-
-
-class Location(SQLModel, table=True):
-    __tablename__ = "Locations"
-
-    id: int = Field(primary_key=True, index=True)
-    name: str = Field(index=True, unique=True)
-
-    job_ads: List["JobAd"] = Relationship(back_populates="location")
-    resumes: List["Resume"] = Relationship(back_populates="location")
 
 
 class Level(SQLModel, table=True):
@@ -165,7 +165,7 @@ class JobAd(SQLModel, table=True):
 
     company: "Company" = Relationship(back_populates="job_ads")
     education: "Education" = Relationship(back_populates="job_ads")
-    location: "Location" = Relationship(back_populates="job_ads")
+    location: Optional["Location"] = Relationship(back_populates="job_ads")
     employment_type: "EmploymentType" = Relationship(back_populates="job_ads")
     skills: List["Skill"] = Relationship(back_populates="job_ads", link_model=JobAdSkill)
     status: "Status" = Relationship(back_populates="job_ads")
