@@ -1,16 +1,4 @@
-
-from pydantic import BaseModel, Field
-# from data.db_models import User
-from sqlmodel import SQLModel, Field
-
-
-class Users(SQLModel, table=True):
-    id: int = Field(primary_key=True)
-    username: str
-    hashed_password: str
-
-    class Config:
-        from_attributes = True
+from pydantic import BaseModel
 
 
 class CreateUserRequest(BaseModel):
