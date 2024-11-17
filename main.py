@@ -6,7 +6,7 @@ import uvicorn
 # from routers.api.users_router import router as users_router
 from users.user_router import router as users_router
 from resumes.resume_routers import router as resumes_router
-from utils.auth import token_router
+from utils.token_router import token_router
 
 load_dotenv()
 
