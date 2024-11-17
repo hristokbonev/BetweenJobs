@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from data.database import create_db
 import uvicorn
 from routers.api.users_router import router as users_router
+from utils.auth import token_router
 
 load_dotenv()
 
@@ -13,9 +14,16 @@ async def lifespan(app: FastAPI):
     yield
     print("Shutting down...")
 
+
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(users_router)
+app.include_router(token_router)
+   
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="localhost", port=8000)
+
+
+
