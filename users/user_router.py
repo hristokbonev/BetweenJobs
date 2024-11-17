@@ -48,5 +48,7 @@ def register_new_skill(data: CreateSkillRequest, session: Session = Depends(get_
         if not new_skill:
             raise HTTPException(status_code=406, detail="This skill already exists!")
         return new_skill
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
