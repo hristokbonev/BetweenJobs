@@ -45,7 +45,6 @@ def show_company_by_id(comp_id: int, session: Session = Depends(get_session)):
 def register_new_company(data: CreateCompanyRequest, session: Session = Depends(get_session)):
     try:
         new_company = cs.create_company(data, session)
-        print(new_company)
         if not new_company:
             raise HTTPException(status_code=500, detail=f"Failed to create company with name {data.company_name}.")
         return new_company

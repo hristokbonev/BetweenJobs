@@ -40,13 +40,9 @@ def create_user(data: UserRegistrationRequest, session: Session):
 
 
 # ADMIN Functions
-class SkillsLevels:
-    pass
-
-
 def create_new_skill(data: CreateSkillRequest, session: Session):
     # Check if skill exists
-    is_skill = select(Skill).where(Skill.name == data.skill_name)
+    is_skill = select(Skill).where(Skill.name == data.name)
     existing_skill = session.execute(is_skill).scalars().first()
     if existing_skill:
         raise ValueError(f'Skill {data.skill_name} already exists!')
@@ -54,23 +50,7 @@ def create_new_skill(data: CreateSkillRequest, session: Session):
     new_skill = Skill(**data.model_dump())
     session.add(new_skill)
     session.commit()
-    new_skill_id = new_skill.id
-    print(new_skill_id)
-    # Check if is_scalable skill and validate level value
-    if data.is_scalable:
-        level_entry = session.execute(
-            select(Level).where(Level.level == data.level)
-        ).scalars().first()
-
-        if not level_entry:
-            raise ValueError(f"Level {data.level} does not exist in Levels table.")
-
-        # Create a record in SkillsLevels table
-        skill_level = SkillsLevels(skill_id=new_skill.id, level_id=level_entry.id)
-        session.add(skill_level)
-        session.commit()
-
-        # Return the newly created skill
+    # Return the newly created skill
     find_new_skill = select(Skill).where(Skill.id == new_skill.id)
     response = session.execute(find_new_skill).scalars().first()
     return response
