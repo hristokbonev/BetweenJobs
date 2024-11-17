@@ -21,5 +21,3 @@ def view_resume(id: int, session: Session = Depends(get_session)):
 
     return resume if resume else NotFoundException(detail='Resume not found')
 
-
-@router.post('/create', response_model=ResumeResponse)
