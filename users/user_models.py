@@ -29,3 +29,9 @@ class UserRegistrationRequest(BaseModel):
         orm_mode = True
 
 
+class CreateSkillRequest(BaseModel):
+    skill_name: str
+    is_scalable: bool = False
+
+    class Config:
+        orm_mode = True

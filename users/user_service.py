@@ -1,6 +1,6 @@
 from sqlmodel import Session, select
-from data.db_models import User
-from users.user_models import UsersResponse, UserRegistrationRequest
+from data.db_models import User, Skill
+from users.user_models import UsersResponse, UserRegistrationRequest, CreateSkillRequest
 from typing import List
 from datetime import datetime
 import base64
@@ -35,6 +35,18 @@ def create_user(data: UserRegistrationRequest, session: Session):
     session.commit()
 
     response = view_user_by_id(new_user.id, session)
+    return response
+
+
+# ADMIN Functions
+def create_new_skill(data: CreateSkillRequest, session: Session):
+    new_skill = Skill(**data.model_dump())
+    session.add(new_skill)
+    session.commit()
+    new_skill_id = new_skill.id
+    print(new_skill_id)
+    find_new_skill = select(Skill).where(Skill.id == new_skill_id)
+    response = session.execute(find_new_skill).scalars().first()
     return response
 
 

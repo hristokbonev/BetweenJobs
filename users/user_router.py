@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
-from users.user_models import UserRegistrationRequest, UsersResponse
+from users.user_models import UserRegistrationRequest, UsersResponse, CreateSkillRequest
 from users import user_service as us
 from data.database import get_session
 from typing import List
@@ -36,5 +36,17 @@ def get_user_by_id(user_id: int, session: Session = Depends(get_session)):
         if not user:
             raise HTTPException(status_code=404, detail=f"User with ID {user_id} not found.")
         return user
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
+
+
+# Admin controls
+@users_router.post('/admin/skill')
+def register_new_skill(data: CreateSkillRequest, session: Session = Depends(get_session)):
+    try:
+        new_skill = us.create_new_skill(data=data, session=session)
+        if not new_skill:
+            raise HTTPException(status_code=406, detail="This skill already exists!")
+        return new_skill
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
