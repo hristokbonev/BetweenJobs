@@ -52,3 +52,16 @@ def search_users( searche_criteria: UserSearch = Depends(),
 
     return users    
 
+
+# Admin controls
+@users_router.post('/admin/skill')
+def register_new_skill(data: CreateSkillRequest, session: Session = Depends(get_session)):
+    try:
+        new_skill = us.create_new_skill(data=data, session=session)
+        if not new_skill:
+            raise HTTPException(status_code=406, detail="This skill already exists!")
+        return new_skill
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")

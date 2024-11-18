@@ -1,4 +1,6 @@
-from sqlmodel import SQLModel, create_engine, Session
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlmodel import SQLModel
 from data.config import DATABASE_URL
 
 # Database engine setup
@@ -8,7 +10,7 @@ engine = create_engine(DATABASE_URL, echo=True)
 def create_db():
     SQLModel.metadata.create_all(bind=engine)
 
-# Dependency to get the DB session       
+# Dependency to get the DB session
 def get_session():
     with Session(engine) as session:
         yield session

@@ -4,9 +4,11 @@ from pydantic import BaseModel, Field, EmailStr
 
 
 class UsersResponse(BaseModel):
-
+    '''Used in user get endoiints'''
     id: int | None = None
+    # created_at: Optional[datetime] = Field(default_factory=datetime.now)
     username : str
+    # password : str = Field()
     first_name : str
     last_name : str
     is_admin : bool
@@ -55,10 +57,15 @@ class UserSchema(BaseModel):
     class Config:
         orm_mode = True
 
+class CreateSkillRequest(BaseModel):
+    name: str
+    is_scalable: bool = False
 
+    class Config:
+        orm_mode = True
 class TokenData(BaseModel):
     username: str
-    
+
 
 class Token(BaseModel):
     access_token: str
