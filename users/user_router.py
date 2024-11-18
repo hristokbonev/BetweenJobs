@@ -18,19 +18,6 @@ def show_users(session: Session = Depends(get_session)):
     except ValueError as e:
         return HTTPException(status_code=404, detail=str(e))
 
-
-# @router.post('/register', response_model=UsersResponse)
-# def register_user(reg_form: UserRegistrationRequest, session: Session = Depends(get_session)):
-
-#     try:
-#         return crud.create_user(reg_form=reg_form, session=session)
-    
-#     except ValueError:
-#         return NotFoundException(detail='User could not be created')
-    
-#     except Exception:
-#         return HTTPException(status_code=500, detail='Problem creating user: ')
-
     
 @router.get('/users/{user_id}', response_model=UsersResponse)
 def get_user_by_id(user_id: int, session: Session = Depends(get_session)):

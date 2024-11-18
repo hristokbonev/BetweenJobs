@@ -3,7 +3,6 @@ from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 from data.database import create_db
 import uvicorn
-# from routers.api.users_router import router as users_router
 from users.user_router import router as user_router
 from resumes.resume_routers import router as resumes_router
 from utils.authentication import users_router

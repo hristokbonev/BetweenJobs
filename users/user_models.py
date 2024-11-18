@@ -6,9 +6,7 @@ from pydantic import BaseModel, Field, EmailStr
 class UsersResponse(BaseModel):
 
     id: int | None = None
-    # created_at: Optional[datetime]
     username : str
-    # password : str = Field()
     first_name : str
     last_name : str
     is_admin : bool
