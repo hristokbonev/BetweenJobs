@@ -70,12 +70,19 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     username = payload.get('sub') if payload else None
     if not username:
         return None
-    return get_user(username)
+    return get_user(username, token)
 
 
-def get_current_admin_user(user: User = Depends(get_current_user)):
+# def get_current_admin_user(user: User = Depends(get_current_user)):
+#     if not user.is_admin:
+#         raise HTTPException(status_code=403, detail="User is not an admin")
+#     return user
+
+
+def get_current_admin_user(token: str = Depends(oauth2_scheme)):
+    user = get_current_user(token)  # Assuming this function returns a User or None
+    if user is None:
+        raise HTTPException(status_code=401, detail="User not authenticated")
     if not user.is_admin:
         raise HTTPException(status_code=403, detail="User is not an admin")
-    return user
-
-
+    return None

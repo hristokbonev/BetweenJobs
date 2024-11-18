@@ -42,11 +42,11 @@ class UserCreate(BaseModel):
 
 
 class UserUpdate(BaseModel):
-    username: str
-    password: str
-    first_name: Optional[str]
-    last_name: Optional[str]
-    email: str
+    username: Optional[str] = None
+    password: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[str] = None
 
 
 class UserSchema(BaseModel):
