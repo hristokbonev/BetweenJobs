@@ -1,7 +1,6 @@
 from datetime import timedelta
 import os
 from fastapi import APIRouter, Depends, HTTPException, status
-# from sqlalchemy.orm import Session
 from data.db_models import User
 from users.user_service import update_user
 from utils import auth
