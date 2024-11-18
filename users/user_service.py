@@ -22,16 +22,6 @@ def view_user_by_id(user_id: int, session: Session):
     return user
 
 
-def create_user(username, password, first_name, last_name, birthdate, email, session: Session):
-    # Convert birthdate to an ISO 8601 string format if it's a datetime object
-    birthdate_str = birthdate.isoformat() if isinstance(birthdate, datetime) else birthdate
-
-    statement = select(User).where(User.id == user_id)
-    user = session.exec(statement).first()
-
-    return user if user else None
-
-
 # ADMIN Functions
 def create_new_skill(data: CreateSkillRequest, session: Session):
     # Check if skill exists

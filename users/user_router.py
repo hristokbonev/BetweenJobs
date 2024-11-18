@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from common.exceptions import NotFoundException
 from data.db_models import User
-from users.user_models import UserRegistrationRequest, UserSchema, UserSearch, UsersResponse
+from users.user_models import UserRegistrationRequest, UserSchema, UserSearch, UsersResponse, CreateSkillRequest
 from users import user_service as us
 from data.database import get_session
 from typing import List
@@ -54,7 +54,7 @@ def search_users( searche_criteria: UserSearch = Depends(),
 
 
 # Admin controls
-@users_router.post('/admin/skill')
+@router.post('/admin/skill')
 def register_new_skill(data: CreateSkillRequest, session: Session = Depends(get_session)):
     try:
         new_skill = us.create_new_skill(data=data, session=session)
