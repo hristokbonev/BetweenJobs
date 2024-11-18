@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session
+from sqlmodel import Session, select
 from common.exceptions import NotFoundException
 from data.db_models import User
 from users.user_models import UserRegistrationRequest, UserSchema, UserSearch, UsersResponse
@@ -45,16 +45,22 @@ def get_user_by_id(user_id: int, session: Session = Depends(get_session)):
 @router.get("/search", response_model=list[UserSchema])
 def search_users( searche_criteria: UserSearch = Depends(),
                  session: Session = Depends(get_session)):
-    user = session.query(User)
+    
+    statement = select(User)
+    user = session.exec(statement)
 
     if searche_criteria.username:
-        user = user.filter(User.username == searche_criteria.username)
+        statement = select(User).where(User.username == searche_criteria.username)
+        user = session.exec(statement)
     if searche_criteria.first_name:
-        user = user.filter(User.first_name == searche_criteria.first_name)
+        statement = select(User).where(User.first_name == searche_criteria.first_name)
+        user = session.exec(statement)
     if searche_criteria.last_name:
-        user = user.filter(User.last_name == searche_criteria.last_name)
+        statement = select(User).where(User.last_name == searche_criteria.last_name)
+        user = session.exec(statement)
     if searche_criteria.email:
-        user = user.filter(User.email == searche_criteria.email)            
+        statement = select(User).where(User.email == searche_criteria.email)
+        user = session.exec(statement)         
 
     users = user.all()    
 

@@ -8,7 +8,7 @@ from users.user_models import UserCreate, UserSchema, Token, UserUpdate
 from users.auth import  create_access_token, get_password_hash, verify_password
 from data.database import engine, create_db
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 
 users_router = APIRouter(prefix='/api/users', tags=["Users"])
@@ -44,7 +44,8 @@ def create_user(user: UserCreate, session: Session = Depends(get_session)):
 
 @users_router.put('/{user_id}', response_model=UserSchema)
 def update_user(user_id: int, user_update: UserUpdate, session: Session = Depends(get_session)):
-    user = session.query(User).filter(User.id == user_id).first()
+    statement = select(User).where(User.id == user_id)
+    user = session.exec(statement).first()
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     if user_update.username:
@@ -65,7 +66,8 @@ def update_user(user_id: int, user_update: UserUpdate, session: Session = Depend
 
 @users_router.post('/login', response_model=Token)
 def login(from_data: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_session)):
-    user = session.query(User).filter(User.username == from_data.username).first()
+    statement = select(User).where(User.username == from_data.username)
+    user = session.exec(statement).first()
     if not user:
         raise HTTPException(status_code=401, detail="Incorrect username or password")
     # is_admin = user.is_admin
