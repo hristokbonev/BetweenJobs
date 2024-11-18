@@ -1,6 +1,6 @@
-from sqlalchemy import create_engine
+# from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlmodel import SQLModel
+from sqlmodel import SQLModel, create_engine
 from data.config import DATABASE_URL
 
 # Database engine setup
