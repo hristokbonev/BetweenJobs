@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, create_engine, Session
-from data.config import DATABASE_URL
+from config import DATABASE_URL
 
 # Database engine setup
 engine = create_engine(DATABASE_URL, echo=True)
@@ -13,15 +13,15 @@ def get_session():
     with Session(engine) as session:
         yield session
 
-# Optional: Function to dispose engine after use
-def start_db():
-    SQLModel.metadata.create_all(bind=engine)
-    yield
-    engine.dispose()
+# # Optional: Function to dispose engine after use
+# def start_db():
+#     SQLModel.metadata.create_all(bind=engine)
+#     yield
+#     engine.dispose()
 
-def get_db():
-    db = Session()
-    try:
-        yield db
-    finally:
-        db.close()
+# def get_db():
+#     db = Session()
+#     try:
+#         yield db
+#     finally:
+#         db.close()
