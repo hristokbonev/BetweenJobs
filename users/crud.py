@@ -23,7 +23,8 @@ def create_user(db: Session, user: UserCreate):
 
 
 def get_user(db: Session, username: str) -> UserCreate:
-        user = db.query(User).filter(User.username == username).first()
+        statement = select(User).where(User.username == username)
+        user = db.exec(statement).first()
         if not user:
             return None
         return UserCreate(username=user.username)
@@ -33,7 +34,7 @@ def get_user_by_username(session: Session, username: str):
     statement = select(User).where(User.username == username)
     return session.exec(statement).first()
 
-    #  return session.query(User).filter(User.username == username).first()
+  
     
     
 
