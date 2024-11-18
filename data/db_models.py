@@ -50,7 +50,7 @@ class Company(SQLModel, table=True):
 class User(SQLModel, table=True):
     __tablename__ = "Users"
 
-    id: int = Field(primary_key=True, index=True)
+    id: Optional[int] = Field(primary_key=True, index=True)
     created_at: datetime = Field(default_factory=datetime.now)
     username: str = Field(unique=True, index=True)
     password: str
