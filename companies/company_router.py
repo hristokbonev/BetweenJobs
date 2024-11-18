@@ -3,6 +3,7 @@ from sqlmodel import Session
 from companies.company_models import CompanyResponse, CreateCompanyRequest, UpdateCompanyRequest
 from data.database import get_session
 from companies import company_service as cs
+from jobposts import jobpost_service as js
 from typing import List, Optional, Dict
 
 
@@ -18,7 +19,9 @@ def show_all_companies(
         companies = cs.view_companies(session, name=name, job_ad_title=job_ad_title)
         if not companies:
             raise HTTPException(status_code=404, detail="No companies found.")
+
         return companies
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
 
@@ -30,12 +33,14 @@ def show_company_by_id(comp_id: int, session: Session = Depends(get_session)):
         if not company:
             raise HTTPException(status_code=404, detail=f"Company with ID {comp_id} not found.")
         employees = cs.view_users_in_company(comp_id, session)
+        job_ads = js.view_jobs_by_company_id(comp_id, session)
 
         return CompanyResponse(
             name=company.name,
             description=company.description,
             author_id=company.author_id,
-            employees=employees
+            employees=employees,
+            job_ads=job_ads
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")

@@ -1,24 +1,12 @@
 from pydantic import BaseModel
 from typing import Optional
+from jobposts.jobpost_models import JobAddResponse
 from users.user_models import UsersResponse
-
-
-class JobAddResponse(BaseModel):
-    title: str
-    company_name: str
-    company_description: Optional[str] = None
-    education: str
-    salary: float
-    employment: str
-    location: str
-
-    class Config:
-        orm_mode = True
 
 
 class CompanyResponse(BaseModel):
     name: str
-    description: str
+    description: Optional[str] = None
     author_id: int
     employees: Optional[list[UsersResponse]] = None
     job_ads: Optional[list[JobAddResponse]] = None

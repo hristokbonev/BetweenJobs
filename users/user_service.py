@@ -55,4 +55,3 @@ def create_new_skill(data: CreateSkillRequest, session: Session):
     response = session.execute(find_new_skill).scalars().first()
     return response
 
-

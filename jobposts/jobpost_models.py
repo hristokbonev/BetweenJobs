@@ -2,6 +2,19 @@ from pydantic import BaseModel
 from typing import Optional
 
 
+class JobAddResponse(BaseModel):
+    title: str
+    company_name: str
+    company_description: Optional[str] = None
+    education: str
+    salary: float
+    employment: str
+    location: str
+
+    class Config:
+        orm_mode = True
+
+
 class CreateJobAdRequest(BaseModel):
     title: str
     company_id: int

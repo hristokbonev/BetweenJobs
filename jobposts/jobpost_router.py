@@ -38,19 +38,10 @@ def register_new_job_ad(data: CreateJobAdRequest, session: Session = Depends(get
         new_job_ad = js.create_job_post(data=data, session=session)
         if not new_job_ad:
             raise HTTPException(status_code=500, detail=f"Failed to create job ad with name {data.title}.")
-        education = ats.view_education_by_id(new_job_ad, session)
-        employment = ats.get_employment_by_id(new_job_ad, session)
-        location = ats.get_location_by_id(new_job_ad, session)
 
-        return JobAddResponse(
-            title=new_job_ad.title,
-            company_name=new_job_ad.company_name,
-            company_description=new_job_ad.description,
-            education=education,
-            salary=new_job_ad.salary,
-            employment=employment,
-            location=location
-        )
+        new_job = show_job_ad_by_id(job_id=new_job_ad.id, session=session)
+
+        return JobAddResponse(**dict(new_job))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
 
