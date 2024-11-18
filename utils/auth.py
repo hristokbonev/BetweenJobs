@@ -8,7 +8,7 @@ from passlib.context import CryptContext
 from sqlmodel import Session
 from data.database import engine
 from data.db_models import User
-from users.crud import get_user, get_user_by_username
+from utils.crud import get_user, get_user_by_username
 from users.user_models import TokenData
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
