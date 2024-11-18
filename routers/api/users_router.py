@@ -10,7 +10,7 @@ router = APIRouter()
 @router.get("/users/{user_id}")
 def get_user_companies(user_id: int, session: Session = Depends(get_session)):
     statement = select(User).where(User.id == user_id)
-    user = session.execute(statement).scalars().first()
+    user = session.exec(statement).scalars().first()
     
     if user:
         return {"user": user}

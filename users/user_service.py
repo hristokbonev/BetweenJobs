@@ -7,7 +7,7 @@ import base64
 
 def view_users(session: Session):
     statement = select(User).order_by(User.id)
-    users = session.execute(statement).scalars().all()
+    users = session.exec(statement).scalars().all()
 
     return users
 
@@ -15,7 +15,7 @@ def view_users(session: Session):
 def view_user_by_id(user_id: int, session: Session):
 
     statement = select(User).where(User.id == user_id)
-    user = session.execute(statement).scalars().first()
+    user = session.exec(statement).scalars().first()
 
     return user if user else None
 

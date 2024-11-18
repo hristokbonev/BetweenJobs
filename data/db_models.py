@@ -120,20 +120,20 @@ class Resume(SQLModel, table=True):
     __tablename__ = "Resumes"
 
     user_id: int = Field(foreign_key="Users.id")
-    username: str = Field(index=True)
     full_name: Optional[str] = Field(default=None, index=True)
     title: str = Field(index=True)
     education_id: Optional[int] = Field(default=None, foreign_key="Education.id")
-    job_description: Optional[str] = Field(default=None, index=True)
+    summary: Optional[str] = Field(default=None, index=True)
     location_id: Optional[int] = Field(default=None, foreign_key="Locations.id")
-    status_id: int = Field(index=True, foreign_key="Statuses.id")
+    status_id: int = Field(index=True, foreign_key="Statuses.id", default=1)
     employment_type_id: int = Field(foreign_key="EmploymentTypes.id", index=True)
     id: int = Field(primary_key=True, index=True)
+
+
     user: "User" = Relationship(back_populates="resumes")
     job_ads: List["JobAd"] = Relationship(back_populates="resumes", link_model=Match)
     skills: List["Skill"] = Relationship(back_populates="resumes", link_model=ResumeSkill)
     education: "Education" = Relationship(back_populates="resumes")
-    
     location: Optional[Location] = Relationship(back_populates="resumes")
     status: "Status" = Relationship(back_populates="resumes")
     employment_type: "EmploymentType" = Relationship(back_populates="resumes")

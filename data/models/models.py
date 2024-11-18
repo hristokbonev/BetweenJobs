@@ -108,7 +108,7 @@ class Resume(SQLModel, table=True):
     full_name: Optional[str] = Field(default=None, index=True)
     title: str = Field(index=True)
     education_id: Optional[int] = Field(default=None, foreign_key="Education.id")
-    job_description: Optional[str] = Field(default=None, index=True)
+    summary: Optional[str] = Field(default=None, index=True)
     location_id: Optional[int] = Field(default=None, foreign_key="Locations.id")
     status_id: int = Field(index=True, foreign_key="Statuses.id")
     employment_type_id: int = Field(foreign_key="EmploymentTypes.id", index=True)
