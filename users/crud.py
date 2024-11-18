@@ -33,4 +33,8 @@ def get_user_by_username(session: Session, username: str):
     statement = select(User).where(User.username == username)
     return session.exec(statement).first()
 
+    #  return session.query(User).filter(User.username == username).first()
+    
+    
+
 
