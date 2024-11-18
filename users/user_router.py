@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 from common.exceptions import NotFoundException
-from users.user_models import UserRegistrationRequest, UsersResponse
+from data.db_models import User
+from users.user_models import UserRegistrationRequest, UserSchema, UserSearch, UsersResponse
 from users import user_service as us
 from data.database import get_session
 from typing import List
@@ -38,3 +39,24 @@ def get_user_by_id(user_id: int, session: Session = Depends(get_session)):
     user = us.view_user_by_id(user_id, session)
 
     return user if user else NotFoundException(detail='User not found')
+
+
+
+@router.get("/search", response_model=list[UserSchema])
+def search_users( searche_criteria: UserSearch = Depends(),
+                 session: Session = Depends(get_session)):
+    user = session.query(User)
+
+    if searche_criteria.username:
+        user = user.filter(User.username == searche_criteria.username)
+    if searche_criteria.first_name:
+        user = user.filter(User.first_name == searche_criteria.first_name)
+    if searche_criteria.last_name:
+        user = user.filter(User.last_name == searche_criteria.last_name)
+    if searche_criteria.email:
+        user = user.filter(User.email == searche_criteria.email)            
+
+    users = user.all()    
+
+    return users    
+

@@ -79,21 +79,3 @@ def get_current_admin_user(user: User = Depends(get_current_user)):
     return user
 
 
-# def get_current_user(request: Request):
-#     token: Optional[str] = request.headers.get('Authorization')
-#     if token is None:
-#         raise HTTPException(status_code=401, detail="Authorization token is missing")
-
-#     # Remove 'Bearer ' from the start of the token if it's included
-#     if token.startswith("Bearer "):
-#         token = token[7:]
-
-#     try:
-#         payload = jwt.decode(token, key, algorithms=[algorithm])
-#         # Process the payload to retrieve user information
-#     except jwt.ExpiredSignatureError:
-#         raise HTTPException(status_code=401, detail="Token has expired")
-#     except jwt.JWTError:
-#         raise HTTPException(status_code=401, detail="Token is invalid")
-
-#     return payload
