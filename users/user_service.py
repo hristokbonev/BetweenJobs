@@ -1,23 +1,23 @@
-# from sqlmodel import Session, select
-# from data.db_models import User
-# from users.user_models import UserRegistrationRequest
-# from datetime import datetime
-# import base64
+from sqlmodel import Session, select
+from data.db_models import User
+from users.user_models import UserRegistrationRequest
+from datetime import datetime
+import base64
 
 
-# def view_users(session: Session):
-#     statement = select(User).order_by(User.id)
-#     users = session.execute(statement).scalars().all()
+def view_users(session: Session):
+    statement = select(User).order_by(User.id)
+    users = session.execute(statement).scalars().all()
 
-#     return users
+    return users
 
 
-# def view_user_by_id(user_id: int, session: Session):
+def view_user_by_id(user_id: int, session: Session):
 
-#     statement = select(User).where(User.id == user_id)
-#     user = session.execute(statement).scalars().first()
+    statement = select(User).where(User.id == user_id)
+    user = session.execute(statement).scalars().first()
 
-#     return user if user else None
+    return user if user else None
 
 
 # def create_user(reg_form: UserRegistrationRequest, session: Session):

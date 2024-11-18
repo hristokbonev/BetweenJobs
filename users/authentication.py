@@ -1,11 +1,12 @@
 import os
-from fastapi import APIRouter, FastAPI, Depends, HTTPException
+from fastapi import APIRouter, FastAPI, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import List
 from data.db_models import User
 from users import auth
-from users.user_models import UserCreate, UserSchema, Token, TokenData
+from users.crud import get_user_by_username
+from users.user_models import UserCreate, UserSchema, Token, TokenData, UserUpdate
 from users.auth import verify_password, create_access_token, get_current_user, get_password_hash
 from data.database import engine, create_db
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -43,29 +44,28 @@ def create_user(user: UserCreate, session: Session = Depends(get_session)):
     return db_user
 
 @users_router.put('/{user_id}', response_model=UserSchema)
-def update_user(user_id: int, user: UserCreate, session: Session = Depends(get_session)):
-    db_user = session.query(User).filter(User.id == user_id).first()
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
+def update_user(user_id: int, user: UserUpdate, session: Session = Depends(get_session)):
+    user = session.query(User).filter(User.id == user_id).first()
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     user.username = user.username
     user.password = get_password_hash(user.password)
     user.first_name = user.first_name
     user.last_name = user.last_name
-    user.is_admin = user.is_admin
     user.email = user.email
     session.commit()
-    session.refresh(db_user)
-    return db_user
+    session.refresh(user)
+    return user
 
 
-# @users_router.delete('/{user_id}', response_model=UserSchema)
-# def delete_user(user_id: int, session: Session = Depends(get_session)):
-#     db_user = session.query(User).filter(User.id == user_id).first()
-#     if db_user is None:
-#         raise HTTPException(status_code=404, detail="User not found")
-#     session.delete(db_user)
-#     session.commit()
-#     return db_user
+@users_router.delete('/{user_id}', response_model=UserSchema)
+def delete_user(user_id: int, session: Session = Depends(get_session)):
+    user = session.query(User).filter(User.id == user_id).first()
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    session.delete(user)
+    session.commit()
+    return user
 
 
 @users_router.post('/login', response_model=Token)
@@ -79,11 +79,6 @@ def login(from_data: OAuth2PasswordRequestForm = Depends(), session: Session = D
 
     return Token(access_token=access_token, token_type="bearer")
     
-    
-
-@users_router.get('/me', response_model=UserSchema)
-def read_users_me(current_user: User = Depends(auth.get_current_user)):
-    return current_user
 
 
 @users_router.post('/logout')

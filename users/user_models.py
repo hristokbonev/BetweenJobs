@@ -39,6 +39,12 @@ class UserCreate(BaseModel):
     birth_date: Optional[date]
     email: str
 
+class UserUpdate(BaseModel):
+    username: str
+    password: str
+    first_name: Optional[str]
+    last_name: Optional[str]
+    email: str
 
 class UserSchema(BaseModel):
     id: Optional[int]
