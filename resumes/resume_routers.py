@@ -1,12 +1,11 @@
 from data.database import get_session
 from sqlmodel import Session
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query
 from resumes.resume_models import ResumeRequest, ResumeResponse, ResumeUpdate
 from common.exceptions import NotFoundException
 from resumes import resume_services as rs
 from typing import List, Optional, Union
 from typing import Literal
-from locations import location_services as ls
 
 router = APIRouter(prefix='/api/resumes', tags=['Resumes'])
 

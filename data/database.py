@@ -1,6 +1,4 @@
-from sqlmodel import SQLModel
-from sqlmodel import create_engine
-from sqlmodel import Session
+from sqlmodel import SQLModel, create_engine, Session
 from config import DATABASE_URL
 
 # Database engine setup
