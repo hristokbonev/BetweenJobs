@@ -6,7 +6,6 @@ from users.user_models import UserRegistrationRequest, UserSchema, UserSearch, U
 from users import user_service as us
 from data.database import get_session
 from typing import List
-from users import crud
 
 router = APIRouter(prefix='/api/users', tags=["Users"])
 
