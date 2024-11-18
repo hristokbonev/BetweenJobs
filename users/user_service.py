@@ -1,8 +1,11 @@
+import logging
 from sqlmodel import Session, select
 from data.db_models import User
-from users.user_models import UserRegistrationRequest
-from datetime import datetime
-import base64
+from users.user_models import UserRegistrationRequest, UserSearch, UserUpdate
+
+
+
+from utils.auth import get_password_hash
 
 
 def view_users(session: Session):
@@ -20,22 +23,48 @@ def view_user_by_id(user_id: int, session: Session):
     return user if user else None
 
 
-# def create_user(reg_form: UserRegistrationRequest, session: Session):
-#     # Convert birthdate to an ISO 8601 string format if it's a datetime object
-#     reg_form.date_of_birth = reg_form.date_of_birth.isoformat() if isinstance(reg_form.date_of_birth, datetime) else reg_form.date_of_birth
+def get_filtered_users(search_criteria: UserSearch, page: int, limit: int, session: Session):
+    statement = select(User)
 
-#     # Hash the password securely
-#     reg_form.password = base64.b64encode(reg_form.password.encode('utf-8')).decode('utf-8')
+    if search_criteria.username:
+        statement = statement.filter(User.username.ilike(f"%{search_criteria.username}%"))
+    if search_criteria.first_name:
+        statement = statement.filter(User.first_name.ilike(f"%{search_criteria.first_name}%"))
+    if search_criteria.last_name:
+        statement = statement.filter(User.last_name.ilike(f"%{search_criteria.last_name}%"))
+    if search_criteria.email:
+        statement = statement.filter(User.email.ilike(f"%{search_criteria.email}%"))
 
-#     # Create a new User object (SQLModel model) from the UserRegistrationRequest object (Pydantic model)
-#     new_user = User(**reg_form.model_dump())
+    offset = (page - 1) * limit
+    statement = statement.offset(offset).limit(limit)
 
-#     # Add and commit the new user to the session
-#     session.add(new_user)
-#     session.commit()
+    users = session.exec(statement).all()
 
-#     response = view_user_by_id(new_user.id, session)
-
-#     return response if response else None
+    return users
 
 
+def update_user(user_id: int, user_update: UserUpdate, session: Session):
+    stm = select(User).where(User.id == user_id)
+    user = session.exec(stm).first()
+    
+    if not user:
+        return None
+
+    if user_update.username is not None:
+        user.username = user_update.username
+    if user_update.password is not None:
+        user.password = get_password_hash(user_update.password) 
+    if user_update.first_name is not None:
+        user.first_name = user_update.first_name
+    if user_update.last_name is not None:
+        user.last_name = user_update.last_name
+    if user_update.email is not None:
+        user.email = user_update.email
+
+    session.add(user)
+    session.commit()
+
+    return user
+   
+
+#    

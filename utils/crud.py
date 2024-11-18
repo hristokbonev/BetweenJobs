@@ -22,12 +22,12 @@ def create_user(db: Session, user: UserCreate):
     return db_user
 
 
-def get_user(db: Session, username: str) -> UserCreate:
+def get_user(username: str, db: Session) -> UserCreate:
         statement = select(User).where(User.username == username)
         user = db.exec(statement).first()
         if not user:
             return None
-        return UserCreate(username=user.username)
+        return user
 
 
 def get_user_by_username(session: Session, username: str):
