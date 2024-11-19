@@ -3,30 +3,23 @@ import os
 from fastapi import APIRouter, Depends, HTTPException, status
 # from sqlalchemy.orm import Session
 from data.db_models import User
+from data.database import get_session
 from users import auth
 from users.user_models import UserCreate, UserSchema, Token, UserUpdate
-from users.auth import  create_access_token, get_password_hash, verify_password
-from data.database import engine, create_db
+from users.auth import  create_access_token, get_password_hash
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlmodel import Session, select
 
 
-users_router = APIRouter(prefix='/api/users', tags=["Users"])
+router = APIRouter(prefix='/api/users', tags=["Users"])
 
 key = os.getenv("SECRET_KEY")
 algorithm = os.getenv("ALGORITHM")
 access_token_expire_minutes = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
 
-create_db()
-
-def get_session():
-    with Session(engine) as session:
-        yield session
-
-
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/users/login', auto_error=False)   
 
-@users_router.post('/', response_model=UserSchema)
+@router.post('/', response_model=UserSchema)
 def create_user(user: UserCreate, session: Session = Depends(get_session)):
     db_user = User( username=user.username,
                     password=get_password_hash(user.password),
@@ -42,7 +35,7 @@ def create_user(user: UserCreate, session: Session = Depends(get_session)):
     session.refresh(db_user)
     return db_user
 
-@users_router.put('/{user_id}', response_model=UserSchema)
+@router.put('/{user_id}', response_model=UserSchema)
 def update_user(user_id: int, user_update: UserUpdate, session: Session = Depends(get_session)):
     statement = select(User).where(User.id == user_id)
     user = session.exec(statement).first()
@@ -64,7 +57,7 @@ def update_user(user_id: int, user_update: UserUpdate, session: Session = Depend
 
 
 
-@users_router.post('/login', response_model=Token)
+@router.post('/login', response_model=Token)
 def login(from_data: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_session)):
     statement = select(User).where(User.username == from_data.username)
     user = session.exec(statement).first()
@@ -80,7 +73,7 @@ def login(from_data: OAuth2PasswordRequestForm = Depends(), session: Session = D
     
 
 
-@users_router.post('/logout')
+@router.post('/logout')
 def logout(token: str = Depends(oauth2_scheme)):
     auth.verify_token(token)
     auth.token_blacklist.add(token)

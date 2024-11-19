@@ -1,7 +1,8 @@
-from sqlalchemy.orm import Session
 from data.db_models import User
 from users.user_models import UserCreate
 from sqlmodel import select, Session
+from users.user_models import UserModel
+
 
 def create_user(db: Session, user: UserCreate):
 
@@ -22,13 +23,12 @@ def create_user(db: Session, user: UserCreate):
     return db_user
 
 
-def get_user(db: Session, username: str) -> UserCreate:
+def get_user(session: Session, username: str):
         statement = select(User).where(User.username == username)
-        user = db.exec(statement).first()
+        user = session.exec(statement).first()
         if not user:
             return None
-        return UserCreate(username=user.username)
-
+        return UserModel(**user.model_dump())
 
 def get_user_by_username(session: Session, username: str):
     statement = select(User).where(User.username == username)

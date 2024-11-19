@@ -1,17 +1,22 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
-from common.exceptions import NotFoundException
+from common.exceptions import NotFoundException, UnauthorizedException
 from data.db_models import User
-from users.user_models import UserRegistrationRequest, UserSchema, UserSearch, UsersResponse
+from users.user_models import UserSchema, UserSearch, UsersResponse, UserModel
 from users import user_service as us
 from data.database import get_session
 from typing import List
-from users import crud
+from users.auth import get_current_user
+
 
 router = APIRouter(prefix='/api/users', tags=["Users"])
 
 @router.get('/', response_model=List[UsersResponse])
-def show_users(session: Session = Depends(get_session)):
+def show_users(session: Session = Depends(get_session), current_user: UserModel = Depends(get_current_user)):
+
+    if not current_user:
+        raise UnauthorizedException(detail='You must be logged in to view users')
+
     try:
         users = us.view_users(session)
 
@@ -34,7 +39,10 @@ def show_users(session: Session = Depends(get_session)):
 
     
 @router.get('/users/{user_id}', response_model=UsersResponse)
-def get_user_by_id(user_id: int, session: Session = Depends(get_session)):
+def get_user_by_id(user_id: int, session: Session = Depends(get_session), current_user: UserModel = Depends(get_current_user)):
+
+    if not current_user:
+        raise UnauthorizedException(detail='You must be logged in to view users')
 
     user = us.view_user_by_id(user_id, session)
 
@@ -44,7 +52,10 @@ def get_user_by_id(user_id: int, session: Session = Depends(get_session)):
 
 @router.get("/search", response_model=list[UserSchema])
 def search_users( searche_criteria: UserSearch = Depends(),
-                 session: Session = Depends(get_session)):
+                 session: Session = Depends(get_session), current_user: UserModel = Depends(get_current_user)):
+    
+    if not current_user:
+        raise UnauthorizedException(detail='You must be logged in to view users')
     
     statement = select(User)
     user = session.exec(statement)

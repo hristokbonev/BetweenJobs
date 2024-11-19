@@ -2,6 +2,19 @@ from datetime import date
 from typing import Optional
 from pydantic import BaseModel, Field, EmailStr
 
+class UserModel(BaseModel):
+
+    id: int | None = None
+    username : str
+    first_name : str
+    last_name : str
+    is_admin : bool
+    date_of_birth : date
+    email : str
+
+    class Config:
+        from_attributes = True
+
 
 class UsersResponse(BaseModel):
 
@@ -17,7 +30,7 @@ class UsersResponse(BaseModel):
 
 
     class Config:
-        orm_mode = True
+        from_attributes = True
     
 class UserRegistrationRequest(BaseModel):
     username: str
@@ -28,7 +41,7 @@ class UserRegistrationRequest(BaseModel):
     email: EmailStr
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UserCreate(BaseModel):
     username: str
@@ -55,7 +68,7 @@ class UserSchema(BaseModel):
     email: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class TokenData(BaseModel):
