@@ -1,12 +1,8 @@
-import logging
 from sqlmodel import Session, select
 from data.db_models import User
-from users.user_models import UserRegistrationRequest, UserSearch, UserUpdate
-from data.db_models import User, Skill, Level
-from users.user_models import UsersResponse, UserRegistrationRequest, CreateSkillRequest
-from typing import List
-from datetime import datetime
-import base64
+from users.user_models import UserSearch, UserUpdate
+from data.db_models import Skill
+from users.user_models import CreateSkillRequest
 
 from utils.auth import get_password_hash
 
@@ -19,8 +15,8 @@ def view_users(session: Session):
 
 
 def view_user_by_id(user_id: int, session: Session):
-    statement = select(User.id, User.username, User.first_name, User.last_name, User.is_admin, User.date_of_birth, User.email).where(User.id == user_id)
-    user = session.execute(statement).all()
+    statement = select(User).where(User.id == user_id)
+    user = session.exec(statement).first()
 
     return user
 

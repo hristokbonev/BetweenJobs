@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session, select
+from sqlmodel import Session
 from common.exceptions import NotFoundException, UnauthorizedException
-from data.db_models import User
 from users.user_models import CreateSkillRequest, UserSchema, UserSearch, UsersResponse, UserModel
 from users import user_service as us
 from data.database import get_session
 from typing import List
-from users.auth import get_current_user
+
+from utils.auth import get_current_user
 
 
 router = APIRouter(prefix='/api/users', tags=["Users"])
@@ -17,13 +17,13 @@ def show_users(session: Session = Depends(get_session), current_user: UserModel 
     if not current_user:
         raise UnauthorizedException(detail='You must be logged in to view users')
 
-    try:
-        users = us.view_users(session)
+    users = us.view_users(session)
 
-        return users
-    except ValueError as e:
-        return HTTPException(status_code=404, detail=str(e))
+    if not users:
+        raise NotFoundException(detail='No users found')
 
+    return users
+    
     
 @router.get('/users/{user_id}', response_model=UsersResponse)
 def get_user_by_id(user_id: int, session: Session = Depends(get_session), current_user: UserModel = Depends(get_current_user)):
@@ -33,8 +33,10 @@ def get_user_by_id(user_id: int, session: Session = Depends(get_session), curren
 
     user = us.view_user_by_id(user_id, session)
 
-    return user if user else NotFoundException(detail='User not found')
-
+    if not user:
+        raise NotFoundException(detail='User not found')
+    
+    return user
 
 
 @router.get("/search", response_model=List[UserSchema])
@@ -47,12 +49,23 @@ def search_users(search_criteria: UserSearch = Depends(),
         raise UnauthorizedException(detail='You must be logged in to view users')
 
     users = us.get_filtered_users(search_criteria, page, limit, session)
+
+    if not users:
+        raise NotFoundException(detail='No users found')
+    
     return users 
 
 
 # Admin controls
 @router.post('/admin/skill')
-def register_new_skill(data: CreateSkillRequest, session: Session = Depends(get_session)):
+def register_new_skill(data: CreateSkillRequest, session: Session = Depends(get_session), current_user: UserModel = Depends(get_current_user)):
+
+    if not current_user:
+        raise UnauthorizedException(detail='You must be an admin to create a new skill')
+    
+    if not current_user.is_admin:
+        raise UnauthorizedException(detail='You must be an admin to create a new skill')
+    
     try:
         new_skill = us.create_new_skill(data=data, session=session)
         if not new_skill:

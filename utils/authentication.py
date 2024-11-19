@@ -5,13 +5,13 @@ from data.db_models import User
 from users.user_service import update_user
 from utils import auth
 from users.user_models import UserCreate, UserSchema, Token, UserUpdate
-from utils.auth import  create_access_token, get_password_hash, verify_password
+from utils.auth import  create_access_token, get_password_hash
 from data.database import engine, create_db
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlmodel import Session, select
 
 
-users_router = APIRouter(prefix='/api/users', tags=["Users"])
+router = APIRouter(prefix='/api/users', tags=["Users"])
 
 key = os.getenv("SECRET_KEY")
 algorithm = os.getenv("ALGORITHM")
@@ -26,7 +26,7 @@ def get_session():
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/users/login', auto_error=False)   
 
-@users_router.post('/', response_model=UserSchema)
+@router.post('/', response_model=UserSchema)
 def create_user(user: UserCreate, session: Session = Depends(get_session)):
     db_user = User( username=user.username,
                     password=get_password_hash(user.password),
@@ -43,7 +43,7 @@ def create_user(user: UserCreate, session: Session = Depends(get_session)):
     return db_user
 
 
-@users_router.put('/{user_id}', response_model=UserSchema)
+@router.put('/{user_id}', response_model=UserSchema)
 def update_user_info(user_id: int, user_update: UserUpdate, session: Session = Depends(get_session)):
 
     updated_user = update_user(user_id, user_update, session)
@@ -53,7 +53,7 @@ def update_user_info(user_id: int, user_update: UserUpdate, session: Session = D
     return updated_user
     
 
-@users_router.post('/login', response_model=Token)
+@router.post('/login', response_model=Token)
 def login(from_data: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_session)):
     statement = select(User).where(User.username == from_data.username)
     user = session.exec(statement).first()
@@ -67,7 +67,7 @@ def login(from_data: OAuth2PasswordRequestForm = Depends(), session: Session = D
     return Token(access_token=access_token, token_type="bearer")
     
 
-@users_router.post('/logout')
+@router.post('/logout')
 def logout(token: str = Depends(oauth2_scheme)):
     auth.verify_token(token)
     auth.token_blacklist.add(token)

@@ -2,14 +2,13 @@ from datetime import datetime, timedelta
 import os
 from typing import Optional
 from jose import jwt, JWTError
-from fastapi import HTTPException, Depends, Request, status
+from fastapi import HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from sqlmodel import Session
 from data.database import engine
-from data.db_models import User
 from utils.crud import get_user, get_user_by_username
-from users.user_models import TokenData
+
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/users/login', auto_error=False)
@@ -70,7 +69,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     username = payload.get('sub') if payload else None
     if not username:
         return None
-    return get_user(username, token)
+    return get_user(username, session=Session(engine))
 
 
 # def get_current_admin_user(user: User = Depends(get_current_user)):
