@@ -7,7 +7,7 @@ from common.exceptions import NotFoundException, UnauthorizedException
 from resumes import resume_services as rs
 from typing import List
 from typing import Literal
-from users.auth import get_current_user
+from utils.auth import get_current_user
 from users.user_models import UserModel
 
 router = APIRouter(prefix='/api/resumes', tags=['Resumes'])

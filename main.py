@@ -7,7 +7,8 @@ from data.database import create_db
 import uvicorn
 from users.user_router import router as user_router
 from resumes.resume_routers import router as resumes_router
-from users.authentication import router as users_router
+from users.user_router import router as users_router
+from utils.authentication import router as auth_router
 
 load_dotenv()
 
@@ -25,6 +26,7 @@ app.include_router(resumes_router)
 app.include_router(users_router)
 app.include_router(companies_router)
 app.include_router(job_post_router)
+app.include_router(auth_router)
 
 
 if __name__ == "__main__":
