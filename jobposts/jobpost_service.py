@@ -1,18 +1,53 @@
 from fastapi import HTTPException
 from sqlmodel import Session, select
-from data.db_models import JobAd, Education, Location, EmploymentType, JobAdView
+from data.db_models import JobAd, JobAdView
 from jobposts.jobpost_models import CreateJobAdRequest, UpdateJobAdRequest, JobAddResponse
 
 
-def show_all_posts(session: Session):
-    statement = select(JobAd)
-    job_posts = session.exec(statement).all()
+def show_all_posts(
+        session: Session,
+        page: int,
+        limit: int,
+        title: str,
+        company_name: str,
+        location: str,
+        employment_type: str,
+        education: str,
+        status: str
+):
+    filters = []
+    if title:
+        filters.append(JobAdView.title == title)
+    if company_name:
+        filters.append(JobAdView.company_name == company_name)
+    if location:
+        filters.append(JobAdView.Location == location)
+    if employment_type:
+        filters.append(JobAdView.Employment == employment_type)
+    if education:
+        filters.append(JobAdView.degree_level == education)
+    if status:
+        filters.append(JobAdView.status == status)
 
-    return job_posts
+    # Build the statement with all filters
+    offset = (page - 1) * limit
+    statement = select(JobAdView).where(*filters).offset(offset).limit(limit)
+    job_ads = session.exec(statement).all()
+
+    return [JobAddResponse(
+        title=row.title,
+        company_name=row.company_name,
+        company_description=row.description,
+        education=row.degree_level,
+        salary=row.salary,
+        employment=row.Employment,
+        location=row.Location,
+        status=row.status
+    ) for row in job_ads]
 
 
 def view_job_post_by_id(ad_id: int, session: Session):
-    statement = select(JobAd).where(JobAd.id == ad_id)
+    statement = select(JobAdView).where(JobAdView.id == ad_id)
     job_ad = session.exec(statement).first()
     return job_ad
 
@@ -56,5 +91,18 @@ def view_jobs_by_company_id(comp_id: int, session: Session):
         education=row.degree_level,
         salary=row.salary,
         employment=row.Employment,
-        location=row.Location
+        location=row.Location,
+        status_name=row.status
     ) for row in job_ads]
+
+
+def delete_job_ad(job_id: int, session: Session):
+    statement = select(JobAd).where(JobAd.id == job_id)
+    target_job_ad = session.exec(statement).first()
+    if not target_job_ad:
+        return None
+
+    session.delete(target_job_ad)
+    session.commit()
+
+    return {"message": f"Job Posting with ID {job_id} and all related data was deleted!"}

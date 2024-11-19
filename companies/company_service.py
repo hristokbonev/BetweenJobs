@@ -1,5 +1,4 @@
 from fastapi import HTTPException
-from sqlalchemy.orm import joinedload
 from sqlmodel import Session, select
 from typing import Optional
 from companies.company_models import CreateCompanyRequest, UpdateCompanyRequest
