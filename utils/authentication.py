@@ -9,6 +9,7 @@ from utils.auth import  create_access_token, get_password_hash
 from data.database import engine, create_db
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlmodel import Session, select
+from common.mailjet_functions import send_email
 
 
 router = APIRouter(prefix='/api/users', tags=["Users"])
@@ -40,6 +41,7 @@ def create_user(user: UserCreate, session: Session = Depends(get_session)):
     session.add(db_user)
     session.commit()
     session.refresh(db_user)
+    send_email(email=db_user.email, name=(db_user.first_name or '')+ ' ' + (db_user.last_name or ''), text= "Welcome to BetweenJobs", subject= "Welcome to BetweenJobs", html= "<h1>Welcome to BetweenJobs</h1>")
     return db_user
 
 
