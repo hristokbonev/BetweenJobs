@@ -1,8 +1,14 @@
+import logging
 from sqlmodel import Session, select
 from data.db_models import User
-from users.user_models import UserRegistrationRequest
+from users.user_models import UserRegistrationRequest, UserSearch, UserUpdate
+from data.db_models import User, Skill, Level
+from users.user_models import UsersResponse, UserRegistrationRequest, CreateSkillRequest
+from typing import List
 from datetime import datetime
 import base64
+
+from utils.auth import get_password_hash
 
 
 def view_users(session: Session):
@@ -13,29 +19,64 @@ def view_users(session: Session):
 
 
 def view_user_by_id(user_id: int, session: Session):
+    statement = select(User.id, User.username, User.first_name, User.last_name, User.is_admin, User.date_of_birth, User.email).where(User.id == user_id)
+    user = session.execute(statement).all()
 
-    statement = select(User).where(User.id == user_id)
-    user = session.exec(statement).first()
-
-    return user if user else None
-
-
-# def create_user(reg_form: UserRegistrationRequest, session: Session):
-#     # Convert birthdate to an ISO 8601 string format if it's a datetime object
-#     reg_form.date_of_birth = reg_form.date_of_birth.isoformat() if isinstance(reg_form.date_of_birth, datetime) else reg_form.date_of_birth
-
-#     # Hash the password securely
-#     reg_form.password = base64.b64encode(reg_form.password.encode('utf-8')).decode('utf-8')
-
-#     # Create a new User object (SQLModel model) from the UserRegistrationRequest object (Pydantic model)
-#     new_user = User(**reg_form.model_dump())
-
-#     # Add and commit the new user to the session
-#     session.add(new_user)
-#     session.commit()
-
-#     response = view_user_by_id(new_user.id, session)
-
-#     return response if response else None
+    return user
 
 
+# ADMIN Functions
+def create_new_skill(data: CreateSkillRequest, session: Session):
+    # Check if skill exists
+    is_skill = select(Skill).where(Skill.name == data.name)
+    existing_skill = session.execute(is_skill).scalars().first()
+    if existing_skill:
+        raise ValueError(f'Skill {data.skill_name} already exists!')
+    # Create new skill record
+    new_skill = Skill(**data.model_dump())
+    session.add(new_skill)
+    session.commit()
+    # Return the newly created skill
+    find_new_skill = select(Skill).where(Skill.id == new_skill.id)
+    response = session.execute(find_new_skill).scalars().first()
+    return response
+
+def get_filtered_users(search_criteria: UserSearch, page: int, limit: int, session: Session):
+    statement = select(User)
+    if search_criteria.username:
+        statement = statement.filter(User.username.ilike(f"%{search_criteria.username}%"))
+    if search_criteria.first_name:
+        statement = statement.filter(User.first_name.ilike(f"%{search_criteria.first_name}%"))
+    if search_criteria.last_name:
+        statement = statement.filter(User.last_name.ilike(f"%{search_criteria.last_name}%"))
+    if search_criteria.email:
+        statement = statement.filter(User.email.ilike(f"%{search_criteria.email}%"))
+
+    offset = (page - 1) * limit
+    statement = statement.offset(offset).limit(limit)
+    users = session.exec(statement).all()
+    return users
+
+
+def update_user(user_id: int, user_update: UserUpdate, session: Session):
+    stm = select(User).where(User.id == user_id)
+    user = session.exec(stm).first()
+    
+    if not user:
+        return None
+    
+    if user_update.username is not None:
+        user.username = user_update.username
+    if user_update.password is not None:
+        user.password = get_password_hash(user_update.password) 
+    if user_update.first_name is not None:
+        user.first_name = user_update.first_name
+    if user_update.last_name is not None:
+        user.last_name = user_update.last_name
+    if user_update.email is not None:
+        user.email = user_update.email    
+
+    session.add(user)
+    session.commit()
+
+    return user    

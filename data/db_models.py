@@ -93,6 +93,7 @@ class Skill(SQLModel, table=True):
 
     id: int = Field(primary_key=True)
     name: str = Field(unique=True, index=True)
+    is_scalable: bool = Field(default=False)
 
     levels: List["Level"] = Relationship(back_populates="skills", link_model=SkillLevel)
     job_ads: List["JobAd"] = Relationship(back_populates="skills", link_model=JobAdSkill)
@@ -190,3 +191,17 @@ class Education(SQLModel, table=True):
 
     job_ads: List["JobAd"] = Relationship(back_populates="education")
     resumes: List["Resume"] = Relationship(back_populates="education")
+
+
+class JobAdView(SQLModel, table=True):
+    __tablename__ = "job_ads_view"
+
+    row_id: int = Field(primary_key=True)  # Surrogate primary key
+    company_id: int
+    title: str
+    company_name: str
+    description: Optional[str] = None
+    degree_level: Optional[str] = None
+    salary: Optional[float] = None
+    Employment: Optional[str] = None
+    Location: Optional[str] = None

@@ -8,7 +8,7 @@ engine = create_engine(DATABASE_URL, echo=True)
 def create_db():
     SQLModel.metadata.create_all(bind=engine)
 
-# Dependency to get the DB session       
+# Dependency to get the DB session
 def get_session():
     with Session(engine) as session:
         yield session

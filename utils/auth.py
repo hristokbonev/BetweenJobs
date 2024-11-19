@@ -1,15 +1,15 @@
-from typing import Optional
 from datetime import datetime, timedelta
-from data.database import get_session
 import os
-from jose import JWTError, jwt
-from fastapi import HTTPException, Depends
+from typing import Optional
+from jose import jwt, JWTError
+from fastapi import HTTPException, Depends, Request, status
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from sqlmodel import Session
 from data.database import engine
 from data.db_models import User
-from users.crud import get_user, get_user_by_username
+from utils.crud import get_user, get_user_by_username
+from users.user_models import TokenData
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/users/login', auto_error=False)
@@ -35,7 +35,6 @@ def authenticate_user(username: str, password: str):
         if not user or not verify_password(password, user.password):
             return False
         return user
-
 
 def create_access_token(data:dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
@@ -64,19 +63,26 @@ def verify_token(token: str):
             return None
 
 
-def get_current_user(token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)):
+def get_current_user(token: str = Depends(oauth2_scheme)):
     if not token:
         return None
     payload = verify_token(token)
     username = payload.get('sub') if payload else None
     if not username:
         return None
-    return get_user(session=session, username = username)
+    return get_user(username, token)
 
 
-def get_current_admin_user(user: User = Depends(get_current_user)):
+# def get_current_admin_user(user: User = Depends(get_current_user)):
+#     if not user.is_admin:
+#         raise HTTPException(status_code=403, detail="User is not an admin")
+#     return user
+
+
+def get_current_admin_user(token: str = Depends(oauth2_scheme)):
+    user = get_current_user(token)  # Assuming this function returns a User or None
+    if user is None:
+        raise HTTPException(status_code=401, detail="User not authenticated")
     if not user.is_admin:
         raise HTTPException(status_code=403, detail="User is not an admin")
-    return user
-
-
+    return None
