@@ -24,7 +24,7 @@ class ResumeResponse(BaseModel):
     skills: list[str] | None = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ResumeRequest(BaseModel):
@@ -87,7 +87,7 @@ class ResumeRequest(BaseModel):
         return value
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ResumeUpdate(BaseModel):
@@ -148,4 +148,4 @@ class ResumeUpdate(BaseModel):
             return value
     
         class Config:
-            orm_mode = True
+            from_attributes = True
