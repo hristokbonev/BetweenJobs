@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel
 from typing import Optional
 
@@ -38,6 +39,21 @@ class UpdateJobAdRequest(BaseModel):
     salary: Optional[float]
     employment_type_id: Optional[int]
     location_id: Optional[int]
+
+    class Config:
+        orm_mode = True
+
+class JobAdResponseWithNamesNotId(BaseModel):
+    title: str
+    created_at: datetime
+    company_name: str
+    description: str | None = None
+    education: str | None = None
+    salary: float
+    employment: str
+    location: str
+    status: str | None = None
+    skills: list[str] | None = None
 
     class Config:
         orm_mode = True

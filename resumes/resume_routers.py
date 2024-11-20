@@ -9,6 +9,8 @@ from typing import List
 from typing import Literal
 from utils.auth import get_current_user
 from users.user_models import UserModel
+from matches import match_services as ms
+from data.db_models import JobAd
 
 router = APIRouter(prefix='/api/resumes', tags=['Resumes'])
 
@@ -34,13 +36,27 @@ def view_resumes(session: Session = Depends(get_session),
     return resumes
 
 
+@router.get('/suggest/{id}', response_model=None)
+def suggest_job_ads(id: int, session: Session = Depends(get_session), current_user: UserModel = Depends(get_current_user)):
+
+    if not current_user:
+        raise UnauthorizedException(detail='You must be logged in to view job ads')
+    
+    ads = ms.suggest_job_ads(id, session)
+
+    if not ads:
+        raise NotFoundException(detail='No job ads found')
+    
+    return ads
+
+
 @router.get('/{id}', response_model=ResumeResponse)
 def view_resume(id: int, session: Session = Depends(get_session), current_user: UserModel = Depends(get_current_user)):
 
     if not current_user:
         raise UnauthorizedException(detail='You must be logged in to view resumes')
 
-    resume = rs.get_resume_by_id(id, session)
+    resume = rs.get_resume_by_id(session=session, id=id)
 
     if not resume:
         raise NotFoundException(detail='Resume not found')
