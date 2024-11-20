@@ -1,15 +1,17 @@
 from datetime import timedelta
 import os
 from fastapi import APIRouter, Depends, HTTPException, status
+from itsdangerous import URLSafeTimedSerializer
 from data.db_models import User
 from users.user_service import update_user
 from utils import auth
-from users.user_models import UserCreate, UserSchema, Token, UserUpdate
+from users.user_models import ResetPasswordRequest, UserCreate, UserSchema, Token, UserUpdate
 from utils.auth import  create_access_token, get_password_hash
 from data.database import engine, create_db
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlmodel import Session, select
 from common.mailjet_functions import send_email
+from passlib.context import CryptContext
 
 
 router = APIRouter(prefix='/api/users', tags=["Users"])
@@ -17,6 +19,7 @@ router = APIRouter(prefix='/api/users', tags=["Users"])
 key = os.getenv("SECRET_KEY")
 algorithm = os.getenv("ALGORITHM")
 access_token_expire_minutes = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
+
 
 create_db()
 
@@ -74,3 +77,53 @@ def logout(token: str = Depends(oauth2_scheme)):
     auth.verify_token(token)
     auth.token_blacklist.add(token)
     return {"message": "Successfully logged out"}
+
+
+@router.post('/reset_password_request')
+def reset_password_request(email: str, session: Session = Depends(get_session)):
+    stm = select(User).where(User.email == email)
+    user = session.exec(stm).first()
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    serializer = URLSafeTimedSerializer(key)
+    token = serializer.dumps({'user_id': user.id}, salt="password-reset-salt")
+    
+    # send_reset_password_email(user.email, token)
+    send_email(email=user.email, name=(user.first_name or '')+ ' ' + (user.last_name or ''), text= "Reset your password", 
+               subject= "Reset your password", 
+               html= f"<h1>Reset your password</h1><p>Click the link below to reset your password</p><a href='http://localhost:8000/docs/api/users/reset_password/{token}'>Reset Password</a>")
+    return {"message": "Password reset email sent. Check your inbox."}
+
+
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+@router.post('/reset_password/{token}')
+def reset_password(request: ResetPasswordRequest, token: str,  session: Session = Depends(get_session)):
+    # Validate passwords match
+    if request.new_password != request.confirm_password:
+        raise HTTPException(status_code=400, detail="Passwords do not match")
+
+    try:
+        # Decode token
+        serializer = URLSafeTimedSerializer(key)
+        data = serializer.loads(request.token, salt="password-reset-salt", max_age=3600)  # Token valid for 1 hour
+        user_id = data['user_id']
+
+        # Query user by ID
+        stm = select(User).where(User.id == user_id)
+        user = session.exec(stm).first()
+
+        if not user:
+            raise HTTPException(status_code=404, detail="Invalid token or user not found")
+
+        # Update user's password
+        user.password = pwd_context.hash(request.new_password)
+        session.commit()
+
+        return {"message": "Password successfully reset"}
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Invalid or expired token")

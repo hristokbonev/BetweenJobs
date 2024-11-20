@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Optional
+from typing import List, Optional
 from pydantic import BaseModel, Field, EmailStr
 
 class UserModel(BaseModel):
@@ -93,3 +93,10 @@ class UserSearch(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     email: Optional[str] = None
+
+
+
+class ResetPasswordRequest(BaseModel):
+    username: str
+    new_password: str
+    confirm_password: str
