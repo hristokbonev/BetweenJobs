@@ -5,7 +5,7 @@ from itsdangerous import URLSafeTimedSerializer
 from data.db_models import User
 from users.user_service import update_user
 from utils import auth
-from users.user_models import ResetPasswordRequest, UserCreate, UserSchema, Token, UserUpdate
+from users.user_models import UserCreate, UserSchema, Token, UserUpdate
 from utils.auth import  create_access_token, get_password_hash
 from data.database import engine, create_db
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -19,7 +19,6 @@ router = APIRouter(prefix='/api/users', tags=["Users"])
 key = os.getenv("SECRET_KEY")
 algorithm = os.getenv("ALGORITHM")
 access_token_expire_minutes = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
-
 
 create_db()
 
@@ -59,9 +58,8 @@ def update_user_info(user_id: int, user_update: UserUpdate, session: Session = D
     
 
 @router.post('/login', response_model=Token)
-def login(from_data: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_session)):
-    statement = select(User).where(User.username == from_data.username)
-    user = session.exec(statement).first()
+def login(from_data: OAuth2PasswordRequestForm = Depends()):
+    user = auth.authenticate_user(from_data.username, from_data.password)
     
     if not user:
         raise HTTPException(status_code=401, detail="Incorrect username or password")
@@ -93,37 +91,40 @@ def reset_password_request(email: str, session: Session = Depends(get_session)):
     # send_reset_password_email(user.email, token)
     send_email(email=user.email, name=(user.first_name or '')+ ' ' + (user.last_name or ''), text= "Reset your password", 
                subject= "Reset your password", 
-               html= f"<h1>Reset your password</h1><p>Click the link below to reset your password</p><a href='http://localhost:8000/docs/api/users/reset_password/{token}'>Reset Password</a>")
+               html= f"""
+                    <h1>Reset your password</h1>
+                    <p>Click the link below to reset your password</p>
+                    <a href='http://127.0.0.1:8000/docs#/Users/reset_password_direct_api_users_reset_password_direct_post'>Reset Password</a>
+                    """)
     return {"message": "Password reset email sent. Check your inbox."}
 
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-@router.post('/reset_password/{token}')
-def reset_password(request: ResetPasswordRequest, token: str,  session: Session = Depends(get_session)):
-    # Validate passwords match
-    if request.new_password != request.confirm_password:
-        raise HTTPException(status_code=400, detail="Passwords do not match")
 
-    try:
-        # Decode token
-        serializer = URLSafeTimedSerializer(key)
-        data = serializer.loads(request.token, salt="password-reset-salt", max_age=3600)  # Token valid for 1 hour
-        user_id = data['user_id']
 
-        # Query user by ID
-        stm = select(User).where(User.id == user_id)
-        user = session.exec(stm).first()
+@router.post('/reset_password_direct')
+def reset_password_direct(email: str,  new_password: str, confirm_password: str, session: Session = Depends(get_session)):
+    """
+    Update the user's password after validating the current password.
+    """
+    # Ensure the new password and confirm password match
+    if new_password != confirm_password:
+        raise HTTPException(status_code=400, detail="New passwords do not match")
+    
+    # Find the user by email
+    stm = select(User).where(User.email == email)
+    user = session.exec(stm).first()
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    
+    # Hash and update the new password
+    user.password = pwd_context.hash(new_password)
+    session.add(user)
+    session.commit()
+    
+    return {"message": "Password successfully updated"}
 
-        if not user:
-            raise HTTPException(status_code=404, detail="Invalid token or user not found")
-
-        # Update user's password
-        user.password = pwd_context.hash(request.new_password)
-        session.commit()
-
-        return {"message": "Password successfully reset"}
-
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="Invalid or expired token")

@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session
+from sqlmodel import Session, select
 from common.exceptions import NotFoundException, UnauthorizedException
-from users.user_models import CreateSkillRequest, UserSchema, UserSearch, UsersResponse, UserModel
+from data.db_models import User
+from users.user_models import CreateSkillRequest, UserSchema, UserSearch, UserUpdate, UsersResponse, UserModel
 from users import user_service as us
 from data.database import get_session
 from typing import List
 
-from utils.auth import get_current_user
+from utils.auth import get_current_user, get_password_hash
 
 
 router = APIRouter(prefix='/api/users', tags=["Users"])
@@ -54,6 +55,32 @@ def search_users(search_criteria: UserSearch = Depends(),
         raise NotFoundException(detail='No users found')
     
     return users 
+
+
+def update_user(user_id: int, user_update: UserUpdate, session: Session):
+    stm = select(User).where(User.id == user_id)
+    user = session.exec(stm).first()
+    
+    if not user:
+        return None
+
+    if user_update.username is not None:
+        user.username = user_update.username
+    if user_update.password is not None:
+        user.password = get_password_hash(user_update.password) 
+    if user_update.first_name is not None:
+        user.first_name = user_update.first_name
+    if user_update.last_name is not None:
+        user.last_name = user_update.last_name
+    if user_update.email is not None:
+        user.email = user_update.email
+
+    session.add(user)
+    session.commit()
+
+    return user
+
+
 
 
 # Admin controls
