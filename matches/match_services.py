@@ -1,8 +1,16 @@
 from data.database import Session
-import re
 from resumes.resume_services import get_resume_by_id
 from jobposts.jobpost_service import show_posts_with_names_not_id
+from sentence_transformers import SentenceTransformer, util
 
+
+model = SentenceTransformer('all-mpnet-base-v2')
+
+
+def titles_match(title1: str, title2: str, threshold=0.65) -> bool:
+    embeddings = model.encode([title1, title2], convert_to_tensor=True)
+    similarity = util.cos_sim(embeddings[0], embeddings[1]).item()
+    return similarity >= threshold
 
 
 def suggest_job_ads(resume_id, session: Session) -> list:
@@ -18,11 +26,7 @@ def suggest_job_ads(resume_id, session: Session) -> list:
         counter = 0
         counter_matches = 0
 
-    # Check if the resume title and the ad title have any common words
-        resume_title = set(resume.title.lower().split())
-        ad_title = set(ad.title.lower().split())
-
-        if not resume_title & ad_title:
+        if not titles_match(resume.title, ad.title):
             continue
 
     # Check if the resume education matches the ad education
