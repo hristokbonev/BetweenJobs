@@ -51,6 +51,7 @@ def create_user(user: UserCreate, session: Session = Depends(get_session)):
 def update_user_info(user_id: int, user_update: UserUpdate, session: Session = Depends(get_session)):
 
     updated_user = update_user(user_id, user_update, session)
+    
     if not updated_user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
