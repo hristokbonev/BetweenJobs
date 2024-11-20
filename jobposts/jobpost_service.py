@@ -1,6 +1,6 @@
 from fastapi import HTTPException
-from sqlmodel import Session, select
-from data.db_models import JobAd, JobAdView
+from sqlmodel import Session, select, delete
+from data.db_models import JobAd, JobAdView, Skill, JobAdSkill
 from jobposts.jobpost_models import CreateJobAdRequest, UpdateJobAdRequest, JobAddResponse
 
 
@@ -54,30 +54,71 @@ def view_job_post_by_id(ad_id: int, session: Session):
 
 def create_job_post(data: CreateJobAdRequest, session: Session):
     # Add new job ad item
-    new_post = JobAd(**data.model_dump())
-    session.add(new_post)
+    new_job_post = JobAd(**data.model_dump())
+    session.add(new_job_post)
+    # Save changes with new job ID
+    session.flush()
+    # Assign all skills related to the JobAd
+    if data.skill_ids:
+        for skill_id in data.skill_ids:
+            statement = select(Skill.id).where(Skill.id == skill_id)
+            session.exec(statement).first()
+            job_ad_skill = JobAdSkill(jobad_id=new_job_post.id, skill_id=skill_id)
+            session.add(job_ad_skill)
+
     session.commit()
 
-    response = view_job_post_by_id(new_post.id, session)
+    response = view_job_post_by_id(new_job_post.id, session)
     return response
 
 
 def change_job_post(target_id: int, data: UpdateJobAdRequest, session: Session):
+    # Fetch the target JobAd record
     statement = select(JobAd).where(JobAd.id == target_id)
-    target_job_ad = session.exec(statement).first()
-    if not target_job_ad:
+    target_job_post = session.exec(statement).first()
+    if not target_job_post:
         raise HTTPException(status_code=404, detail="Job Ad not found.")
 
-    # Get the data as a dictionary, excluding unset fields
-    updates = data.dict(exclude_unset=True)
+    # Update all items in JobAd, excluding the list of skill ids
+    updates = data.dict(exclude_unset=True, exclude={"skill_ids"})
 
-    # Dynamically update fields
     for field, value in updates.items():
-        setattr(target_job_ad, field, value)
+        setattr(target_job_post, field, value)
 
+    session.flush()
+    # Update skills in the JobAdSkill table if skill_ids are provided
+    if data.skill_ids is not None:
+        current_skills = session.exec(
+            select(JobAdSkill.skill_id).where(JobAdSkill.jobad_id == target_id)
+        ).all()
+        current_skill_ids = set(current_skills)
+        new_skill_ids = set(data.skill_ids)
+
+        # Calculate skills to add and remove
+        skills_to_add = new_skill_ids - current_skill_ids
+        skills_to_remove = current_skill_ids - new_skill_ids
+
+        # Add new skills
+        for skill_id in skills_to_add:
+            skill_exists = session.exec(select(Skill).where(Skill.id == skill_id)).first()
+            if not skill_exists:
+                raise HTTPException(status_code=400, detail=f"Skill ID {skill_id} does not exist.")
+            new_skill = JobAdSkill(jobad_id=target_id, skill_id=skill_id)
+            session.add(new_skill)
+
+        # Remove outdated skills
+        if skills_to_remove:
+            session.exec(
+                delete(JobAdSkill).where(
+                    JobAdSkill.jobad_id == target_id, JobAdSkill.skill_id.in_(skills_to_remove)
+                )
+            )
+        # Commit changes to the database
     session.commit()
 
-    return target_job_ad
+    response = view_job_post_by_id(target_id, session)
+    return response
+
 
 
 def view_jobs_by_company_id(comp_id: int, session: Session):

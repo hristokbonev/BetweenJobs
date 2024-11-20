@@ -26,6 +26,7 @@ class CreateJobAdRequest(BaseModel):
     employment_type_id: Optional[int]
     location_id: Optional[int]
     status_id: int = 1
+    skill_ids: list[int]
 
     class Config:
         orm_mode = True
@@ -40,7 +41,8 @@ class UpdateJobAdRequest(BaseModel):
     salary: Optional[float]
     employment_type_id: Optional[int]
     location_id: Optional[int]
-    status: Optional[int]
+    status_id: Optional[int] = 1
+    skill_ids: list[int]
 
     class Config:
         orm_mode = True

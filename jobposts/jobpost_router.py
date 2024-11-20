@@ -82,14 +82,13 @@ def register_new_job_ad(data: CreateJobAdRequest, session: Session = Depends(get
 @job_post_router.put('/{job_id}', response_model=JobAddResponse)
 def modify_jobad_by_id(job_id: int, data: UpdateJobAdRequest, session: Session = Depends(get_session)):
     try:
-        updated_job_ad = js.change_job_post(job_id, data, session)
-        return updated_job_ad
-    except HTTPException as e:
-        raise e
+        js.change_job_post(job_id, data, session)
+        updated_job = show_job_ad_by_id(job_id, session)
+        return JobAddResponse(**dict(updated_job))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f'Server error: {str(e)}')
 
 
 @job_post_router.delete('/{job_id}', response_model=Dict[str, str])
 def delete_jobad_by_id(job_id: int, session: Session = Depends(get_session)):
-    return
+    return js.delete_job_ad(job_id, session)
