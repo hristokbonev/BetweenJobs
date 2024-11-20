@@ -63,15 +63,13 @@ class UserUpdate(BaseModel):
 
 
 class UserSchema(BaseModel):
-    id: Optional[int]
-    username: str
-    first_name: Optional[str]
-    last_name: Optional[str]
-    is_admin: bool
-    email: str
+    id: Optional[int] = None
+    username: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    is_admin: bool 
+    email: Optional[str] =  None
 
-    class Config:
-        from_attributes = True
 
 class CreateSkillRequest(BaseModel):
     name: str
