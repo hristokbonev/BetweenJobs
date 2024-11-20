@@ -32,15 +32,12 @@ def authenticate_user(username: str, password: str):
     with Session(engine) as session:
         user = get_user_by_username(session, username)
         if not user or not verify_password(password, user.password):
-            return False
+            return None
         return user
 
 def create_access_token(data:dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.now() + expires_delta
-    else:
-        expire = datetime.now() + timedelta(minutes= int(access_token_expire_minutes))
+    expire = datetime.now() + timedelta(minutes= int(access_token_expire_minutes))
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, key, algorithm=algorithm)
     return encoded_jwt
