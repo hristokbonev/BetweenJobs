@@ -3,6 +3,7 @@ from sqlmodel import Session, select
 
 from data.db_models import Resume, JobAd, ResumeSkill, Skill, JobAdSkill
 from matches.match_models import MatchResponse
+from common.mailjet_functions import send_email
 
 
 def match_with_job_ad(resume_id: int, job_ad_id: int, session: Session):
@@ -35,6 +36,7 @@ def match_with_job_ad(resume_id: int, job_ad_id: int, session: Session):
     # Calculate match score by comparing location / education / employment type +1 point for each
     # Compare all skills in Resume and get +1 point for each match with JobAd skill
     match_score = 0
+    top_score = len(job_ad_skills) + 3
     if resume.location_id == job_ad.location_id:
         match_score += 1
     if resume.education_id == job_ad.education_id:
@@ -46,6 +48,7 @@ def match_with_job_ad(resume_id: int, job_ad_id: int, session: Session):
         if skill in job_ad_skills:
             match_score += 1
     # Update Resume status and Job Post status == Match
+    match_score = round(match_score / top_score, 2)
     resume.status_id = 4
     job_ad.status_id = 4
     session.add(resume)

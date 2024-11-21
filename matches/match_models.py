@@ -8,4 +8,4 @@ class MatchResponse(BaseModel):
     job_position: str
     company_id: int
     company_name: str
-    match_score: int
+    match_score: float
