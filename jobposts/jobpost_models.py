@@ -57,3 +57,20 @@ class JobAdResponseWithNamesNotId(BaseModel):
 
     class Config:
         orm_mode = True
+
+class JobAdResponseWithSkills(BaseModel):
+
+    id: int
+    title: str
+    created_at: datetime
+    company_name: str
+    description: str | None = None
+    education: int | None = None
+    salary: float
+    employment: int
+    location: int
+    status: int | None = None
+    skills: list[int] | None = None
+
+    class Config:
+        orm_mode = True
