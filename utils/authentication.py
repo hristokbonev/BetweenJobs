@@ -47,8 +47,8 @@ def create_user(user: UserCreate, session: Session = Depends(get_session)):
     return db_user
 
 
-@router.put('/{user_id}', response_model=UserSchema)
-def update_user_info(user_id: int, user_update: UserUpdate, session: Session = Depends(get_session)):
+@router.put('/{user_id}', response_model=UserSchema )
+def update_user_info(user_id: int, user_update: UserUpdate = Depends(), session: Session = Depends(get_session)):
 
     updated_user = update_user(user_id, user_update, session)
     
