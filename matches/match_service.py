@@ -1,7 +1,6 @@
 from fastapi import HTTPException
 from sqlmodel import Session, select
-
-from data.db_models import Resume, JobAd, ResumeSkill, Skill, JobAdSkill
+from data.db_models import Resume, JobAd, ResumeSkill, Skill, JobAdSkill, User
 from matches.match_models import MatchResponse
 from common.mailjet_functions import send_email
 
@@ -19,6 +18,12 @@ def match_with_job_ad(resume_id: int, job_ad_id: int, session: Session):
     resume_skills = session.exec(resume_skills_query).all()
     if not resume:
         raise HTTPException(status_code=404, detail="Resume not found")
+
+    # Fetch the user linked to the Resume
+    user_query = select(User).where(User.id == resume.user_id)
+    user = session.exec(user_query).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found for the resume")
 
     # Fetch JobAd details with relevant skills
     job_ad_query = select(JobAd).where(JobAd.id == job_ad_id)
@@ -54,6 +59,25 @@ def match_with_job_ad(resume_id: int, job_ad_id: int, session: Session):
     session.add(resume)
     session.add(job_ad)
     session.commit()
+
+    # Send email notification to the user
+    email_subject = f"Job Match Notification: {job_ad.title}"
+    email_body = (
+        f"Hello {resume.full_name},\n\n"
+        f"We have found a potential job match for you:\n"
+        f"Job Title: {job_ad.title}\n"
+        f"Company: {job_ad.company_name}\n"
+        f"Match Score: {match_score}%\n\n"
+        f"Please log in to your account for more details.\n\n"
+        f"Best regards,\nYour Job Portal Team"
+    )
+
+    send_email(email='fakeiei@yahoo.com', name=(user.first_name or '') + ' ' + (user.last_name or ''),
+               text=f"Your match score for the possition of {job_ad.title} is {match_score}",
+               subject=f"BetweenJobs Match notification {job_ad.title}",
+               html=f"<h1>Your match score for the possition of {job_ad.title} is {match_score}</h1>"
+               )
+
 
     return MatchResponse(
         user_id=resume.user_id,
