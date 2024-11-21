@@ -27,6 +27,23 @@ class ResumeResponse(BaseModel):
         from_attributes = True
 
 
+class ResumeResponseWithIds(BaseModel):
+
+    id: int | None = None
+    user_id: int
+    full_name: str | None = None
+    title: str
+    education: int | None = None
+    summary: str | None = None
+    status: int
+    employment_type: int | None = None
+    location: int | None = None
+    skills: list[int] | None = None
+
+    class Config:
+        from_attributes = True
+
+
 class ResumeRequest(BaseModel):
 
     user_id: int 

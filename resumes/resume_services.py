@@ -1,6 +1,7 @@
+from sqlalchemy import func
 from data.db_models import Resume, EmploymentType, Education, ResumeSkill, Status, User, Location, Skill
 from sqlmodel import select, Session
-from resumes.resume_models import ResumeResponse
+from resumes.resume_models import ResumeResponse, ResumeResponseWithIds
 
 def get_all_resumes(session: Session, name: str, location: str, employment_type: str, education: str, status: str, title: str, skills: list):
 
@@ -188,3 +189,20 @@ def delete_resume(id, session: Session):
     session.commit()
 
     return resume
+
+def get_resume_with_ids_instead_of_names(id, session: Session):
+
+    statement = select(Resume).where(Resume.id == id)
+
+    resume = session.exec(statement).first()
+
+    resume = ResumeResponseWithIds(id=resume.id, user_id=resume.user_id, full_name=resume.full_name, title=resume.title, summary=resume.summary,
+                                   employment_type=resume.employment_type_id, education=resume.education_id, location=resume.location_id, status=resume.status_id)
+    
+    resume.skills = [session.exec(select(Skill.id).join(ResumeSkill, ResumeSkill.skill_id==Skill.id).join(Resume, Resume.id==ResumeSkill.resume_id).where(Resume.id == resume.id)).all()]
+
+    return resume if resume else None
+
+
+
+    
