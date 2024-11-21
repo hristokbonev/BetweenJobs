@@ -18,3 +18,10 @@ def get_location_by_id(location_id: int, session: Session):
     statement = select(Location.name).where(Location.id == location_id)
     location = session.execute(statement).scalars().first()
     return location
+
+# Used to dynamically call column values for dynamic reference
+# Used for Education, EmploymentType, Skills, Location
+def get_distinct_column_values(session: Session, column):
+    statement = select(column).distinct()
+    results = session.exec(statement).all()
+    return [value for value, in results if value]

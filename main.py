@@ -9,6 +9,7 @@ from users.user_router import router as user_router
 from resumes.resume_routers import router as resumes_router
 from users.user_router import router as users_router
 from utils.authentication import router as auth_router
+from matches.match_router import match_router
 
 load_dotenv()
 
@@ -27,6 +28,7 @@ app.include_router(users_router)
 app.include_router(companies_router)
 app.include_router(job_post_router)
 app.include_router(auth_router)
+app.include_router(match_router)
 
 
 if __name__ == "__main__":
