@@ -98,3 +98,8 @@ class ResetPasswordRequest(BaseModel):
     username: str
     new_password: str
     confirm_password: str
+
+
+# for admin when changing testmode - ON/OFF
+class TestModeResponse(BaseModel):
+    status: bool

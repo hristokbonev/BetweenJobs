@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from sqlmodel import Session, select
-from data.db_models import Resume, JobAd, ResumeSkill, Skill, JobAdSkill, User
+from data.db_models import Resume, JobAd, ResumeSkill, Skill, JobAdSkill, User, Variables
 from matches.match_models import MatchResponse
 from common.mailjet_functions import send_email
 
@@ -60,24 +60,26 @@ def match_with_job_ad(resume_id: int, job_ad_id: int, session: Session):
     session.add(job_ad)
     session.commit()
 
-    # Send email notification to the user
-    email_subject = f"Job Match Notification: {job_ad.title}"
-    email_body = (
-        f"Hello {resume.full_name},\n\n"
-        f"We have found a potential job match for you:\n"
-        f"Job Title: {job_ad.title}\n"
-        f"Company: {job_ad.company_name}\n"
-        f"Match Score: {match_score}%\n\n"
-        f"Please log in to your account for more details.\n\n"
-        f"Best regards,\nYour Job Portal Team"
-    )
+    statement = select(Variables)
+    status = session.exec(statement).first()
 
-    send_email(email='fakeiei@yahoo.com', name=(user.first_name or '') + ' ' + (user.last_name or ''),
-               text=f"Your match score for the possition of {job_ad.title} is {match_score}",
+
+    sender_email = 'fakeiei@yahoo.com' if status.email_test_mode else resume.full_name
+
+    # Send email notification to jobseeker
+    send_email(email='fakeiei@yahoo.com', name=(resume.full_name),
+               text=f"Your match score for the possition of {job_ad.title} is {match_score/100}%",
                subject=f"BetweenJobs Match notification {job_ad.title}",
-               html=f"<h1>Your match score for the possition of {job_ad.title} is {match_score}</h1>"
+               html=f"<h1>Hello {resume.full_name}</h1>,\n\n"
+                f"<h2>We have found a potential job match for you:</h2>\n"
+                f"<p>Job Title: {job_ad.title}</p>\n"
+                f"<p>Company: {job_ad.company_name}</p>\n"
+                f"<p>Match Score: {match_score}%</p>\n\n"
+                f"<p>Please log in to your account for more details.</p>\n\n"
+                f"<h3>Best regards,</h3>\n"
+                f"<h3>Your Job Portal Team</h3>"
                )
-
+    # Send email notification to business owner
 
     return MatchResponse(
         user_id=resume.user_id,

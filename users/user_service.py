@@ -1,6 +1,6 @@
 from sqlmodel import Session, select
-from data.db_models import User
-from users.user_models import UserSearch, UserUpdate
+from data.db_models import User, Variables
+from users.user_models import UserSearch, UserUpdate, UserModel, TestModeResponse
 from data.db_models import Skill
 from users.user_models import CreateSkillRequest
 
@@ -73,3 +73,18 @@ def update_user(user_id: int, user_update, session: Session):
     session.refresh(user)
   
     return user
+
+
+def swith_test_mode(session: Session, user: UserModel):
+    statement = select(Variables)
+    status = session.exec(statement).first()
+    if status:
+        status.email_test_mode = False
+    else:
+        status.email_test_mode = True
+
+    session.add(status)
+    session.commit()
+    session.refresh(status)
+
+    return TestModeResponse(status=status.email_test_mode)
