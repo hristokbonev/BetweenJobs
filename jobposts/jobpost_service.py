@@ -1,8 +1,8 @@
 from fastapi import HTTPException
 from sqlmodel import Session, select
 from data.db_models import JobAd, Education, Location, EmploymentType, JobAdView, Status, JobAdSkill, Skill
-from jobposts.jobpost_models import CreateJobAdRequest, UpdateJobAdRequest, JobAddResponse, JobAdResponseWithNamesNotId
-from sqlalchemy import func
+from jobposts.jobpost_models import CreateJobAdRequest, JobAdResponseWithSkills, UpdateJobAdRequest, JobAddResponse, JobAdResponseWithNamesNotId
+from sqlalchemy import Text, cast, func
 
 
 def show_all_posts(session: Session):
@@ -102,3 +102,87 @@ def show_posts_with_names_not_id(session: Session):
     ) for row in job_posts]
    
    return job_posts
+
+def view_posts_with_skills(session: Session):
+    statement = (
+        select(
+            JobAd,
+            func.string_agg(cast(Skill.id, Text), ', ')
+        ).join(JobAdSkill, JobAd.id == JobAdSkill.jobad_id, isouter=True).join
+        (Skill, JobAdSkill.skill_id == Skill.id, isouter=True).group_by(
+            JobAd.id,  # Include all JobAd columns
+            JobAd.created_at,
+            JobAd.title,
+            JobAd.company_name,
+            JobAd.description,
+            JobAd.salary,
+            JobAd.education_id,
+            JobAd.location_id,
+            JobAd.employment_type_id,
+            JobAd.status_id))
+    
+    job_posts = session.exec(statement).all()
+    
+    job_posts = [JobAdResponseWithSkills(
+        id=row[0].id,
+        title=row[0].title,
+        created_at=row[0].created_at,
+        company_name=row[0].company_name,
+        description=row[0].description,
+        education=row[0].education_id,
+        salary=row[0].salary,
+        employment=row[0].employment_type_id,
+        location=row[0].location_id,
+        status=row[0].status_id,
+        skills=row[1].split(', ') if row[1] else []
+    ) for row in job_posts]
+
+    return job_posts
+
+
+def view_post_with_strings_and_skills(ad_id: int, session: Session):
+    
+    statement = (
+        select(
+            JobAd,
+            Education.degree_level,
+            Location.name,
+            EmploymentType.name,
+            Status.name,
+            func.string_agg(Skill.name, ', ')
+        ).join(Education, JobAd.education_id == Education.id, isouter=True).join
+        (Location, JobAd.location_id == Location.id, isouter=True).join
+        (EmploymentType, JobAd.employment_type_id == EmploymentType.id, isouter=True).join
+        (Status, JobAd.status_id == Status.id, isouter=True).join
+        (JobAdSkill, JobAd.id == JobAdSkill.jobad_id, isouter=True).join
+        (Skill, JobAdSkill.skill_id == Skill.id, isouter=True).group_by(
+            JobAd.id,  # Include all JobAd columns
+            JobAd.created_at,
+            JobAd.title,
+            JobAd.company_name,
+            JobAd.description,
+            JobAd.salary,
+            Education.degree_level,
+            Location.name,
+            EmploymentType.name,
+            Status.name)).where(JobAd.id == ad_id)
+    
+    job_post = session.exec(statement).first()
+    
+    if not job_post:
+        return None
+    
+    job_post = JobAdResponseWithNamesNotId(
+        title=job_post[0].title,
+        created_at=job_post[0].created_at,
+        company_name=job_post[0].company_name,
+        description=job_post[0].description,
+        education=job_post[1],
+        salary=job_post[0].salary,
+        employment=job_post[3],
+        location=job_post[2],
+        status=job_post[4],
+        skills=job_post[5].split(', ') if job_post[5] else []
+    )
+    
+    return job_post

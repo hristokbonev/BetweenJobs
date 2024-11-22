@@ -1,6 +1,6 @@
 from data.database import Session
-from resumes.resume_services import get_resume_by_id
-from jobposts.jobpost_service import show_posts_with_names_not_id
+from resumes.resume_services import get_resume_with_ids_instead_of_names
+from jobposts.jobpost_service import view_post_with_strings_and_skills, view_posts_with_skills
 from sentence_transformers import SentenceTransformer, util
 
 
@@ -15,14 +15,14 @@ def titles_match(title1: str, title2: str, threshold=0.65) -> bool:
 
 def suggest_job_ads(resume_id, session: Session) -> list:
 
-    resume = get_resume_by_id(id=resume_id, session=session)
+    resume = get_resume_with_ids_instead_of_names(id=resume_id, session=session)
 
     if not resume:
         return None
 
     matching_ads = []
 
-    for ad in show_posts_with_names_not_id(session):
+    for ad in view_posts_with_skills(session):
         counter = 0
         counter_matches = 0
 
@@ -64,9 +64,11 @@ def suggest_job_ads(resume_id, session: Session) -> list:
         
 
         if counter_matches/counter >= 0.75:
+            ad = view_post_with_strings_and_skills(ad.id, session)
             matching_ads.append(ad)
 
     if matching_ads:
         return matching_ads, resume
+    
     
     return None
