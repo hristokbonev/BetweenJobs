@@ -62,7 +62,12 @@ def update_user(user_id: int, user_update, session: Session):
         return None
     
     user.username = user_update.username or user.username
-    user.password = get_password_hash(user_update.password) if user_update.password else user.password
+
+    if user_update.new_password or user_update.confirm_password:
+        if user_update.new_password != user_update.confirm_password:
+            raise ValueError("New password and confirm password do not match")
+        user.password = get_password_hash(user_update.new_password)
+
     user.first_name = user_update.first_name or user.first_name
     user.last_name = user_update.last_name or user.last_name
     user.email = user_update.email or user.email
