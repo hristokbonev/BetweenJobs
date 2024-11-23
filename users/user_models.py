@@ -9,7 +9,7 @@ class UserModel(BaseModel):
     first_name : str
     last_name : str
     is_admin : bool
-    date_of_birth : date
+    date_of_birth : Optional[date] = None
     email : str
 
     class Config:
