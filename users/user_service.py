@@ -76,12 +76,12 @@ def update_user(user_id: int, user_update, session: Session):
 
 
 def swith_test_mode(session: Session, user: UserModel):
-    statement = select(Variables)
+    statement = select(Variables).where(Variables.var_id==1)
     status = session.exec(statement).first()
-    if status:
-        status.email_test_mode = False
+    if status.email_test_mode:
+        status.email_test_mode = 0
     else:
-        status.email_test_mode = True
+        status.email_test_mode = 1
 
     session.add(status)
     session.commit()
