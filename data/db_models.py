@@ -206,3 +206,9 @@ class JobAdView(SQLModel, table=True):
     Employment: Optional[str] = None
     Location: Optional[str] = None
     status: Optional[str] = None
+
+
+class Variables(SQLModel, table=True):
+    __tablename__ = "Variables"
+    var_id: int= Field(primary_key=True, index=True)
+    email_test_mode: bool
