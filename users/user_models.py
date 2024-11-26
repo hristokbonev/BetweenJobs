@@ -4,7 +4,6 @@ from pydantic import BaseModel, Field, EmailStr
 
 class UserModel(BaseModel):
 
-    id: int | None = None
     username : str
     first_name : str
     last_name : str
@@ -28,10 +27,10 @@ class UsersResponse(BaseModel):
     date_of_birth : date
     email : str
 
-
     class Config:
         from_attributes = True
-    
+
+
 class UserRegistrationRequest(BaseModel):
     username: str
     password: str = Field(min=4,)
@@ -49,7 +48,7 @@ class UserCreate(BaseModel):
     password: str
     first_name: Optional[str]
     last_name: Optional[str]
-    is_admin: bool
+    is_admin: bool = False
     birth_date: Optional[date]
     email: str
 
