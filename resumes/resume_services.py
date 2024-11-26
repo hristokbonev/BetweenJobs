@@ -205,5 +205,17 @@ def get_resume_with_ids_instead_of_names(id, session: Session):
     return resume if resume else None
 
 
+def get_all_resumes_with_skills_ids(session: Session):
 
+    statement = select(Resume.id, Resume.full_name, Resume.title, Resume.summary, EmploymentType.id, Education.id, Location.id, Status.id)
+    resumes = session.exec(statement).all()
+
+    resumes_list = []
+
+    for resume in resumes:
+        resume = ResumeResponseWithIds(id=resume[0], full_name=resume[1], title=resume[2], summary=resume[3], employment_type=resume[4], education=resume[5], location=resume[6], status=resume[7])
+        resume.skills = [session.exec(select(Skill.id).join(ResumeSkill, ResumeSkill.skill_id==Skill.id).join(Resume, Resume.id==ResumeSkill.resume_id).where(Resume.id == resume.id)).all()]
+        resumes_list.append(resume)
+
+    return resumes_list if resumes_list else None
     
