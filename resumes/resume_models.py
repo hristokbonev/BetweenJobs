@@ -46,7 +46,6 @@ class ResumeResponseWithIds(BaseModel):
 
 class ResumeRequest(BaseModel):
 
-    user_id: int 
     full_name: str | None = None
     title: str
     education: Literal['High school', 'Diploma', 'Undergraduate Degree', 'Postgraduate Degree', 'PhD'] | None = None

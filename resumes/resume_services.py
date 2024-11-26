@@ -111,7 +111,7 @@ def create_resume(resume_form, session: Session, user: UserModel):
         statement = select(Education.id).where(Education.degree_level == resume_form.education)
         education = session.exec(statement).first()
 
-    resume = Resume(user_id=user.id.user_id,
+    resume = Resume(user_id=user.id,
                     full_name=resume_form.full_name, 
                     title=resume_form.title,
                     education_id=education,
