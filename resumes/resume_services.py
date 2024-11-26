@@ -2,6 +2,7 @@ from sqlalchemy import func
 from data.db_models import Resume, EmploymentType, Education, ResumeSkill, Status, User, Location, Skill
 from sqlmodel import select, Session
 from resumes.resume_models import ResumeResponse, ResumeResponseWithIds
+from users.user_models import UserModel
 
 def get_all_resumes(session: Session, name: str, location: str, employment_type: str, education: str, status: str, title: str, skills: list):
 
@@ -90,7 +91,7 @@ def get_resume_by_id(id, session: Session):
     
     return resume if resume else None
 
-def create_resume(resume_form, session: Session):
+def create_resume(resume_form, session: Session, user: UserModel):
 
     location = resume_form.location
     if location:
@@ -110,7 +111,7 @@ def create_resume(resume_form, session: Session):
         statement = select(Education.id).where(Education.degree_level == resume_form.education)
         education = session.exec(statement).first()
 
-    resume = Resume(user_id=resume_form.user_id,
+    resume = Resume(user_id=user.id.user_id,
                     full_name=resume_form.full_name, 
                     title=resume_form.title,
                     education_id=education,

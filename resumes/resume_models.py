@@ -63,7 +63,7 @@ class ResumeRequest(BaseModel):
             with Session(engine) as session:
                 if not education_exists(value, session):
                     raise ValueError(f"Education {value} does not exist")
-        return value
+        return value.capitalize()
     
     @field_validator('status')
     @classmethod
