@@ -31,12 +31,11 @@ def get_session():
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/users/login', auto_error=False)   
 
 @router.post('/', response_model=UserSchema)
-def create_user(user: UserCreate, session: Session = Depends(get_session)):
+def create_user(user: UserCreate = Depends(), session: Session = Depends(get_session)):
     db_user = User( username=user.username,
                     password=get_password_hash(user.password),
                     first_name=user.first_name,
                     last_name=user.last_name,
-                    is_admin=user.is_admin,
                     date_of_birth=user.birth_date,
                     email=user.email
                 )
@@ -49,10 +48,13 @@ def create_user(user: UserCreate, session: Session = Depends(get_session)):
 
 
 @router.put('/{user_id}', response_model=UserSchema )
-def update_user_info(user_id: int, user_update: UserUpdate = Depends(), session: Session = Depends(get_session)):
-
+def update_user_info(user_id: int, user_update: UserUpdate = Depends(), session: Session = Depends(get_session), current_user: UserSchema = Depends(auth.get_current_user)):
     updated_user = update_user(user_id, user_update, session)
     
+    if current_user.id != user_id and not current_user.is_admin:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="You are not authorized to update this user")
+
+
     if not updated_user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
@@ -66,7 +68,7 @@ def login(from_data: OAuth2PasswordRequestForm = Depends()):
     if not user:
         raise HTTPException(status_code=401, detail="Incorrect username or password")
     access_token_expires = timedelta(minutes= int(access_token_expire_minutes))
-    access_token = create_access_token(data={'sub': user.username},
+    access_token = create_access_token(data={'sub': user.username, 'user_id': user.id},
                                         expires_delta=access_token_expires)
 
     return Token(access_token=access_token, token_type="bearer")

@@ -68,7 +68,12 @@ def update_user(user_id: int, user_update, session: Session):
         return None
     
     user.username = user_update.username or user.username
-    user.password = get_password_hash(user_update.password) if user_update.password else user.password
+
+    if user_update.new_password or user_update.confirm_password:
+        if user_update.new_password != user_update.confirm_password:
+            raise ValueError("New password and confirm password do not match")
+        user.password = get_password_hash(user_update.new_password)
+
     user.first_name = user_update.first_name or user.first_name
     user.last_name = user_update.last_name or user.last_name
     user.email = user_update.email or user.email
@@ -96,15 +101,18 @@ def swith_test_mode(session: Session, user: UserModel):
     return TestModeResponse(status=status.email_test_mode)
 
 
-def get_user(username: str, session: Session) -> UserCreate:
-    statement = select(User).where(User.username == username)
+def get_user(username: str, user_id: str, session: Session) -> UserCreate:
+    statement = select(User).where((User.username == username) & (User.id == user_id))
     user = session.exec(statement).first()
     if not user:
         return None
-    return UserModel(**user.model_dump())
+    return UserModel(
+        id=user.id,
+        username=user.username,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        email=user.email,
+        is_admin=user.is_admin,
+        date_of_birth=user.date_of_birth
+    )
 
-
-def get_user_by_username(session: Session, username: str):
-    '''Used to validate username in Authentication endpoint'''
-    statement = select(User).where(User.username == username)
-    return session.exec(statement).first()

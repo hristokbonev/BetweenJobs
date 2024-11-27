@@ -1,6 +1,6 @@
 import pytest
 from sqlmodel import create_engine, SQLModel, Session
-from data.db_models import Company, CompanyUserRole, User, JobAd
+
 
 @pytest.fixture
 def session():

@@ -7,8 +7,8 @@ class UserModel(BaseModel):
     username : str
     first_name : str
     last_name : str
-    is_admin : bool
-    date_of_birth : date
+    is_admin : bool = False
+    date_of_birth : Optional[date] = None
     email : str
 
     class Config:
@@ -30,7 +30,7 @@ class UsersResponse(BaseModel):
     # password : str = Field()
     first_name : str
     last_name : str
-    is_admin : bool
+    is_admin : bool = False
     date_of_birth : date
     email : str
 
@@ -55,14 +55,14 @@ class UserCreate(BaseModel):
     password: str
     first_name: Optional[str]
     last_name: Optional[str]
-    is_admin: bool = False
     birth_date: Optional[date]
     email: str
 
 
 class UserUpdate(BaseModel):
     username: Optional[str] = None
-    password: Optional[str] = None
+    new_password: Optional[str] = None
+    confirm_password: Optional[str] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     email: Optional[str] = None
