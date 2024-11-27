@@ -1,7 +1,8 @@
-from sqlalchemy import func
+from sqlalchemy import Text, func
 from data.db_models import Resume, EmploymentType, Education, ResumeSkill, Status, User, Location, Skill
-from sqlmodel import select, Session
+from sqlmodel import cast, select, Session
 from resumes.resume_models import ResumeResponse, ResumeResponseWithIds
+from users.user_models import UserModel
 
 def get_all_resumes(session: Session, name: str, location: str, employment_type: str, education: str, status: str, title: str, skills: list):
 
@@ -90,7 +91,7 @@ def get_resume_by_id(id, session: Session):
     
     return resume if resume else None
 
-def create_resume(resume_form, session: Session):
+def create_resume(resume_form, session: Session, user: UserModel):
 
     location = resume_form.location
     if location:
@@ -110,7 +111,7 @@ def create_resume(resume_form, session: Session):
         statement = select(Education.id).where(Education.degree_level == resume_form.education)
         education = session.exec(statement).first()
 
-    resume = Resume(user_id=resume_form.user_id,
+    resume = Resume(user_id=user.id,
                     full_name=resume_form.full_name, 
                     title=resume_form.title,
                     education_id=education,
@@ -204,5 +205,37 @@ def get_resume_with_ids_instead_of_names(id, session: Session):
     return resume if resume else None
 
 
+def get_all_resumes_with_skills_ids(session: Session):
 
+    statement = (
+        select(
+            Resume,
+            func.string_agg(cast(Skill.id, Text), ', ')
+        ).join(ResumeSkill, Resume.id == ResumeSkill.resume_id, isouter=True).join
+        (Skill, ResumeSkill.skill_id == Skill.id, isouter=True).group_by(
+            Resume.id,  # Include all Resume columns
+            Resume.user_id,
+            Resume.full_name,
+            Resume.title,
+            Resume.summary,
+            Resume.employment_type_id,
+            Resume.education_id,
+            Resume.location_id,
+            Resume.status_id))
     
+    resumes = session.exec(statement).all()
+   
+    resumes  = [ResumeResponseWithIds(
+        id=resume[0].id,
+        user_id=resume[0].user_id,
+        full_name=resume[0].full_name,
+        title=resume[0].title,
+        summary=resume[0].summary,
+        employment_type=resume[0].employment_type_id,
+        education=resume[0].education_id,
+        location=resume[0].location_id,
+        status=resume[0].status_id,
+        skills=resume[1].split(', ') if resume[1] else []
+    ) for resume in resumes]
+
+    return resumes if resumes else None

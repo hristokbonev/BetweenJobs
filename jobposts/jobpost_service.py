@@ -186,3 +186,43 @@ def view_post_with_strings_and_skills(ad_id: int, session: Session):
     )
     
     return job_post
+
+
+def view_post_with_skills(ad_id: int, session: Session):
+    statement = (
+        select(
+            JobAd,
+            func.string_agg(cast(Skill.id, Text), ', ')
+        ).join(JobAdSkill, JobAd.id == JobAdSkill.jobad_id, isouter=True).join
+        (Skill, JobAdSkill.skill_id == Skill.id, isouter=True).group_by(
+            JobAd.id,  # Include all JobAd columns
+            JobAd.created_at,
+            JobAd.title,
+            JobAd.company_name,
+            JobAd.description,
+            JobAd.salary,
+            JobAd.education_id,
+            JobAd.location_id,
+            JobAd.employment_type_id,
+            JobAd.status_id)).where(JobAd.id == ad_id)
+    
+    job_post = session.exec(statement).first()
+    
+    if not job_post:
+        return None
+    
+    job_post = JobAdResponseWithSkills(
+        id=job_post[0].id,
+        title=job_post[0].title,
+        created_at=job_post[0].created_at,
+        company_name=job_post[0].company_name,
+        description=job_post[0].description,
+        education=job_post[0].education_id,
+        salary=job_post[0].salary,
+        employment=job_post[0].employment_type_id,
+        location=job_post[0].location_id,
+        status=job_post[0].status_id,
+        skills=job_post[1].split(', ') if job_post[1] else []
+    )
+    
+    return job_post

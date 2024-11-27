@@ -42,7 +42,6 @@ class ResumeResponseWithIds(BaseModel):
 
 class ResumeRequest(BaseModel):
 
-    user_id: int 
     full_name: str | None = None
     title: str
     education: Literal['High school', 'Diploma', 'Undergraduate Degree', 'Postgraduate Degree', 'PhD'] | None = None
@@ -59,7 +58,7 @@ class ResumeRequest(BaseModel):
             with Session(engine) as session:
                 if not education_exists(value, session):
                     raise ValueError(f"Education {value} does not exist")
-        return value
+        return value.capitalize()
     
     @field_validator('status')
     @classmethod
