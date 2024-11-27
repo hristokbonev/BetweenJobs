@@ -106,5 +106,13 @@ def get_user(username: str, user_id: str, session: Session) -> UserCreate:
     user = session.exec(statement).first()
     if not user:
         return None
-    return UserModel(**user.model_dump())
+    return UserModel(
+        id=user.id,
+        username=user.username,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        email=user.email,
+        is_admin=user.is_admin,
+        date_of_birth=user.date_of_birth
+    )
 
