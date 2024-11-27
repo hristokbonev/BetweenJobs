@@ -1,6 +1,6 @@
-from sqlalchemy import func
+from sqlalchemy import Text, func
 from data.db_models import Resume, EmploymentType, Education, ResumeSkill, Status, User, Location, Skill
-from sqlmodel import select, Session
+from sqlmodel import cast, select, Session
 from resumes.resume_models import ResumeResponse, ResumeResponseWithIds
 from users.user_models import UserModel
 
@@ -207,15 +207,35 @@ def get_resume_with_ids_instead_of_names(id, session: Session):
 
 def get_all_resumes_with_skills_ids(session: Session):
 
-    statement = select(Resume.id, Resume.full_name, Resume.title, Resume.summary, EmploymentType.id, Education.id, Location.id, Status.id)
-    resumes = session.exec(statement).all()
-
-    resumes_list = []
-
-    for resume in resumes:
-        resume = ResumeResponseWithIds(id=resume[0], full_name=resume[1], title=resume[2], summary=resume[3], employment_type=resume[4], education=resume[5], location=resume[6], status=resume[7])
-        resume.skills = [session.exec(select(Skill.id).join(ResumeSkill, ResumeSkill.skill_id==Skill.id).join(Resume, Resume.id==ResumeSkill.resume_id).where(Resume.id == resume.id)).all()]
-        resumes_list.append(resume)
-
-    return resumes_list if resumes_list else None
+    statement = (
+        select(
+            Resume,
+            func.string_agg(cast(Skill.id, Text), ', ')
+        ).join(ResumeSkill, Resume.id == ResumeSkill.resume_id, isouter=True).join
+        (Skill, ResumeSkill.skill_id == Skill.id, isouter=True).group_by(
+            Resume.id,  # Include all Resume columns
+            Resume.user_id,
+            Resume.full_name,
+            Resume.title,
+            Resume.summary,
+            Resume.employment_type_id,
+            Resume.education_id,
+            Resume.location_id,
+            Resume.status_id))
     
+    resumes = session.exec(statement).all()
+   
+    resumes  = [ResumeResponseWithIds(
+        id=resume[0].id,
+        user_id=resume[0].user_id,
+        full_name=resume[0].full_name,
+        title=resume[0].title,
+        summary=resume[0].summary,
+        employment_type=resume[0].employment_type_id,
+        education=resume[0].education_id,
+        location=resume[0].location_id,
+        status=resume[0].status_id,
+        skills=resume[1].split(', ') if resume[1] else []
+    ) for resume in resumes]
+
+    return resumes if resumes else None

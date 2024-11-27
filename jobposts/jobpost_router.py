@@ -1,10 +1,15 @@
+from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 from companies.company_models import JobAddResponse
 from jobposts.jobpost_models import CreateJobAdRequest, UpdateJobAdRequest
 from data.database import get_session
 from jobposts import jobpost_service as js
+from resumes.resume_models import ResumeResponse
+from users.user_models import UserModel
 from utils import attribute_service as ats
+from matches import match_services as ms
+from utils.auth import get_current_user
 
 
 job_post_router = APIRouter(prefix='/api/jobad', tags=["JobAds"])
@@ -55,3 +60,18 @@ def modify_jobad_by_id(job_id: int, data: UpdateJobAdRequest, session: Session =
         raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=f'Server error: {str(e)}')
+
+
+@job_post_router.get('/', response_model=None)
+
+def suggest_resumes(job_id: int, session: Session = Depends(get_session), current_user: UserModel = Depends(get_current_user)):
+    if not current_user:
+        raise HTTPException(status_code=401, detail="You must be logged in to view resumes")
+    try:
+        a = (datetime.now())
+        resumes = ms.suggest_resumes(job_id, session)
+        b = (datetime.now())
+        print(b-a)
+        return resumes
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")

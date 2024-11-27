@@ -1,10 +1,10 @@
 from data.database import Session
-from resumes.resume_services import get_all_resumes_with_skills_ids, get_resume_with_ids_instead_of_names
+from resumes.resume_services import get_all_resumes_with_skills_ids, get_resume_by_id, get_resume_with_ids_instead_of_names
 from jobposts.jobpost_service import view_post_with_skills, view_post_with_strings_and_skills, view_posts_with_skills
 from sentence_transformers import SentenceTransformer, util
 
 
-model = SentenceTransformer('all-mpnet-base-v2')
+model = SentenceTransformer('all-MiniLM-L6-v2')
 
 
 def titles_match(title1: str, title2: str, threshold=0.65) -> bool:
@@ -126,11 +126,11 @@ def suggest_resumes(ad_id: int, session: Session) -> list:
         
 
         if counter_matches/counter >= 0.75:
-            ad = view_post_with_strings_and_skills(ad.id, session)
+            resume = get_resume_by_id(resume.id, session)
             matching_resumes.append(resume)
 
     if matching_resumes:
         return matching_resumes, ad
-    
+
     
     return None
