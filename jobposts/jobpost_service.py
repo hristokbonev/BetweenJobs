@@ -3,26 +3,86 @@ from sqlmodel import Session, select
 from data.db_models import JobAd, Education, Location, EmploymentType, JobAdView, Status, JobAdSkill, Skill
 from jobposts.jobpost_models import CreateJobAdRequest, UpdateJobAdRequest, JobAddResponse, JobAdResponseWithNamesNotId
 from sqlalchemy import func
+from utils import attribute_service as ats
 
 
-def show_all_posts(session: Session):
-    statement = select(JobAd)
-    job_posts = session.exec(statement).all()
+def show_all_posts(
+            session: Session,
+            page: int,
+            limit: int,
+            title: str,
+            company_name: str,
+            location: str,
+            employment_type: str,
+            education: str,
+            status: str
+    ):
+        filters = []
+        if title:
+            filters.append(JobAdView.title == title)
+        if company_name:
+            filters.append(JobAdView.company_name == company_name)
+        if location:
+            filters.append(JobAdView.Location == location)
+        if employment_type:
+            filters.append(JobAdView.Employment == employment_type)
+        if education:
+            filters.append(JobAdView.degree_level == education)
+        if status:
+            filters.append(JobAdView.status == status)
 
-    return job_posts
+        # Build the statement with all filters
+        offset = (page - 1) * limit
+        statement = select(JobAdView).where(*filters).offset(offset).limit(limit)
+        job_ads = session.exec(statement).all()
+
+        return [JobAddResponse(
+            title=row.title,
+            company_name=row.company_name,
+            company_description=row.description,
+            education=row.degree_level,
+            salary=row.salary,
+            employment=row.Employment,
+            location=row.Location,
+            status=row.status
+        ) for row in job_ads]
 
 
 def view_job_post_by_id(ad_id: int, session: Session):
     statement = select(JobAd).where(JobAd.id == ad_id)
     job_ad = session.exec(statement).first()
-    return job_ad
-
+    education = session.exec(select(Education.degree_level).where(Education.id == job_ad.education_id)).first()
+    location = ats.get_location_by_id(job_ad.location_id, session)
+    employment = ats.get_employment_by_id(job_ad.employment_type_id, session)
+    status = ats.view_education_by_id(job_ad.status_id, session)
+    return JobAddResponse(
+        title=job_ad.title,
+        company_name=job_ad.company_name,
+        company_description=job_ad.description,
+        education=education,
+        salary=job_ad.salary,
+        employment=employment,
+        location=location,
+        status=status
+        )
 
 def create_job_post(data: CreateJobAdRequest, session: Session):
     # Add new job ad item
     new_post = JobAd(**data.model_dump())
     session.add(new_post)
     session.commit()
+
+    # Check if list of skills is provided
+    if data.skill_ids:
+        ats.assign_skills(
+            company_id=data.company_id,
+            post_id=new_post.id,
+            target='jobpost',
+            skill_ids=data.skill_ids,
+            skill_levels=data.skill_levels,
+            session=session
+        )
+        session.commit()
 
     response = view_job_post_by_id(new_post.id, session)
     return response
