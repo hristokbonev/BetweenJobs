@@ -101,8 +101,8 @@ def swith_test_mode(session: Session, user: UserModel):
     return TestModeResponse(status=status.email_test_mode)
 
 
-def get_user(username: str, session: Session) -> UserCreate:
-    statement = select(User).where(User.username == username)
+def get_user(username: str, user_id: str, session: Session) -> UserCreate:
+    statement = select(User).where((User.username == username) & (User.id == user_id))
     user = session.exec(statement).first()
     if not user:
         return None

@@ -70,8 +70,9 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         return None
     payload = verify_token(token)
     username = payload.get('sub') if payload else None
-    if not username:
+    user_id = payload.get('user_id') if payload else None
+    if not username or not user_id:
         return None
-    return us.get_user(username, session=Session(engine))
+    return us.get_user(username, user_id, session=Session(engine))
 
 
