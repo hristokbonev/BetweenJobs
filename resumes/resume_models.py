@@ -44,7 +44,7 @@ class ResumeRequest(BaseModel):
 
     full_name: str | None = None
     title: str
-    education: Literal['High school', 'Diploma', 'Undergraduate Degree', 'Postgraduate Degree', 'PhD'] | None = None
+    education: Literal['High school', 'Diploma', 'Undergraduate degree', 'Postgraduate degree', 'PhD'] | None = None
     summary: str | None = None
     status: Literal['Active', 'Hidden', 'Private', 'Matched', 'Archived', 'Busy'] = 'Active'
     employment_type: Literal['Full-time', 'Part-time', 'Temporary', 'Zero-hour contract', 'Casual employment', 'Internship'] | None = None

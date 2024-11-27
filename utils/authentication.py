@@ -6,7 +6,8 @@ from data.db_models import User
 from users.user_service import update_user
 from utils import auth
 from users.user_models import UserCreate, UserSchema, Token, UserUpdate
-from utils.auth import  create_access_token, get_password_hash
+from utils.auth import  create_access_token
+from users.user_service import get_password_hash
 from data.database import engine, create_db
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlmodel import Session, select

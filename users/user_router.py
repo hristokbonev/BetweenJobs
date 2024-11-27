@@ -6,8 +6,7 @@ from users.user_models import CreateSkillRequest, UserSchema, UserSearch, UserUp
 from users import user_service as us
 from data.database import get_session
 from typing import List
-
-from utils.auth import get_current_user, get_password_hash
+from utils.auth import get_current_user
 
 
 router = APIRouter(prefix='/api/users', tags=["Users"])

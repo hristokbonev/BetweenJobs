@@ -10,6 +10,7 @@ from data.database import engine
 from users import user_service as us
 
 
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/users/login', auto_error=False)
 
@@ -19,9 +20,6 @@ algorithm = os.getenv("ALGORITHM")
 access_token_expire_minutes = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
 
 token_blacklist = set()
-
-def get_password_hash(password):
-    return pwd_context.hash(password)
 
 
 def verify_password(plain_password, hashed_password):
