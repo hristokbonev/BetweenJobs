@@ -6,8 +6,7 @@ from users.user_models import CreateSkillRequest, UserSchema, UserSearch, UserUp
 from users import user_service as us
 from data.database import get_session
 from typing import List
-
-from utils.auth import get_current_user, get_password_hash
+from utils.auth import get_current_user
 
 
 router = APIRouter(prefix='/api/users', tags=["Users"])
@@ -48,9 +47,9 @@ def search_users(search_criteria: UserSearch = Depends(),
 # Admin controls
 @router.post('/admin/skill')
 def register_new_skill(data: CreateSkillRequest, session: Session = Depends(get_session), current_user: UserModel = Depends(get_current_user)):
-
+    '''Allows creating of a new skill, only if loggedin user is admin'''
     if not current_user:
-        raise UnauthorizedException(detail='You must be an admin to create a new skill')
+        raise UnauthorizedException(detail='You need to be authenticated to use this service')
     
     if not current_user.is_admin:
         raise UnauthorizedException(detail='You must be an admin to create a new skill')
@@ -62,5 +61,20 @@ def register_new_skill(data: CreateSkillRequest, session: Session = Depends(get_
         return new_skill
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
+
+
+@router.post('/admin/testmode')
+def enable_test_email_mode(session: Session = Depends(get_session), current_user: UserModel = Depends(get_current_user)):
+    if not current_user:
+        raise UnauthorizedException(detail='You need to be authenticated to use this service')
+
+    if not current_user.is_admin:
+        raise UnauthorizedException(detail='You must be an admin to change test status')
+
+    try:
+        new_status = us.swith_test_mode(session, current_user)
+        return new_status
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")

@@ -6,7 +6,10 @@ from jobposts.jobpost_models import CreateJobAdRequest, UpdateJobAdRequest
 from typing import Optional, Literal, List, Dict
 from data.database import get_session
 from jobposts import jobpost_service as js
+from users.user_models import UserModel
 from utils import attribute_service as ats
+from matches import match_services as ms
+from utils.auth import get_current_user
 
 
 job_post_router = APIRouter(prefix='/api/jobad', tags=["JobAds"])
@@ -89,6 +92,20 @@ def modify_jobad_by_id(job_id: int, data: UpdateJobAdRequest, session: Session =
         raise HTTPException(status_code=500, detail=f'Server error: {str(e)}')
 
 
+
+@job_post_router.get('/suggest_resumes', response_model=None)
+
+def suggest_resumes(job_id: int, session: Session = Depends(get_session), current_user: UserModel = Depends(get_current_user)):
+    if not current_user:
+        raise HTTPException(status_code=401, detail="You must be logged in to view resumes")
+    try:
+        resumes = ms.suggest_resumes(job_id, session)
+        print(b-a)
+        return resumes
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
+
 @job_post_router.delete('/{job_id}', response_model=Dict[str, str])
 def delete_jobad_by_id(job_id: int, session: Session = Depends(get_session)):
     return js.delete_job_ad(job_id, session)
+

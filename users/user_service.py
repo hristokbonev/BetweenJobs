@@ -1,12 +1,23 @@
 from sqlmodel import Session, select
-from data.db_models import User
-from users.user_models import UserSearch, UserUpdate
+from data.db_models import User, Variables
+from users.user_models import UserSearch, UserUpdate, UserModel, TestModeResponse, UserCreate
 from data.db_models import Skill
 from users.user_models import CreateSkillRequest
+from passlib.context import CryptContext
+from fastapi.security import OAuth2PasswordBearer
 
-from utils.auth import get_password_hash
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/users/login', auto_error=False)
 
+def get_password_hash(password: str):
+    return pwd_context.hash(password)
 
+# redundant
+def view_users(session: Session):
+    statement = select(User).order_by(User.id)
+    users = session.exec(statement).all()
+
+    return users
 
 
 def view_user_by_id(user_id: int, session: Session):
@@ -73,3 +84,32 @@ def update_user(user_id: int, user_update, session: Session):
     session.refresh(user)
   
     return user
+
+
+def swith_test_mode(session: Session, user: UserModel):
+    statement = select(Variables).where(Variables.var_id==1)
+    status = session.exec(statement).first()
+    if status.email_test_mode:
+        status.email_test_mode = 0
+    else:
+        status.email_test_mode = 1
+
+    session.add(status)
+    session.commit()
+    session.refresh(status)
+
+    return TestModeResponse(status=status.email_test_mode)
+
+
+def get_user(username: str, session: Session) -> UserCreate:
+    statement = select(User).where(User.username == username)
+    user = session.exec(statement).first()
+    if not user:
+        return None
+    return UserModel(**user.model_dump())
+
+
+def get_user_by_username(session: Session, username: str):
+    '''Used to validate username in Authentication endpoint'''
+    statement = select(User).where(User.username == username)
+    return session.exec(statement).first()
