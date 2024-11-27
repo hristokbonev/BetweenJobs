@@ -80,3 +80,4 @@ def get_current_admin_user(token: str = Depends(oauth2_scheme)):
     if not user.is_admin:
         raise HTTPException(status_code=403, detail="User is not an admin")
     return None
+

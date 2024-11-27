@@ -8,7 +8,7 @@ class UserModel(BaseModel):
     first_name : str
     last_name : str
     is_admin : bool
-    date_of_birth : date
+    date_of_birth : Optional[date] = None
     email : str
 
     class Config:
@@ -55,7 +55,8 @@ class UserCreate(BaseModel):
 
 class UserUpdate(BaseModel):
     username: Optional[str] = None
-    password: Optional[str] = None
+    new_password: Optional[str] = None
+    confirm_password: Optional[str] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     email: Optional[str] = None
