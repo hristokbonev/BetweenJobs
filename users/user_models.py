@@ -15,6 +15,13 @@ class UserModel(BaseModel):
         from_attributes = True
 
 
+class UserModelWithId(UserModel):
+    id: int
+
+    class Config:
+        from_attributes = True
+
+
 class UsersResponse(BaseModel):
     '''Used in user get endoiints'''
     id: int | None = None
