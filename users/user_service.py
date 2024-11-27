@@ -3,8 +3,14 @@ from data.db_models import User, Variables
 from users.user_models import UserSearch, UserUpdate, UserModel, TestModeResponse, UserCreate
 from data.db_models import Skill
 from users.user_models import CreateSkillRequest
+from passlib.context import CryptContext
+from fastapi.security import OAuth2PasswordBearer
 
-from utils.auth import get_password_hash
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/users/login', auto_error=False)
+
+def get_password_hash(password: str):
+    return pwd_context.hash(password)
 
 # redundant
 def view_users(session: Session):
