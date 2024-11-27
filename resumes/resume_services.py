@@ -39,7 +39,24 @@ def get_all_resumes(session: Session, name: str = None, location: str = None, em
     if skills:
         statement = statement.join(ResumeSkill, ResumeSkill.resume_id == Resume.id)
         statement = statement.join(Skill, Skill.id == ResumeSkill.skill_id)
+
+        statement = statement.group_by(
+            Resume.id, 
+            User.username, 
+            Resume.full_name, 
+            Resume.title, 
+            Resume.summary, 
+            EmploymentType.name, 
+            Education.degree_level, 
+            Location.name, 
+            Status.name
+        ) 
+        
+        statement = statement.having(
+            func.count(Skill.id).label('skill_count') == len(skills)
+        )
         statement = statement.where(Skill.name.in_(skills))
+
 
     resumes = session.exec(statement).all()
 
@@ -61,7 +78,7 @@ def get_all_resumes(session: Session, name: str = None, location: str = None, em
             location=resume[8],
             status=resume[9])
         
-        resume.skills = [session.exec(select(Skill.name).join(ResumeSkill, ResumeSkill.skill_id==Skill.id).join(Resume, Resume.id==ResumeSkill.resume_id).where(Resume.id == resume.id)).all()]
+        resume.skills = session.exec(select(Skill.name).join(ResumeSkill, ResumeSkill.skill_id==Skill.id).join(Resume, Resume.id==ResumeSkill.resume_id).where(Resume.id == resume.id)).all()
         
         resumes_list.append(resume)
 
@@ -88,8 +105,8 @@ def get_resume_by_id(id, session: Session):
     
     resume.skills = session.exec(select(Skill.name).join(ResumeSkill, ResumeSkill.skill_id==Skill.id).join(Resume, Resume.id==ResumeSkill.resume_id).where(Resume.id == resume.id)).all()
 
-    
     return resume if resume else None
+
 
 def create_resume(resume_form, session: Session, user: UserModel):
 
@@ -175,7 +192,7 @@ def update_resume(id, resume_form, session: Session):
     
     session.commit()
 
-    return get_resume_by_id(resume.id, session)
+    return get_resume_by_id(id=resume.id, session=session)
 
 
 def delete_resume(id, session: Session):
@@ -197,10 +214,13 @@ def get_resume_with_ids_instead_of_names(id, session: Session):
 
     resume = session.exec(statement).first()
 
+    if not resume:
+        return None
+
     resume = ResumeResponseWithIds(id=resume.id, user_id=resume.user_id, full_name=resume.full_name, title=resume.title, summary=resume.summary,
                                    employment_type=resume.employment_type_id, education=resume.education_id, location=resume.location_id, status=resume.status_id)
     
-    resume.skills = [session.exec(select(Skill.id).join(ResumeSkill, ResumeSkill.skill_id==Skill.id).join(Resume, Resume.id==ResumeSkill.resume_id).where(Resume.id == resume.id)).all()]
+    resume.skills = session.exec(select(Skill.id).join(ResumeSkill, ResumeSkill.skill_id==Skill.id).join(Resume, Resume.id==ResumeSkill.resume_id).where(Resume.id == resume.id)).all()
 
     return resume if resume else None
 

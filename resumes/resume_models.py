@@ -43,7 +43,7 @@ class ResumeResponseWithIds(BaseModel):
 class ResumeRequest(BaseModel):
 
     full_name: str | None = None
-    title: str
+    title: str 
     education: Literal['High school', 'Diploma', 'Undergraduate degree', 'Postgraduate degree', 'PhD'] | None = None
     summary: str | None = None
     status: Literal['Active', 'Hidden', 'Private', 'Matched', 'Archived', 'Busy'] = 'Active'
