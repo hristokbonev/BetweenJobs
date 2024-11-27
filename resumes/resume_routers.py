@@ -10,7 +10,7 @@ from typing import List
 from typing import Literal
 from utils.auth import get_current_user
 from users.user_models import UserModel
-from matches import match_services as ms
+from matches import match_service as ms
 from data.db_models import JobAd
 
 router = APIRouter(prefix='/api/resumes', tags=['Resumes'])

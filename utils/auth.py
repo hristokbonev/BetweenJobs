@@ -7,7 +7,7 @@ from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from sqlmodel import Session
 from data.database import engine
-from utils.crud import get_user, get_user_by_username
+from users import user_service as us
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -30,17 +30,14 @@ def verify_password(plain_password, hashed_password):
 
 def authenticate_user(username: str, password: str):
     with Session(engine) as session:
-        user = get_user_by_username(session, username)
+        user = us.get_user_by_username(session, username)
         if not user or not verify_password(password, user.password):
-            return False
+            return None
         return user
 
 def create_access_token(data:dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.now() + expires_delta
-    else:
-        expire = datetime.now() + timedelta(minutes= int(access_token_expire_minutes))
+    expire = datetime.now() + timedelta(minutes= int(access_token_expire_minutes))
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, key, algorithm=algorithm)
     return encoded_jwt
@@ -69,7 +66,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     username = payload.get('sub') if payload else None
     if not username:
         return None
-    return get_user(username, session=Session(engine))
+    return us.get_user(username, session=Session(engine))
 
 
 # def get_current_admin_user(user: User = Depends(get_current_user)):

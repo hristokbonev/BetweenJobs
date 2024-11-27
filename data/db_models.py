@@ -195,7 +195,7 @@ class Education(SQLModel, table=True):
 
 class JobAdView(SQLModel, table=True):
     __tablename__ = "job_ads_view"
-
+    id: int
     row_id: int = Field(primary_key=True)  # Surrogate primary key
     company_id: int
     title: str
@@ -205,3 +205,10 @@ class JobAdView(SQLModel, table=True):
     salary: Optional[float] = None
     Employment: Optional[str] = None
     Location: Optional[str] = None
+    status: Optional[str] = None
+
+
+class Variables(SQLModel, table=True):
+    __tablename__ = "Variables"
+    var_id: int= Field(primary_key=True, index=True)
+    email_test_mode: bool

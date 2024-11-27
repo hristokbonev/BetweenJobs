@@ -1,10 +1,9 @@
 from datetime import date
-from typing import Optional
+from typing import List, Optional
 from pydantic import BaseModel, Field, EmailStr
 
 class UserModel(BaseModel):
 
-    id: int | None = None
     username : str
     first_name : str
     last_name : str
@@ -28,10 +27,10 @@ class UsersResponse(BaseModel):
     date_of_birth : date
     email : str
 
-
     class Config:
         from_attributes = True
-    
+
+
 class UserRegistrationRequest(BaseModel):
     username: str
     password: str = Field(min=4,)
@@ -49,7 +48,7 @@ class UserCreate(BaseModel):
     password: str
     first_name: Optional[str]
     last_name: Optional[str]
-    is_admin: bool
+    is_admin: bool = False
     birth_date: Optional[date]
     email: str
 
@@ -63,15 +62,13 @@ class UserUpdate(BaseModel):
 
 
 class UserSchema(BaseModel):
-    id: Optional[int]
-    username: str
-    first_name: Optional[str]
-    last_name: Optional[str]
-    is_admin: bool
-    email: str
+    id: Optional[int] = None
+    username: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    is_admin: bool 
+    email: Optional[str] =  None
 
-    class Config:
-        from_attributes = True
 
 class CreateSkillRequest(BaseModel):
     name: str
@@ -93,3 +90,15 @@ class UserSearch(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     email: Optional[str] = None
+
+
+
+class ResetPasswordRequest(BaseModel):
+    username: str
+    new_password: str
+    confirm_password: str
+
+
+# for admin when changing testmode - ON/OFF
+class TestModeResponse(BaseModel):
+    status: bool
