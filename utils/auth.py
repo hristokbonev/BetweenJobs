@@ -7,7 +7,8 @@ from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from sqlmodel import Session
 from data.database import engine
-from utils.crud import get_user, get_user_by_username
+from users import user_service as us
+
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -20,9 +21,6 @@ access_token_expire_minutes = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
 
 token_blacklist = set()
 
-def get_password_hash(password):
-    return pwd_context.hash(password)
-
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
@@ -30,7 +28,7 @@ def verify_password(plain_password, hashed_password):
 
 def authenticate_user(username: str, password: str):
     with Session(engine) as session:
-        user = get_user_by_username(session, username)
+        user = us.get_user_by_username(session, username)
         if not user or not verify_password(password, user.password):
             return None
         return user
@@ -66,4 +64,19 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     username = payload.get('sub') if payload else None
     if not username:
         return None
-    return get_user(username, session=Session(engine))
+    return us.get_user(username, session=Session(engine))
+
+
+# def get_current_admin_user(user: User = Depends(get_current_user)):
+#     if not user.is_admin:
+#         raise HTTPException(status_code=403, detail="User is not an admin")
+#     return user
+
+
+def get_current_admin_user(token: str = Depends(oauth2_scheme)):
+    user = get_current_user(token)  # Assuming this function returns a User or None
+    if user is None:
+        raise HTTPException(status_code=401, detail="User not authenticated")
+    if not user.is_admin:
+        raise HTTPException(status_code=403, detail="User is not an admin")
+    return None

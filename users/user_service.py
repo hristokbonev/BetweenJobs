@@ -7,11 +7,6 @@ from users.user_models import CreateSkillRequest
 from utils.auth import get_password_hash
 
 
-def view_users(session: Session):
-    statement = select(User).order_by(User.id)
-    users = session.exec(statement).all()
-
-    return users
 
 
 def view_user_by_id(user_id: int, session: Session):
