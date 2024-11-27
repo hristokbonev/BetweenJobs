@@ -1,12 +1,8 @@
 from typing import Literal
 from pydantic import BaseModel
 from pydantic import field_validator
-from education.education_services import education_exists
-from employment.employment_services import employment_type_exists
-from locations.location_services import location_exists
-from skills.skill_services import skill_exists
+from utils.attribute_service import education_exists, location_exists, employment_type_exists, skill_exists, status_exists
 from data.database import engine, Session
-from status.status_services import status_exists
 
 
 class ResumeResponse(BaseModel):
@@ -46,10 +42,9 @@ class ResumeResponseWithIds(BaseModel):
 
 class ResumeRequest(BaseModel):
 
-    user_id: int 
     full_name: str | None = None
     title: str
-    education: Literal['High school', 'Diploma', 'Undergraduate Degree', 'Postgraduate Degree', 'PhD'] | None = None
+    education: Literal['High school', 'Diploma', 'Undergraduate degree', 'Postgraduate degree', 'PhD'] | None = None
     summary: str | None = None
     status: Literal['Active', 'Hidden', 'Private', 'Matched', 'Archived', 'Busy'] = 'Active'
     employment_type: Literal['Full-time', 'Part-time', 'Temporary', 'Zero-hour contract', 'Casual employment', 'Internship'] | None = None
@@ -63,7 +58,7 @@ class ResumeRequest(BaseModel):
             with Session(engine) as session:
                 if not education_exists(value, session):
                     raise ValueError(f"Education {value} does not exist")
-        return value
+        return value.capitalize()
     
     @field_validator('status')
     @classmethod

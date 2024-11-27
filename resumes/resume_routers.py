@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional, Union
 from data.database import get_session
 from sqlmodel import Session
@@ -9,7 +10,7 @@ from typing import List
 from typing import Literal
 from utils.auth import get_current_user
 from users.user_models import UserModel
-from matches import match_services as ms
+from matches import match_service as ms
 from data.db_models import JobAd
 
 router = APIRouter(prefix='/api/resumes', tags=['Resumes'])
@@ -70,7 +71,7 @@ def create_resume(resume_form: ResumeRequest, session: Session = Depends(get_ses
     if not current_user:
         raise UnauthorizedException(detail='You must be logged in to create a resume')
 
-    resume = rs.create_resume(resume_form, session)
+    resume = rs.create_resume(resume_form, session, current_user)
 
     if not resume:
         raise NotFoundException(detail='Resume could not be created')
@@ -83,6 +84,12 @@ def update_resume(id: int, resume_form: ResumeUpdate, session: Session = Depends
 
     if not current_user:
         raise UnauthorizedException(detail='You must be logged in to update a resume')
+    
+    if not rs.get_resume_by_id(session, id):
+        raise NotFoundException(detail='Resume not found')
+    
+    if current_user.id.user_id != rs.get_resume_by_id(session, id).user_id:
+        raise UnauthorizedException(detail='You are not authorized to update this resume')
 
     resume = rs.update_resume(id, resume_form, session)
 
@@ -98,6 +105,12 @@ def delete_resume(id: int, session: Session = Depends(get_session), current_user
 
     if not current_user:
         raise UnauthorizedException(detail='You must be logged in to delete a resume')
+    
+    if not rs.get_resume_by_id(session, id):
+        raise NotFoundException(detail='Resume not found')
+    
+    if current_user.id.user_id != rs.get_resume_by_id(session, id).user_id:
+        raise UnauthorizedException(detail='You are not authorized to delete this resume')
     
     resume = rs.delete_resume(id, session)
 
