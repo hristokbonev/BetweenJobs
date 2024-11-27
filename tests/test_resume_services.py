@@ -107,4 +107,4 @@ class TestResumeModels(TestCase):
             ResumeRequest(full_name='Test User', title='Software Engineer', education='Undergraduate degree', summary='Summary of resume', status='Active', employment_type='Full-time', location='Sofia', skills=['Invalid skill'])
 
 
-    def testCreateResume_
+#    def testCreateResume_
