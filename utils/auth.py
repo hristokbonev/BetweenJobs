@@ -5,8 +5,9 @@ from jose import jwt, JWTError
 from fastapi import HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
-from sqlmodel import Session
+from sqlmodel import Session, select
 from data.database import engine
+from data.db_models import User
 from users import user_service as us
 
 
@@ -26,12 +27,19 @@ def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def authenticate_user(username: str, password: str):
+def authenticate_user(identifier: str, password: str):
     with Session(engine) as session:
-        user = us.get_user_by_username(session, username)
+        user = None
+        if identifier.isdigit():  
+            user = us.view_user_by_id(int(identifier), session)
+        else: 
+            statement = select(User).where(User.username == identifier)
+            user = session.exec(statement).first()
+
         if not user or not verify_password(password, user.password):
             return None
         return user
+
 
 def create_access_token(data:dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
@@ -66,18 +74,4 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         return None
     return us.get_user(username, session=Session(engine))
 
-
-# def get_current_admin_user(user: User = Depends(get_current_user)):
-#     if not user.is_admin:
-#         raise HTTPException(status_code=403, detail="User is not an admin")
-#     return user
-
-
-def get_current_admin_user(token: str = Depends(oauth2_scheme)):
-    user = get_current_user(token)  # Assuming this function returns a User or None
-    if user is None:
-        raise HTTPException(status_code=401, detail="User not authenticated")
-    if not user.is_admin:
-        raise HTTPException(status_code=403, detail="User is not an admin")
-    return None
 

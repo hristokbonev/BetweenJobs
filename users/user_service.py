@@ -108,8 +108,3 @@ def get_user(username: str, session: Session) -> UserCreate:
         return None
     return UserModel(**user.model_dump())
 
-
-def get_user_by_username(session: Session, username: str):
-    '''Used to validate username in Authentication endpoint'''
-    statement = select(User).where(User.username == username)
-    return session.exec(statement).first()
