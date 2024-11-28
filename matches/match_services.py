@@ -50,9 +50,8 @@ def suggest_job_ads(resume_id, session: Session) -> list:
     # Check if the resume education matches the ad education
         if resume.education and ad.education:
             
-            if ad.education > resume.education:
-                if ad.education - resume.education > 2:
-                    continue
+            if ad.education > resume.education + 1:
+                continue
            
 
     # Check if the resume location matches the ad location
