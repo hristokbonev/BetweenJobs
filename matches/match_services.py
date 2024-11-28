@@ -50,9 +50,8 @@ def suggest_job_ads(resume_id, session: Session) -> list:
     # Check if the resume education matches the ad education
         if resume.education and ad.education:
             
-            if ad.education > resume.education:
-                if ad.education - resume.education > 2:
-                    continue
+            if ad.education > resume.education + 1:
+                continue
            
 
     # Check if the resume location matches the ad location
@@ -65,7 +64,7 @@ def suggest_job_ads(resume_id, session: Session) -> list:
         
     # Check if the resume skills match the ad skills
 
-        if resume.skills and ad.skills:
+        if ad.skills:
             counter_skills = 0
             counter_skill_matches = 0
 
