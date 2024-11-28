@@ -21,6 +21,7 @@ def get_location_by_id(location_id: int, session: Session):
     location = session.exec(statement).first()
     return location
 
+
 def get_status_by_id(status_id: int, session: Session):
     statement = select(Status.name).where(Status.id == status_id)
     status = session.exec(statement).first()
