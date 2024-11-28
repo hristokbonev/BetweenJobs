@@ -3,10 +3,10 @@ from users.user_service import get_password_hash
 from passlib.context import CryptContext
 from unittest.mock import MagicMock
 from sqlmodel import Session
-from data.db_models import User, Skill, Variables
-from users.user_models import CreateSkillRequest, UserSearch, UserUpdate, UserModel, TestModeResponse, UserCreate
+from data.db_models import User, Variables
+from users.user_models import UserSearch, UserUpdate, UserModel, TestModeResponse, UserCreate
 from users.user_service import (
-    get_password_hash, view_users, view_user_by_id, create_new_skill, 
+    get_password_hash, view_users, view_user_by_id, 
     get_filtered_users, update_user, swith_test_mode, get_user
 )
 
