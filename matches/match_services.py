@@ -46,15 +46,13 @@ def suggest_job_ads(resume_id, session: Session) -> list:
         counter = 0
         counter_matches = 0
 
-        if not titles_match(resume.title, ad.title):
-            continue
 
     # Check if the resume education matches the ad education
         if resume.education and ad.education:
-            counter += 1
-
-            if resume.education == ad.education:
-                counter_matches += 1
+            
+            if ad.education > resume.education:
+                if ad.education - resume.education > 2:
+                    continue
            
 
     # Check if the resume location matches the ad location
@@ -68,12 +66,17 @@ def suggest_job_ads(resume_id, session: Session) -> list:
     # Check if the resume skills match the ad skills
 
         if resume.skills and ad.skills:
+            counter_skills = 0
+            counter_skill_matches = 0
 
             for skill in ad.skills:
-                counter += 1
+                counter_skills += 1
                 if skill in resume.skills:
-                    counter_matches += 1
+                    counter_skill_matches += 1
 
+            if not counter_skill_matches/counter_skills >= 0.5:
+                continue
+            
     # Check if resume employment type matches the ad employment type
 
         if resume.employment_type and ad.employment:
@@ -83,13 +86,19 @@ def suggest_job_ads(resume_id, session: Session) -> list:
                 counter_matches += 1
         
 
-        if counter_matches/counter >= 0.75:
-            ad = view_post_with_strings_and_skills(ad.id, session)
-            matching_ads.append(ad)
+        if counter > 0 and not counter_matches/counter >= 0.5:
+            continue
+
+        if not titles_match(resume.title, ad.title):
+            continue
+
+        ad = view_post_with_strings_and_skills(ad.id, session)
+        matching_ads.append(ad)
+        
 
     if matching_ads:
-        return matching_ads
-    
+        resume = get_resume_by_id(resume.id, session)
+        return matching_ads, resume
     
     return None
 
@@ -108,14 +117,11 @@ def suggest_resumes(ad_id: int, session: Session) -> list:
         counter = 0
         counter_matches = 0
 
-        if not titles_match(resume.title, ad.title):
-            continue
-
     # Check if the resume education matches the ad education
         if resume.education and ad.education:
             counter += 1
 
-            if resume.education == ad.education:
+            if resume.education >= ad.education:
                 counter_matches += 1
            
 
@@ -130,11 +136,16 @@ def suggest_resumes(ad_id: int, session: Session) -> list:
     # Check if the resume skills match the ad skills
 
         if resume.skills and ad.skills:
+            counter_skills = 0
+            counter_skill_matches = 0
 
             for skill in ad.skills:
-                counter += 1
+                counter_skills += 1
                 if skill in resume.skills:
-                    counter_matches += 1
+                    counter_skill_matches += 1
+
+            if not counter_skill_matches/counter_skills >= 0.5:
+                continue
 
     # Check if resume employment type matches the ad employment type
 
@@ -145,12 +156,17 @@ def suggest_resumes(ad_id: int, session: Session) -> list:
                 counter_matches += 1
         
 
-        if counter_matches/counter >= 0.75:
-            resume = get_resume_by_id(resume.id, session)
-            matching_resumes.append(resume)
+        if counter > 0 and not counter_matches/counter >= 0.66:
+            continue
+
+        if not titles_match(resume.title, ad.title):
+            continue
+
+        resume = get_resume_by_id(resume.id, session)
+        matching_resumes.append(resume)
 
     if matching_resumes:
-        return matching_resumes
+        return matching_resumes, ad
 
     
     return None
