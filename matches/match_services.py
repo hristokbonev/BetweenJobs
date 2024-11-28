@@ -64,7 +64,7 @@ def suggest_job_ads(resume_id, session: Session) -> list:
         
     # Check if the resume skills match the ad skills
 
-        if resume.skills and ad.skills:
+        if ad.skills:
             counter_skills = 0
             counter_skill_matches = 0
 
