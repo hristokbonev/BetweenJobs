@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import HTTPException
 from sqlmodel import Session, select
 from data.db_models import JobAd, Education, Location, EmploymentType, JobAdView, Status, JobAdSkill, Skill
@@ -10,12 +12,12 @@ def show_all_posts(
             session: Session,
             page: int,
             limit: int,
-            title: str,
-            company_name: str,
-            location: str,
-            employment_type: str,
-            education: str,
-            status: str
+            title: Optional[str] = None,
+            company_name: Optional[str] = None,
+            location: Optional[str] = None,
+            employment_type: Optional[str] = None,
+            education: Optional[str] = None,
+            status: Optional[str] = None
     ):
         filters = []
         if title:

@@ -35,28 +35,36 @@ def populate_data(session):
         description="A tech company",
         author_id=1,
     )
-    status1 = Status(
-        id=1,
-        name="Open"
+    company2 = Company(
+        id=2,
+        name="ServiceCorp",
+        description="A service company",
+        author_id=1,
     )
+    status1 = Status(id=1, name="Open")
+    status2 = Status(id=2, name="Hidden")
     job_ad1 = JobAd(
         id=1,
         title="Software Engineer",
         company_id=1,
         company_name="TechCorp",
-        status_id=1,  # Provide the required status_id
+        status_id=1,
+    )
+    job_ad2 = JobAd(
+        id=2,
+        title="Database Engineer",
+        company_id=1,
+        company_name="TechCorp",
+        status_id=1,
     )
 
-    session.add(user1)
-    session.add(company1)
-    session.add(status1)
-    session.add(job_ad1)
+    session.add_all([user1, company1, company2, status1, status2, job_ad1, job_ad2])
     session.commit()
 
 # Test: View companies
 def test_view_companies(session, populate_data):
     companies = cs.view_companies(session)
-    assert len(companies) == 1
+    assert len(companies) == 2
 
 
 # Test: Search companies by name only
@@ -67,7 +75,7 @@ def test_view_companies_by_name(session, populate_data):
 
 # Test: Search companies by job ad title only
 def test_view_companies_by_job_ad_title(session, populate_data):
-    companies = cs.view_companies(session, job_ad_title="Software Engineer")
+    companies = cs.view_companies(session, job_ad_title="Database Engineer")
     assert len(companies) == 1
     assert companies[0].name == "TechCorp"
 
@@ -95,9 +103,9 @@ def test_view_users_in_company(session, populate_data):
 
 # Test: View company by ID
 def test_view_company_by_id(session, populate_data):
-    company = cs.view_company_by_id(comp_id=1, session=session)
+    company = cs.view_company_by_id(comp_id=2, session=session)
     assert company is not None
-    assert company.name == "TechCorp"
+    assert company.name == "ServiceCorp"
 
 # Test: Create a new company
 def test_create_company(session):

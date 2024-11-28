@@ -20,9 +20,6 @@ access_token_expire_minutes = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
 
 token_blacklist = set()
 
-def get_password_hash(password):
-    return pwd_context.hash(password)
-
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
@@ -67,12 +64,6 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     if not username:
         return None
     return us.get_user(username, session=Session(engine))
-
-
-# def get_current_admin_user(user: User = Depends(get_current_user)):
-#     if not user.is_admin:
-#         raise HTTPException(status_code=403, detail="User is not an admin")
-#     return user
 
 
 def get_current_admin_user(token: str = Depends(oauth2_scheme)):

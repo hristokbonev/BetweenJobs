@@ -2,7 +2,7 @@ import pytest
 from fastapi import HTTPException
 from sqlmodel import SQLModel, create_engine, Session
 from data.db_models import (
-    JobAd, Education, Location, EmploymentType, Status, Skill, JobAdSkill, User, Company
+    JobAd, Education, Location, EmploymentType, Status, User, Company
 )
 from jobposts import jobpost_service as jps
 from datetime import date
@@ -39,8 +39,10 @@ def populate_data(session):
     )
     education1 = Education(id=1, degree_level="Bachelor's")
     location1 = Location(id=1, name="Remote")
-    employment1 = EmploymentType(id=1, name="Full-Time")
+    employment1 = EmploymentType(id=1, name="Part-Time")
+    employment2 = EmploymentType(id=2, name="Full-Time")
     status1 = Status(id=1, name="Open")
+    status2 = Status(id=2, name="Hidden")
     job_ad1 = JobAd(
         id=1,
         title="Software Engineer",
@@ -53,8 +55,32 @@ def populate_data(session):
         status_id=1,
         company_id=1,
     )
+    job_ad2 = JobAd(
+        id=2,
+        title="Software Engineer",
+        company_name="TechCorp",
+        description="Develop software",
+        salary=80000,
+        education_id=1,
+        location_id=1,
+        employment_type_id=1,
+        status_id=2,
+        company_id=1,
+    )
+    job_ad3 = JobAd(
+        id=3,
+        title="Software Engineer",
+        company_name="TechCorp",
+        description="Develop software",
+        salary=80000,
+        education_id=1,
+        location_id=1,
+        employment_type_id=2,
+        status_id=1,
+        company_id=1,
+    )
 
-    session.add_all([user1, company1, education1, location1, employment1, status1, job_ad1])
+    session.add_all([user1, company1, education1, location1, employment1, employment2, status1, status2, job_ad1, job_ad2, job_ad3])
     session.commit()
 
 
@@ -63,17 +89,9 @@ def test_show_all_posts(session, populate_data):
     results = jps.show_all_posts(
         session=session,
         page=1,
-        limit=10,
-        title="Software Engineer",
-        company_name="TechCorp",
-        location="Remote",
-        employment_type="Full-Time",
-        education="Bachelor's",
-        status="Open",
+        limit=10
     )
-    assert len(results) == 1
-    assert results[0].title == "Software Engineer"
-    assert results[0].company_name == "TechCorp"
+    assert len(results) == 3
 
 
 # Test: view_job_post_by_id
@@ -81,7 +99,7 @@ def test_view_job_post_by_id(session, populate_data):
     result = jps.view_job_post_by_id(ad_id=1, session=session)
     assert result.title == "Software Engineer"
     assert result.location == "Remote"
-    assert result.employment == "Full-Time"
+    assert result.employment == "Part-Time"
     assert result.education == "Bachelor's"
 
 

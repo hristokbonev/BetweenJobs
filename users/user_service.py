@@ -4,7 +4,6 @@ from users.user_models import UserSearch, UserUpdate, UserModel, TestModeRespons
 from data.db_models import Skill
 from users.user_models import CreateSkillRequest
 
-from utils.auth import get_password_hash
 
 # redundant
 def view_users(session: Session):
