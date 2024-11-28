@@ -11,7 +11,7 @@ from resumes.resume_models import ResumeRequest, ResumeResponse, ResumeResponseW
 
 client = TestClient(app)
 
-class TestResumeModels(TestCase):
+class TestResumeServices(TestCase):
 
     @classmethod
     def setUpClass(cls):
