@@ -1,0 +1,114 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family:'Courier New', Courier, monospace;
+}
+/* Align all elements with margin, font color and screen fitting */
+.showcase {
+    position: absolute;
+    right: 0;
+    width: 100%;
+    min-height: 100vh;
+    padding: 100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: black;
+    color: aliceblue;
+    z-index: 2;
+}
+/* Align header styles and positioning */
+.showcase header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 30px 100px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+/* Styling of logo */
+.logo {
+    text-transform: uppercase;
+    cursor: pointer;
+}
+/* Display toggle with menu icon */
+.toggle {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    background: url("../images/menu_icn.png");
+    background-repeat: no-repeat;
+    background-size: 30px;
+    background-position: center;
+    cursor: pointer;
+}
+/* Open right side bar for menu options */
+.toggle.active {
+    background: url("../images/close_icn.png");
+    background-repeat: no-repeat;
+    background-size: 25px;
+    background-position: center;
+}
+/* Arrange video position and transparency */
+.showcase video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    min-width: 100%;
+    min-height: 100%;
+    object-fit: cover;
+    opacity: 0.8;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+/* Position text and display on top of video */
+.text {
+    position: relative;
+    z-index: 10;
+    padding-top: 80%;
+}
+
+.text h2 {
+    font-size: 2em;
+    font-weight: 700;
+    line-height: 1em;
+    text-transform: uppercase;
+}
+
+.text h3 {
+    font-size: 1.5em;
+    font-weight: 600;
+    line-height: 1em;
+    text-transform: uppercase;
+}
+/* Styling of button */
+.text a {
+    display: inline-block;
+    font-size: 1em;
+    background: #fff;
+    padding: 10;
+    text-decoration: none;
+    color: #111;
+    margin-top: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: 0.2s;
+}
+
+.text a:hover {
+    letter-spacing: 5px;
+}
+/* Style menu options */
+.menu {
+    display: none;
+}
