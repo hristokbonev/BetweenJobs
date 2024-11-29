@@ -9,26 +9,39 @@
 <body>
   <section class="showcase">
     <header>
-      <h2 class="logo">Between Jobs</h2>
       <div class="toggle"></div>
+      <h2 class="logo">Between Jobs</h2>
     </header>
     <video src="https://xjlwrdolhwpgdikznbcs.supabase.co/storage/v1/object/public/videos/Between%20Jobs%20Landing.mp4?t=2024-11-29T11%3A33%3A40.497Z" muted loop autoplay></video>  
     <div class="overlay"></div>
     <div class="text">
       <h2>Job match</h2>
-      <h3>is now easier with Between Jobs</h3>
+      <h3>
+        <span>is now easier</span><br>
+        <span>with Between Jobs</span>
+      </h3>
       <a href="#">Find your dream job</a>
     </div>
   </section>
 
   <div class="menu">
     <ul>
-      <li><a href="#">Home</a></li>
-      <li><a href="#">Job Ads</a></li>
-      <li><a href="#">Login</a></li>
-      <li><a href="#">Register</a></li>
+      <li><a href="/home">Home</a></li>
+      <li><a href="/jobads">Job Ads</a></li>
+      <li><a href="/login">Login</a></li>
+      <li><a href="/register">Register</a></li>
     </ul>
   </div>
-  
+  <script>
+    const menuToggle = document.querySelector('.toggle')
+    const menuItems = document.querySelector('.menu')
+    const showcase = document.querySelector('.showcase')
+
+    menuToggle.addEventListener('click', () => {
+      menuToggle.classList.toggle('active')
+      showcase.classList.toggle('active')
+      menuItems.classList.toggle('active')
+    })
+  </script>
 </body>
 </html>

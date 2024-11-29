@@ -1,23 +1,40 @@
-* {
-    box-sizing: border-box;
+/* Ensure no margins or paddings are causing scroll bars */
+html, body {
     margin: 0;
     padding: 0;
-    font-family:'Courier New', Courier, monospace;
-}
-/* Align all elements with margin, font color and screen fitting */
-.showcase {
-    position: absolute;
-    right: 0;
     width: 100%;
-    min-height: 100vh;
-    padding: 100px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: black;
-    color: aliceblue;
-    z-index: 2;
+    height: 100%;
+    overflow: hidden; /* Prevent scrollbars */
 }
+/* Define hover color */
+:root {
+    --overlay-color: #ADD8E6;
+}
+
+/* Showcase container styles */
+.showcase {
+    position: relative; /* For absolute positioning of child elements */
+    width: 100%;
+    height: 100vh; /* Full viewport height */
+    overflow: hidden; /* Prevent content overflow */
+    display: flex;
+    transition: 1.5s;
+}
+/* Showcase styling when side bar is active */
+.showcase.active {
+    left:150px;
+}
+
+/* Video styling to fit the full viewport */
+.showcase video {
+    position: absolute; /* Allows full control over positioning */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the video scales proportionally to cover the viewport */
+}
+
 /* Align header styles and positioning */
 .showcase header {
     position: absolute;
@@ -28,14 +45,16 @@
     z-index: 100;
     display: flex;
     align-items: center;
-    justify-content: space-between;
 }
+
 /* Styling of logo */
 .logo {
     text-transform: uppercase;
     cursor: pointer;
+    color:#ffffff
 }
-/* Display toggle with menu icon */
+
+/* Display toggle with closed menu icon */
 .toggle {
     position: relative;
     width: 60px;
@@ -44,38 +63,39 @@
     background-repeat: no-repeat;
     background-size: 30px;
     background-position: center;
+    margin-left: 10px; /* Add 10px gap between logo and menu icon */
     cursor: pointer;
 }
-/* Open right side bar for menu options */
+/* Display toggle with open menu icon */
 .toggle.active {
     background: url("../images/close_icn.png");
     background-repeat: no-repeat;
-    background-size: 25px;
+    background-size: 28px;
     background-position: center;
 }
-/* Arrange video position and transparency */
-.showcase video {
-    position: absolute;
-    top: 0;
-    left: 0;
-    min-width: 100%;
-    min-height: 100%;
-    object-fit: cover;
-    opacity: 0.8;
-}
 
+/* Overlay for the video */
 .overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    background: rgba(0, 0, 0, 0.1); /* Optional: Adds a semi-transparent overlay */
+    z-index: 5; /* Layering for proper stacking */
 }
+
 /* Position text and display on top of video */
 .text {
-    position: relative;
+    position: absolute;
+    bottom: 0; /* Aligns text at the bottom */
+    left: 0; /* Aligns text to the left */
+    padding-top: 80%; /* 80% from the top */
+    padding-left: 50px; /* Optional: Add some left padding */
+    padding-bottom: 5%;
     z-index: 10;
-    padding-top: 80%;
+    text-align: left; /* Align text to the left */
+    color: white;
 }
 
 .text h2 {
@@ -86,29 +106,68 @@
 }
 
 .text h3 {
+    display: block;
     font-size: 1.5em;
     font-weight: 600;
     line-height: 1em;
     text-transform: uppercase;
 }
+
 /* Styling of button */
 .text a {
     display: inline-block;
-    font-size: 1em;
-    background: #fff;
-    padding: 10;
-    text-decoration: none;
-    color: #111;
-    margin-top: 10px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    transition: 0.2s;
+    padding: 10px 30px; /* Adds adequate padding for a prominent button */
+    font-size: 16px; /* Font size for legibility */
+    font-weight: 600; /* Slightly bold for emphasis */
+    text-transform: uppercase; /* Makes the text uppercase */
+    text-align: center; /* Centers text within the button */
+    color: #ffffff; /* White text color */
+    background-color: #0056b3; /* Bright Consulting-like blue background */
+    border: 2px solid #0056b3; /* Adds a blue border */
+    border-radius: 50px; /* Rounded corners for a modern look */
+    text-decoration: none; /* Removes underline from the link */
+    transition: all 0.3s ease; /* Smooth hover effect */
+    letter-spacing: 1px; /* Adds subtle spacing between letters */
+    cursor: pointer; /* Indicates clickability */
 }
 
 .text a:hover {
-    letter-spacing: 5px;
+    background-color: var(--overlay-color); /* Darker blue for hover effect */
+    color: #ffffff; /* Keeps text white */
+    border-color: var(--overlay-color); /* Matches hover border with background */
+    transform: translateY(-3px); /* Lifts button slightly on hover */
+    box-shadow: 0 5px 15px rgba(0, 64, 153, 0.3); /* Adds a subtle shadow effect */
 }
+
 /* Style menu options */
-.menu {
-    display: none;
+.menu.active {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    width: 100px;
+    height: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.menu ul {
+    position: relative;
+    list-style: none;
+}
+
+.menu ul li {
+    margin-bottom: 20px;
+}
+
+.menu ul li a {
+    text-decoration: none;
+    font-size: 24px;
+    color:blue;
+}
+
+.menu ul li a:hover {
+    color: var(--overlay-color)
 }
