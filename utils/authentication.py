@@ -31,11 +31,12 @@ def get_session():
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/users/login', auto_error=False)   
 
 @router.post('/', response_model=UserSchema)
-def create_user(user: UserCreate = Depends(), session: Session = Depends(get_session)):
+def create_user(user: UserCreate, session: Session = Depends(get_session)):
     db_user = User( username=user.username,
                     password=get_password_hash(user.password),
                     first_name=user.first_name,
                     last_name=user.last_name,
+                    is_admin=user.is_admin,
                     date_of_birth=user.birth_date,
                     email=user.email
                 )
