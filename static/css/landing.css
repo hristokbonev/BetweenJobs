@@ -61,7 +61,7 @@ html, body {
     position: relative;
     width: 60px;
     height: 60px;
-    background: url("../../templates/images/menu_icn.png");
+    background: url("../images/menu_icn.png");
     background-repeat: no-repeat;
     background-size: 30px;
     background-position: center;
@@ -70,7 +70,7 @@ html, body {
 }
 /* Display toggle with open menu icon */
 .toggle.active {
-    background: url("../../templates/images/close_icn.png");
+    background: url("../images/close_icn.png");
     background-repeat: no-repeat;
     background-size: 28px;
     background-position: center;
