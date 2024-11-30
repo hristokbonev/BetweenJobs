@@ -9,12 +9,19 @@ templates = Jinja2Templates(directory='templates')
 
 @index_router.get('/')
 def index(request: Request):
+    return templates.TemplateResponse(request=request, name='index.html')
+    
+
+@index_router.get('/home')
+def index(request: Request):
     token = request.cookies.get('token')
     if token:
         user = au.get_current_user(token)
         print(user)
-        return templates.TemplateResponse(request=request, name='index.html',
+        return templates.TemplateResponse(request=request, name='home.html',
                                           context={'request': request, 'user': user})
 
     else:
-        return templates.TemplateResponse(request=request, name='index.html')
+        return templates.TemplateResponse(request=request, name='home.html')
+    
+    

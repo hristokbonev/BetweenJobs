@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 from companies.company_router import companies_router
 from jobposts.jobpost_router import job_post_router
@@ -23,6 +24,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+# Mount static files
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.include_router(user_router)
 app.include_router(resumes_router)
