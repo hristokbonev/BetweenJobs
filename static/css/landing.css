@@ -124,8 +124,8 @@ html, body {
     text-transform: uppercase; /* Makes the text uppercase */
     text-align: center; /* Centers text within the button */
     color: #ffffff; /* White text color */
-    background-color: #0056b3; /* Bright Consulting-like blue background */
-    border: 2px solid #0056b3; /* Adds a blue border */
+    background-color: var(--primary-color); /* Bright Consulting-like blue background */
+    border: 2px solid var(--primary-color); /* Adds a blue border */
     border-radius: 50px; /* Rounded corners for a modern look */
     text-decoration: none; /* Removes underline from the link */
     transition: all 0.3s ease; /* Smooth hover effect */
