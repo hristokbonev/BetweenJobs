@@ -13,6 +13,7 @@ from utils.authentication import router as auth_router
 from matches.match_router import match_router
 # Add WEB Routers
 from web_routers.home_router import index_router
+from web_routers.jobposts_router import jobs_router
 
 load_dotenv()
 
@@ -37,6 +38,7 @@ app.include_router(auth_router)
 app.include_router(match_router)
 
 app.include_router(index_router)
+app.include_router(jobs_router)
 
 
 if __name__ == "__main__":
