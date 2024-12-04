@@ -4,6 +4,9 @@ from companies.company_models import CompanyResponse, CreateCompanyRequest, Upda
 from data.database import get_session
 from companies import company_service as cs
 from jobposts import jobpost_service as js
+from users.user_models import UserModel
+from utils.auth import get_current_user
+from common import exceptions as ex
 from typing import List, Optional, Dict
 
 
@@ -13,8 +16,11 @@ companies_router = APIRouter(prefix='/api/companies', tags=["Companies"])
 def show_all_companies(
     name: Optional[str] = None,
     job_ad_title: Optional[str] = None,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_session),
+    current_user: UserModel = Depends(get_current_user)
 ):
+    if not current_user:
+        raise ex.UnauthorizedException(detail='You must be logged in to view resumes')
     try:
         companies = cs.view_companies(session, name=name, job_ad_title=job_ad_title)
         if not companies:
@@ -27,7 +33,9 @@ def show_all_companies(
 
 
 @companies_router.get('/{comp_id}', response_model=CompanyResponse)
-def show_company_by_id(comp_id: int, session: Session = Depends(get_session)):
+def show_company_by_id(comp_id: int, session: Session = Depends(get_session), current_user: UserModel = Depends(get_current_user)):
+    if not current_user:
+        raise ex.UnauthorizedException(detail='You must be logged in to view resumes')
     try:
         company = cs.view_company_by_id(comp_id, session)
         if not company:
@@ -47,7 +55,9 @@ def show_company_by_id(comp_id: int, session: Session = Depends(get_session)):
 
 
 @companies_router.post('/', response_model=CompanyResponse)
-def register_new_company(data: CreateCompanyRequest, session: Session = Depends(get_session)):
+def register_new_company(data: CreateCompanyRequest, session: Session = Depends(get_session), current_user: UserModel = Depends(get_current_user)):
+    if not current_user:
+        raise ex.UnauthorizedException(detail='You must be logged in to view resumes')
     try:
         new_company = cs.create_company(data, session)
         if not new_company:
@@ -58,7 +68,13 @@ def register_new_company(data: CreateCompanyRequest, session: Session = Depends(
 
 
 @companies_router.put('/{comp_id}', response_model=CompanyResponse)
-def modify_company_by_id(comp_id: int, data: UpdateCompanyRequest, session: Session = Depends(get_session)):
+def modify_company_by_id(
+        comp_id: int,
+        data: UpdateCompanyRequest,
+        session: Session = Depends(get_session),
+        current_user: UserModel = Depends(get_current_user)):
+    if not current_user:
+        raise ex.UnauthorizedException(detail='You must be logged in to view resumes')
     try:
         updated_company = cs.change_company(session=session, target_id=comp_id, data=data)
         return updated_company
@@ -69,5 +85,7 @@ def modify_company_by_id(comp_id: int, data: UpdateCompanyRequest, session: Sess
 
 
 @companies_router.delete('/{comp_id}', response_model=Dict[str, str])
-def delete_company_by_id(company_id: int, session: Session = Depends(get_session)):
+def delete_company_by_id(company_id: int, session: Session = Depends(get_session), current_user: UserModel = Depends(get_current_user)):
+    if not current_user:
+        raise ex.UnauthorizedException(detail='You must be logged in to view resumes')
     return cs.delete_company(target_id=company_id, session=session)

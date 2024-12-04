@@ -54,16 +54,7 @@ def show_job_ad_by_id(job_id: int, session: Session = Depends(get_session)):
         if not job_ad:
             raise HTTPException(status_code=404, detail=f"Job Ad with ID {job_id} not found.")
 
-        return JobAddResponse(
-            title=job_ad.title,
-            company_name=job_ad.company_name,
-            company_description=job_ad.description,
-            education=job_ad.degree_level,
-            salary=job_ad.salary,
-            employment=job_ad.Employment,
-            location=job_ad.Location,
-            status=job_ad.status
-        )
+        return job_ad
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
 
