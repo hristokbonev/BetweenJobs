@@ -16,21 +16,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python 3.12
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.12
+    # Step to set up Docker and build the image
+    - name: Set up Docker
+      uses: docker/setup-buildx-action@v2
 
-    - name: Install dependencies
+    # Build the Docker image
+    - name: Build Docker image
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-
-    - name: Building web app
-      uses: azure/appservice-build@v2
-      with:
-        platform: 'python'
-        platform-version: '3.12'
+        docker build -t fastapi-app .
 
     - name: Deploy web App using GH Action azure/webapps-deploy
       uses: azure/webapps-deploy@v3
