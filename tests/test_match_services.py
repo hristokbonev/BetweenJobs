@@ -4,7 +4,7 @@ from data.db_models import Company, JobAd, JobAdSkill, User, Location, Education
 from sqlmodel import SQLModel
 import os
 from jobposts.jobpost_models import JobAdResponseWithNamesNotId
-from matches.match_services import suggest_job_ads, suggest_resumes, titles_match
+from matches.suggest_service import suggest_job_ads, suggest_resumes, titles_match
 from datetime import datetime
 from resumes.resume_models import ResumeResponse
 
@@ -301,7 +301,7 @@ class TestMatchServices(TestCase):
         jobad_id = 1
         result = suggest_resumes(jobad_id, self.session)
 
-        expected = [ResumeResponse(user_id=1, username='testuser', full_name=None, title='Software Engineer', education='Undergraduate degree', summary=None, status='Active', employment_type='Full-time', location='Sofia', id=1, skills=['Python', 'Java', 'MySQL', 'JavaScript'])]
+        expected = [ResumeResponse(user_id=1, username='testuser', full_name=None, title='Software Engineer', education='Undergraduate degree', summary=None, status='Active', employment_type='Full-time', location='Sofia', id=1, skills=['Python', 'Java', 'MySQL', 'JavaScript']), ResumeResponse(user_id=1, username='testuser', full_name=None, title='Web Developer', education='Undergraduate degree', summary=None, status='Active', employment_type='Full-time', location='Sofia', id=2, skills=['Python', 'Java'])]
 
         self.assertEqual(result, expected)
 

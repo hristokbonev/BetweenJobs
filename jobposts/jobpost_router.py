@@ -8,7 +8,7 @@ from data.database import get_session
 from jobposts import jobpost_service as js
 from users.user_models import UserModel
 from utils import attribute_service as ats
-from matches import match_services as ms
+from matches import suggest_service as ms
 from utils.auth import get_current_user
 
 
