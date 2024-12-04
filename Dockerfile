@@ -1,23 +1,15 @@
-# Use the official Python 3.12 image from Docker Hub
+# syntax=docker/dockerfile:1
+
 FROM python:3.12
 
-# Set the working directory in the container
-WORKDIR /app
+WORKDIR /code
 
-# Copy the requirements.txt file into the container
 COPY requirements.txt .
 
-# Install dependencies from the requirements.txt
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
-# Copy the rest of the application code into the container
 COPY . .
 
-# Expose the port that FastAPI will run on
-EXPOSE 8000
+EXPOSE 3100
 
-# Set the environment variable for the app (optional)
-ENV PYTHONPATH=/app
-
-# Command to run the FastAPI app with uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["gunicorn", "main:app"]
