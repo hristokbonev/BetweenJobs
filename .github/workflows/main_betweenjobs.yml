@@ -1,8 +1,9 @@
 name: Python CI
 
 on:
-
-  [push]
+  push:
+    branches:
+      - main
 
 env:
   AZURE_WEBAPP_NAME: betweenjobs # set this to your application's name
