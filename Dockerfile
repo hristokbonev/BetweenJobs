@@ -1,5 +1,5 @@
 # Use the official Python 3.12 image from Docker Hub
-FROM python:3.12-slim
+FROM python:3.12
 
 # Set the working directory in the container
 WORKDIR /app
@@ -8,8 +8,7 @@ WORKDIR /app
 COPY requirements.txt .
 
 # Install dependencies from the requirements.txt
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
+RUN pip install -r requirements.txt
 
 # Copy the rest of the application code into the container
 COPY . .
