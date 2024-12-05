@@ -10,10 +10,11 @@ from typing import List
 from typing import Literal
 from utils.auth import get_current_user
 from users.user_models import UserModel
-from matches import match_service as ms
-from data.db_models import JobAd
+from matches import suggest_service as ms
+
 
 router = APIRouter(prefix='/api/resumes', tags=['Resumes'])
+
 
 @router.get('/', response_model=Union[List[ResumeResponse], ResumeResponse, ]) 
 def view_resumes(session: Session = Depends(get_session), 
@@ -85,10 +86,10 @@ def update_resume(id: int, resume_form: ResumeUpdate, session: Session = Depends
     if not current_user:
         raise UnauthorizedException(detail='You must be logged in to update a resume')
     
-    if not rs.get_resume_by_id(session, id):
+    if not rs.get_resume_by_id(session=session, id=id):
         raise NotFoundException(detail='Resume not found')
     
-    if current_user.id.user_id != rs.get_resume_by_id(session, id).user_id:
+    if current_user.username != rs.get_resume_by_id(session=session,id=id).username:
         raise UnauthorizedException(detail='You are not authorized to update this resume')
 
     resume = rs.update_resume(id, resume_form, session)

@@ -8,7 +8,7 @@ from data.database import get_session
 from jobposts import jobpost_service as js
 from users.user_models import UserModel
 from utils import attribute_service as ats
-from matches import match_services as ms
+from matches import suggest_service as ms
 from utils.auth import get_current_user
 
 
@@ -54,16 +54,7 @@ def show_job_ad_by_id(job_id: int, session: Session = Depends(get_session)):
         if not job_ad:
             raise HTTPException(status_code=404, detail=f"Job Ad with ID {job_id} not found.")
 
-        return JobAddResponse(
-            title=job_ad.title,
-            company_name=job_ad.company_name,
-            company_description=job_ad.description,
-            education=job_ad.degree_level,
-            salary=job_ad.salary,
-            employment=job_ad.Employment,
-            location=job_ad.Location,
-            status=job_ad.status
-        )
+        return job_ad
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
 
