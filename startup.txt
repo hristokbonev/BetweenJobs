@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Define the virtual environment directory
+VENV_DIR=/home/site/wwwroot/antenv
+
+# Check if the virtual environment directory exists
+if [ ! -d "$VENV_DIR" ]; then
+  # Create a virtual environment
+  python -m venv $VENV_DIR
+fi
+
+# Activate the virtual environment
+source $VENV_DIR/bin/activate
+
+# Install the dependencies
+pip install -r /home/site/wwwroot/requirements.txt
+
+# Start the application with Gunicorn and Uvicorn
+gunicorn -w 2 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000 main:app
