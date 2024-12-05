@@ -73,8 +73,8 @@ def search(
     # Map search_field to function arguments
     filter_args = {}
     if search_field and keyword:
-        if search_field in filter_args:
-            filter_args[search_field] = keyword
+        filter_args[search_field] = keyword
+    print(filter_args.items())
     # Get job posts and sum of jobposts
     job_adds = js.show_all_posts(
         session=session,
