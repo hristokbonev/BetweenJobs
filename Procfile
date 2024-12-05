@@ -1,1 +1,1 @@
-web: gunicorn -w 2 -b 0.0.0.0:8000 main:app
+web: pip install -r requirements.txt && gunicorn -w 2 -b 0.0.0.0:8000 main:app
