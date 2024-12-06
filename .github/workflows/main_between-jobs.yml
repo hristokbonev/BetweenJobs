@@ -62,11 +62,6 @@ jobs:
         with:
           name: python-app
 
-      - name: Log in to Azure CLI
-        uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C03EE6E10AE74C8E9483C1D9F7797FA3 }}
-
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
