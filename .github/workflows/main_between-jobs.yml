@@ -28,8 +28,9 @@ jobs:
             source antenv/bin/activate
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
-        pip install uvicorn
+        run: |
+          pip install -r requirements.txt
+          pip install uvicorn
 
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
       - name: Zip artifact for deployment
