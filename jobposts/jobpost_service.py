@@ -14,8 +14,8 @@ def show_all_posts(session: Session, **filters: Any):
 
         if field == "location.name":
             statement = statement.join(JobAd.location).where(Location.name.ilike(f"%{value}%"))
-        elif field == "employment_type":
-            statement = statement.where(JobAd.employment_type.ilike(f"%{value}%"))
+        elif field == "employment.name":
+            statement = statement.where(JobAd.employment_type).where(EmploymentType.name.ilike(f"%{value}%"))
         elif field == "region":
             statement = statement.where(JobAd.region.ilike(f"%{value}%"))
         else:

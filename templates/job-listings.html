@@ -131,8 +131,9 @@
                 </div>
                 <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
                   <select name="job_type" class="selectpicker" data-style="btn-white btn-lg" data-width="100%" data-live-search="true" title="Select Job Type">
-                    <option>Part Time</option>
-                    <option>Full Time</option>
+                    {% for employment in employments %}
+                      <option>{{ employment }}</option>
+                    {% endfor %}
                   </select>
                 </div>
                 <div class="col-12 col-sm-6 col-md-6 col-lg-2 mb-4 mb-lg-0">
@@ -143,11 +144,12 @@
               </div>
               <div class="row">
                 <div class="col-md-12 popular-keywords">
-                  <h3>Trending Keywords:</h3>
-                  <ul class="keywords list-unstyled m-0 p-0">
-                    <li><a href="#" class="">UI Designer</a></li>
-                    <li><a href="#" class="">Python</a></li>
-                    <li><a href="#" class="">Developer</a></li>
+                  <h3>Filters Applied:</h3>
+                  <ul class="keywords list-unstyled m-0 p-0" id="filters-applied">
+                    <!-- Filtered keywords will be added here -->
+                     {% for filter, value in filters.items() %}
+                      <li><a href="#" class="">{{ value }}</a></li>
+                     {% endfor %}
                   </ul>
                 </div>
               </div>
@@ -336,20 +338,6 @@
     <script src="../static/js/bootstrap-select.min.js"></script>
     
     <script src="../static/js/custom.js"></script>
-    <script>
-      $(document).ready(function () {
-        $('.selectpicker').selectpicker();
-
-        // Force dropdown to respect page boundaries
-        $('.selectpicker').on('shown.bs.select', function () {
-          $('.dropdown-menu').css({
-            position: 'absolute', /* Ensure it is positioned independently */
-            top: 'auto', /* Adjust positioning if needed */
-            left: 'auto', /* Adjust positioning if needed */
-          });
-        });
-      });
-    </script>
-     
+    <script src="../static/js/custom-scripts.js"></script>
   </body>
 </html>

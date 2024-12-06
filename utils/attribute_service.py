@@ -53,6 +53,12 @@ def get_all_locations(session: Session):
     return locations if locations else None
 
 
+def get_all_employments(session: Session):
+    statement = select(EmploymentType.name)
+    employments = session.exec(statement).all()
+    return employments if employments else None
+
+
 def location_exists(location, session: Session):
     statement = select(Location.name).where(Location.name == location)
     location = session.exec(statement).first()

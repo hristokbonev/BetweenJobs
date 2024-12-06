@@ -28,8 +28,9 @@ def default_view(
     paginated_jobs = job_adds[start:end]
     total_pages = (all_jobs + limit - 1) // limit
 
-    # Get locations for dropdown list
+    # Get locations and employment tyepes for dropdown list
     locations = list(ats.get_all_locations(session))
+    employments = list(ats.get_all_employments(session))
 
     token = request.cookies.get('token')
     context={
@@ -43,7 +44,8 @@ def default_view(
             'search_field': None,
             'keyword': None
         },
-        'locations': locations
+        'locations': locations,
+        'employments': employments
     }
 
     if token:
@@ -83,6 +85,8 @@ def search(
         filter_args[search_field] = keyword
     if region:
         filter_args["location.name"] = region
+    if jobtype:
+        filter_args['employment.name'] = jobtype
     print(filter_args.items())
     # Get job posts and sum of jobposts
     job_adds = js.show_all_posts(
@@ -97,8 +101,9 @@ def search(
     paginated_jobs = job_adds[start:end]
     total_pages = (all_jobs + limit - 1) // limit
 
-    # Get locations for dropdown list
+    # Get locations and employment tyepes for dropdown list
     locations = list(ats.get_all_locations(session))
+    employments = list(ats.get_all_employments(session))
 
     token = request.cookies.get('token')
     context={
@@ -112,9 +117,12 @@ def search(
             'search_field': search_field,
             'keyword': keyword
         },
-        'locations': locations
+        'locations': locations,
+        'employments': employments,
+        'filters': filter_args
     }
 
+    print(filter_args)
     if token:
         user = au.get_current_user(token)
         context['user'] = user
