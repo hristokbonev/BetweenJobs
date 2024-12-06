@@ -24,15 +24,15 @@ jobs:
 
       - name: Create and start virtual environment
         run: |
-          python -m venv venv
+          python3 -m venv venv
           source venv/bin/activate
+
 
       - name: Install dependencies
         run: |
             pip install --upgrade pip
             pip install -r requirements.txt
-            pip install uvicorn
-            pip install gunicorn
+            
 
       - name: Debug Python Environment
         run: |
@@ -41,18 +41,14 @@ jobs:
             which python
             which pip
 
-      # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
-      - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
           name: python-app
           path: |
-            release.zip
+            . 
             !venv/
-
   deploy:
     runs-on: ubuntu-latest
     needs: build
@@ -66,8 +62,6 @@ jobs:
         with:
           name: python-app
 
-      - name: Unzip artifact for deployment
-        run: unzip release.zip
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
@@ -75,5 +69,4 @@ jobs:
         with:
           app-name: 'Between-Jobs'
           slot-name: 'Production'
-          package: release.zip
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C03EE6E10AE74C8E9483C1D9F7797FA3 }}
