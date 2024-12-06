@@ -28,7 +28,11 @@ jobs:
           source antenv/bin/activate
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+            pip install --upgrade pip
+            pip install -r requirements.txt
+            pip install uvicorn
+            pip install gunicorn
 
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
       - name: Zip artifact for deployment
@@ -65,3 +69,10 @@ jobs:
           app-name: 'Between-Jobs'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C03EE6E10AE74C8E9483C1D9F7797FA3 }}
+
+    - name: Debug Python Environment
+      run: |
+        python --version
+        pip list
+        which python
+        which pip
