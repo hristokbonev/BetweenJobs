@@ -24,7 +24,7 @@ jobs:
 
       - name: Create and start virtual environment
         run: |
-          python3 -m venv venv
+          python -m venv venv
           source venv/bin/activate
 
 
@@ -32,14 +32,7 @@ jobs:
         run: |
             pip install --upgrade pip
             pip install -r requirements.txt
-            
-
-      - name: Debug Python Environment
-        run: |
-            python --version
-            pip list
-            which python
-            which pip
+            pip install --target="./.python_packages/lib/site-packages" -r requirements.txt
 
 
       - name: Upload artifact for deployment jobs
