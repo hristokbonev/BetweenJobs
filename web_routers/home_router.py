@@ -18,7 +18,6 @@ def index(request: Request):
 @index_router.get('/home')
 def index(request: Request, session: Session = Depends(get_session)):
     locations = list(ats.get_all_locations(session))
-    print(locations)
     token = request.cookies.get('token')
     if token:
         user = au.get_current_user(token)
