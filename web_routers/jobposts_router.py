@@ -5,6 +5,7 @@ from data.database import get_session
 from sqlmodel import Session
 from utils import auth as au
 from jobposts import jobpost_service as js
+from utils import attribute_service as ats
 
 
 jobs_router = APIRouter(prefix='/jobposts')
@@ -27,6 +28,9 @@ def default_view(
     paginated_jobs = job_adds[start:end]
     total_pages = (all_jobs + limit - 1) // limit
 
+    # Get locations for dropdown list
+    locations = list(ats.get_all_locations(session))
+
     token = request.cookies.get('token')
     context={
         'request': request, 
@@ -38,7 +42,8 @@ def default_view(
         'filters': {
             'search_field': None,
             'keyword': None
-        }
+        },
+        'locations': locations
     }
 
     if token:
@@ -54,9 +59,11 @@ def default_view(
 # Utility function
 def _get_search_data(
     keyword: str = Form(...),
-    search_field: str = Form(...)
+    search_field: str = Form(...),
+    region: str = Form(...),
+    job_type: str = Form(...)
 ):
-    return keyword, search_field
+    return keyword, search_field, region, job_type
 
 
 @jobs_router.post('/')
@@ -67,13 +74,15 @@ def search(
     limit: int = Query(20, ge=1, le=100),
     form_data = Depends(_get_search_data)
 ):
-    keyword, search_field = form_data
-    print(search_field)
-    print(keyword)
+    # Obtain filtered elements
+    keyword, search_field, region, jobtype = form_data
+   
     # Map search_field to function arguments
     filter_args = {}
     if search_field and keyword:
         filter_args[search_field] = keyword
+    if region:
+        filter_args["location.name"] = region
     print(filter_args.items())
     # Get job posts and sum of jobposts
     job_adds = js.show_all_posts(
@@ -88,6 +97,9 @@ def search(
     paginated_jobs = job_adds[start:end]
     total_pages = (all_jobs + limit - 1) // limit
 
+    # Get locations for dropdown list
+    locations = list(ats.get_all_locations(session))
+
     token = request.cookies.get('token')
     context={
         'request': request, 
@@ -99,7 +111,8 @@ def search(
         'filters': {
             'search_field': search_field,
             'keyword': keyword
-        }
+        },
+        'locations': locations
     }
 
     if token:

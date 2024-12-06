@@ -8,18 +8,21 @@ from sqlalchemy import Text, cast, func
 
 def show_all_posts(session: Session, **filters: Any):
     statement = select(JobAd)
-    print(filters.items())
-    # Apply dynamic filters if provided
     for field, value in filters.items():
-        column = getattr(JobAd, field, None)
-        if column is not None:
-            # Check if column is str and apply wildcard search
-            if isinstance(value, str):
+        if not value:
+            continue
+
+        if field == "location.name":
+            statement = statement.join(JobAd.location).where(Location.name.ilike(f"%{value}%"))
+        elif field == "employment_type":
+            statement = statement.where(JobAd.employment_type.ilike(f"%{value}%"))
+        elif field == "region":
+            statement = statement.where(JobAd.region.ilike(f"%{value}%"))
+        else:
+            column = getattr(JobAd, field, None)
+            if column is not None:
                 statement = statement.where(column.ilike(f"%{value}%"))
-            else:
-                statement = statement.where(column == value)
-        elif field == "location":  
-            statement = statement.where(JobAd.location.has(name.ilike(f"%{value}%")))
+
             
     job_posts = session.exec(statement).all()
 
