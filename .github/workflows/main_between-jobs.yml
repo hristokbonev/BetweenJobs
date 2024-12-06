@@ -24,9 +24,10 @@ jobs:
 
       - name: Create and start virtual environment
         run: |
-          if [ ! -d "antenv" ]; then
+            if [ ! -d "antenv" ]; then
             python -m venv antenv
-          fi
+            fi
+            source antenv/bin/activate
 
       - name: Install dependencies
         run: pip install -r requirements.txt
