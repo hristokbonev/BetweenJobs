@@ -1,0 +1,34 @@
+.badge-active {
+    color: #fff;
+    background-color: lightgreen;
+  }
+  
+  .badge-hidden {
+    color: #212529;
+    background-color: lightgrey;
+  }
+  
+  .badge-matched {
+    color: #fff;
+    background-color: red;
+  }
+  
+  .badge-private {
+    color: #fff;
+    background-color: lightblue;
+  }
+  
+.dropdown-menu.show {
+  max-height: 150px; /* Set the max height of the dropdown options */
+  overflow-y: auto; /* Enable vertical scrolling */
+  overflow-x: hidden; /* Hide horizontal scrolling if unnecessary */
+  z-index: 1050;
+}
+
+
+/* Add stilization for spacing div to increase the gap from dropdown */
+div.spacing {
+  height: 5rem !important;
+  display: block !important;
+}
+
