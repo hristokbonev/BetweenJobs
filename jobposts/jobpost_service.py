@@ -1,12 +1,29 @@
 from fastapi import HTTPException
 from sqlmodel import Session, select
+from typing import Any
 from data.db_models import JobAd, Education, Location, EmploymentType, JobAdView, Status, JobAdSkill, Skill
 from jobposts.jobpost_models import CreateJobAdRequest, JobAdResponseWithSkills, UpdateJobAdRequest, JobAddResponse, JobAdResponseWithNamesNotId
 from sqlalchemy import Text, cast, func
 
 
-def show_all_posts(session: Session):
+def show_all_posts(session: Session, **filters: Any):
     statement = select(JobAd)
+    for field, value in filters.items():
+        if not value:
+            continue
+
+        if field == "location.name":
+            statement = statement.join(JobAd.location).where(Location.name.ilike(f"%{value}%"))
+        elif field == "employment.name":
+            statement = statement.where(JobAd.employment_type).where(EmploymentType.name.ilike(f"%{value}%"))
+        elif field == "region":
+            statement = statement.where(JobAd.region.ilike(f"%{value}%"))
+        else:
+            column = getattr(JobAd, field, None)
+            if column is not None:
+                statement = statement.where(column.ilike(f"%{value}%"))
+
+            
     job_posts = session.exec(statement).all()
 
     return job_posts
