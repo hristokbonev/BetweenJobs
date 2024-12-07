@@ -21,7 +21,7 @@
     <!-- MAIN CSS -->
     <link rel="stylesheet" href="../static/css/style.css">  
 
-    {% from 'macros.html' import load_header %}
+    {% from 'macros.html' import load_header, load_footer %}
     
   
   </head>
@@ -33,6 +33,7 @@
       <span class="sr-only">Loading...</span>
     </div>
   </div>
+
     
 
 <div class="site-wrap">
@@ -48,7 +49,7 @@
     
 
     <!-- NAVBAR -->
-    {{ load_header(user) }}
+    {{ load_header(get_user(request)) }}
 
     <!-- HOME -->
     <section class="home-section section-hero overlay bg-image" style="background-image: url('../static/images/hero_1.jpg');" id="home-section">
