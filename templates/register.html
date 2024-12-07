@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Between Jobs</title>
+    <title>Sing up - Between Jobs</title>
 
     <!-- External CSS -->
     <link rel="stylesheet" href="../static/css/custom-bs.css">
@@ -18,7 +18,7 @@
 </head>
 <body id="top">
 
-<!-- Loader -->
+    <!-- Loader -->
   <div id="overlayer"></div>
   <div class="loader">
     <div class="spinner-border text-primary" role="status">
@@ -26,10 +26,9 @@
     </div>
   </div>
 
-
     <div class="site-wrap">
         <!-- Header -->
-        <header class="site-navbar mt-9">
+        <header class="site-navbar mt-3">
             <div class="container-fluid">
                 <div class="row align-items-center">
                     <div class="site-logo col-6"><a href="home.html">BetweenJobs</a></div>
@@ -44,44 +43,44 @@
             </div>
         </header>
 
-        <!-- Login Section -->
+        <!-- Register Section -->
         <section class="section-hero overlay bg-image" style="background-image: url('../static/images/hero_1.jpg'); background-size: cover; background-repeat: no-repeat; background-position: center center; height: 100vh; width: 100%; position: relative;">
             <div class="container">
                 <div class="row align-items-center justify-content-center">
                     <div class="col-md-10">
                         <div class="form-box login-container">
-                            <h2 class="text-white text-center mb-4">Log In to Your Account</h2>
+                            <h2 class="text-white text-center mb-4">Create Account</h2>
 
+                <form action="/register" method="post" class="p-4 bg-light">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required><br><br>
+                
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required><br><br>
+    
+                <label for="confirm">Confirm Password:</label>
+                <input type="password" id="confirm_password" name="confirm_password" required><br><br>
+    
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required><br><br>
+    
+                <label for="first_name">First Name:</label>
+                <input type="text" id="first_name" name="first_name" required><br><br>
+    
+                <label for="last_name">Last Name:</label>
+                <input type="text" id="last_name" name="last_name" required><br><br>
+                
+                <button type="submit">Sing up</button>
+            </form>
 
-                            <!-- Login Form -->
-                            <form method="post" action="/login" class="p-4 bg-light">
-                              <input type="hidden" name="next" value="/login-home.html">
-                                <div class="form-group">
-                                  <label for="username">Username</label>
-                                  <input type="username" id="username" name="username" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="password">Password</label>
-                                    <input type="password" id="password" name="password" required>
-                                </div>
-                                <div class="form-group">
-                                    <button type="submit" class="btn btn-primary btn-block">Log In</button>
-                                </div>
-                                <div class="text-center footer">
-                                    <p>Don't have an account? <a href="/register">Sign up</a></p>
-                                </div>
-                            </form>
-
-                            <!-- Error Message -->
-                            {% if error %}
-                            <section id="errors">
-                                <p style="color: red;">{{ error }}</p>
-                            </section>
-                            {% endif %}                         
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <!-- Error Message -->
+            {% if error %}
+                <section id="errors">
+                    <p style="color: red;">{{ error }}</p>
+                </section>
+            {% elif user %}
+                <p>Welcome, {{ user.username }}! Your account has been created.</p>
+            {% endif %}
         </section>
         
         <!-- Footer -->
