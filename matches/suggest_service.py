@@ -1,7 +1,7 @@
 from data.database import Session
 from resumes.resume_services import get_all_resumes_with_skills_ids, get_resume_by_id, get_resume_with_ids_instead_of_names
 from jobposts.jobpost_service import view_post_with_skills, view_post_with_strings_and_skills, view_posts_with_skills
-import openai
+import openai 
 from dotenv import load_dotenv
 import os
 from numpy import dot
