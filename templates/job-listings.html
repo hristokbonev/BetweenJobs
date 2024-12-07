@@ -117,9 +117,9 @@
                     <option value="" {% if not filters.search_field %}selected{% endif %}>Select Search Field</option>
                     <option value="title" {% if filters.search_field == "title" %}selected{% endif %}>Job Title</option>
                     <option value="company_name" {% if filters.search_field == "company_name" %}selected{% endif %}>Company</option>
-                    <option value="education" {% if filters.search_field == "education" %}selected{% endif %}>Education Level</option>
+                    <!-- <option value="education" {% if filters.search_field == "education" %}selected{% endif %}>Education Level</option>
                     <option value="status" {% if filters.search_field == "status" %}selected{% endif %}>Status</option>
-                    <option value="skills" {% if filters.search_field == "skills" %}selected{% endif %}>Skills</option>
+                    <option value="skills" {% if filters.search_field == "skills" %}selected{% endif %}>Skills</option> -->
                   </select>
               </div>
                 <div class="col-12 col-sm-6 col-md-6 col-lg-2 mb-4 mb-lg-0">
@@ -147,9 +147,11 @@
                   <h3>Filters Applied:</h3>
                   <ul class="keywords list-unstyled m-0 p-0" id="filters-applied">
                     <!-- Filtered keywords will be added here -->
-                     {% for filter, value in filters.items() %}
-                      <li><a href="#" class="">{{ value }}</a></li>
-                     {% endfor %}
+                    {% for filter, value in filters.items() %}
+                      {% if value %}
+                        <li><a href="#" class="">{{ value }}</a></li>
+                      {% endif %}
+                    {% endfor %}
                   </ul>
                 </div>
               </div>
@@ -250,7 +252,7 @@
         <div class="row align-items-center">
           <div class="col-md-8">
             <h2 class="text-white">Looking For A Job?</h2>
-            <p class="mb-0 text-white lead">Lorem ipsum dolor sit amet consectetur adipisicing elit tempora adipisci impedit.</p>
+            <p class="mb-0 text-white lead">Sign up with Between Jobs and find your match.</p>
           </div>
           <div class="col-md-3 ml-auto">
             <a href="#" class="btn btn-warning btn-block btn-lg">Sign Up</a>
