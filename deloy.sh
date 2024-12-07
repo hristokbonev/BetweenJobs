@@ -1,14 +1,14 @@
 # Check if virtual environment exists
-if [ ! -d "venv" ]; then
+if [ ! -d "antenv" ]; then
     echo "Creating virtual environment..."
-    python3 -m venv venv
+    python3 -m venv antenv
 else
     echo "Virtual environment already exists."
 fi
 
 # Activate the virtual environment
 echo "Activating virtual environment..."
-source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+source antenv/bin/activate
 
 # Install dependencies from requirements.txt
 echo "Installing dependencies..."
