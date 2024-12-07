@@ -1,3 +1,11 @@
+if [ -f "/home/site/wwwroot/output.tar.gz" ]; then
+    echo "Extracting output.tar.gz..."
+    tar -xzvf /home/site/wwwroot/output.tar.gz -C /home/site/wwwroot/
+else
+    echo "No output.tar.gz found."
+    exit 1
+fi
+
 # Check if virtual environment exists
 if [ ! -d "antenv" ]; then
     echo "Creating virtual environment..."
