@@ -47,10 +47,22 @@ def employment_type_exists(employment_type, session: Session):
     return bool(employment_type_name)
 
 
+def get_employment_type_by_id(employment_id: int, session: Session):
+    statement = select(EmploymentType.name).where(EmploymentType.id == employment_id)
+    employment = session.exec(statement).first()
+    return employment if employment else None
+
+
 def get_all_locations(session: Session):
     statement = select(Location.name)
     locations = session.exec(statement).all()
     return locations if locations else None
+
+
+def get_location_by_id(location_id: int, session: Session):
+    statement = select(Location.name).where(Location.id == location_id)
+    location = session.exec(statement).first()
+    return location if location else None
 
 
 def get_all_employments(session: Session):

@@ -1,15 +1,15 @@
 from typing import Optional
 from fastapi import APIRouter, Request, Depends, Query, Form
-from starlette.templating import Jinja2Templates
 from data.database import get_session
 from sqlmodel import Session
 from utils import auth as au
 from jobposts import jobpost_service as js
 from utils import attribute_service as ats
+from common.template_config import CustomJinja2Templates
 
 
 jobs_router = APIRouter(prefix='/jobposts')
-templates = Jinja2Templates(directory='templates')
+templates = CustomJinja2Templates(directory='templates')
 
 
 @jobs_router.get('/')
@@ -39,7 +39,7 @@ def default_view(
         'alladds': all_jobs,
         'current_page': page,
         'total_pages': total_pages,
-        'min': min,
+        'min': min, 
         'filters': {
             'search_field': None,
             'keyword': None
@@ -122,7 +122,6 @@ def search(
         'filters': filter_args
     }
 
-    print(filter_args)
     if token:
         user = au.get_current_user(token)
         context['user'] = user
@@ -141,11 +140,16 @@ def show_jobpost(
 ):
     target_job = js.view_job_post_by_id(id, session)
 
+    location = ats.get_location_by_id(target_job.location_id, session)
+    employment = ats.get_employment_type_by_id(target_job.employment_type_id, session)
+
     token = request.cookies.get('token')
     context={
         'request': request, 
         'jobad': target_job,
-        'min': min
+        'min': min,
+        'location': location,
+        'employment': employment
     }
 
     if token:
