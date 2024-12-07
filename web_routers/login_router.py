@@ -191,7 +191,7 @@ def reset_password(request: Request):
 
 
 @login_router.post('/reset_password')
-def mail(request: Request, email: str, session: Session = Depends(get_session)):
+async def mail(request: Request, email: str = Form(...), session: Session = Depends(get_session)):
     stm = select(User).where(User.email == email)
     user = session.exec(stm).first()
 
@@ -204,14 +204,25 @@ def mail(request: Request, email: str, session: Session = Depends(get_session)):
     serializer = URLSafeTimedSerializer(key)
     token = serializer.dumps({'user_id': user.id}, salt='reset-password')
 
-    send_email(email=user.email, name=(user.first_name or '') + ' ' + (user.last_name or ''), text="Click the link below to reset your password", subject="Reset your password", html=f"<h1>Reset your password</h1><p>Click the link below to reset your password</p><a href='http://localhost:8000/reset_password_form'>Reset password</a>")
+    reset_link = f"http://localhost:8000/reset_password_form"
+    send_email(
+        email=user.email,
+        name=(user.first_name or '') + ' ' + (user.last_name or ''),
+        text=f"Click the link below to reset your password: {reset_link}",
+        subject="Reset your password",
+        html=f"""
+            <h1>Reset your password</h1>
+            <p>Click the link below to reset your password:</p>
+            <a href='{reset_link}'>Reset password</a>
+        """
+    )
     return templates.TemplateResponse(
         "reset_password.html",
         {"request": request, "success": "Password reset email sent. Check your inbox."}
     )
 
 
-
+    # form = await request.form()
     # email = request.form['email']
     # mailjet = Client(auth=(key_API, key_Secret), version='v3.1')
     # data = {
@@ -227,11 +238,11 @@ def mail(request: Request, email: str, session: Session = Depends(get_session)):
     #                     "Name": "",
     #                 }
     #             ],
-    #             "TemplateID": 6541657,
+    #             "TemplateID":  6541634,
     #             "TemplateLanguage": True,
     #             "Subject": "check",
     #             "Variables": {
-    #                 "firstname": ""
+    #                 "lastname": ""
     #             }
     #         }
     #     ]
