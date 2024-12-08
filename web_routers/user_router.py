@@ -1,5 +1,4 @@
 from mailjet_rest import Client
-from django.http import HttpResponseRedirect
 from fastapi import APIRouter, HTTPException, Request, Form, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session, select

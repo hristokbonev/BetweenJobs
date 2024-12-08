@@ -7,11 +7,6 @@ from common.template_config import CustomJinja2Templates
 
 router = APIRouter(prefix='')
 templates = CustomJinja2Templates(directory='templates')
-    
-
-@index_router.get('/')
-def index(request: Request):
-    return templates.TemplateResponse(request=request, name='index.html')
 
 
 @router.get('/')
