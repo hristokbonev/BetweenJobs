@@ -15,6 +15,8 @@ from matches.match_router import match_router
 from web_routers.home_router import index_router
 from web_routers.jobposts_router import jobs_router
 from web_routers.user_router import login_router
+from web_routers.match_router import match_router
+
 
 load_dotenv()
 
@@ -41,10 +43,11 @@ app.include_router(match_router)
 app.include_router(index_router)
 app.include_router(jobs_router)
 app.include_router(login_router)
+app.include_router(match_router)
 
 
-# if __name__ == "__main__":
-#     import uvicorn
-#     uvicorn.run("main:app", host="127.0.0.1", port=8000)
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="127.0.0.1", port=8000)
 
 
