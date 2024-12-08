@@ -5,12 +5,17 @@ from utils import attribute_service as ats
 from utils import auth as au
 from common.template_config import CustomJinja2Templates
 
-index_router = APIRouter(prefix='')
+router = APIRouter(prefix='')
 templates = CustomJinja2Templates(directory='templates')
+
+
+@router.get('/')
+def index(request: Request):
+    return templates.TemplateResponse(request=request, name='index.html')
     
 
-@index_router.get('/home')
-def index(request: Request, session: Session = Depends(get_session)):
+@router.get('/home')
+def serve_home(request: Request, session: Session = Depends(get_session)):
     locations = list(ats.get_all_locations(session))
     token = request.cookies.get('token')
     if token:
