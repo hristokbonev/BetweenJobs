@@ -1,7 +1,7 @@
 from typing import Optional
 
 from sqlmodel import Session, select
-from data.db_models import Education, EmploymentType, Location, Skill, Status, JobAdSkill, SkillLevel, ResumeSkill
+from data.db_models import CompanyLogo, Education, EmploymentType, Location, Skill, Status, JobAdSkill, SkillLevel, ResumeSkill
 
 
 def view_education_by_id(education_id: int, session: Session):
@@ -141,3 +141,14 @@ def assign_skills(company_id: int,
 
                 skill = SkillLevel(skill_id=skill_id, level_id=level_id)
                 session.add(skill)
+
+# Used to obtain company logo by company ID
+def get_company_logo(company_id: int, session: Session):
+    statement = select(CompanyLogo.logo_url).where(CompanyLogo.company_id == company_id)
+    logo_url = session.exec(statement).first()
+    return logo_url
+
+def get_all_logos(session: Session):
+    statement = select(CompanyLogo)
+    logos = session.exec(statement).all()
+    return logos if logos else None

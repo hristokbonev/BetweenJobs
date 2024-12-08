@@ -4,7 +4,7 @@
 
 {% block content %}
     <!-- HOME -->
-    <section class="section-hero overlay inner-page bg-image" style="background-image: url('images/hero_1.jpg');" id="home-section">
+    <section class="section-hero overlay inner-page bg-image" style="background-image: url('../static/images/hero_1.jpg');" id="home-section">
       <div class="container">
         <div class="row">
           <div class="col-md-7">
@@ -26,7 +26,7 @@
           <div class="col-lg-8 mb-4 mb-lg-0">
             <div class="d-flex align-items-center">
               <div class="border p-2 d-inline-block mr-3 rounded">
-                <img src="../static/images/job_logo_5.jpg" alt="Image">
+                <img src="{{ logo }}" alt="Image" width="150" height="150">
               </div>
               <div>
                 <h2>{{ jobad.title }}</h2>
@@ -101,13 +101,18 @@
               <h3 class="text-primary  mt-3 h5 pl-3 mb-3 ">Job Summary</h3>
               <ul class="list-unstyled pl-3 mb-0">
                 <li class="mb-2"><strong class="text-black">Published on:</strong> {{ jobad.created_at.strftime('%Y-%m-%d') }}</li>
-                <li class="mb-2"><strong class="text-black">Vacancy:</strong> 20</li>
                 <li class="mb-2"><strong class="text-black">Employment Status:</strong> {{ jobad.education.degree_level }}</li>
-                <li class="mb-2"><strong class="text-black">Experience:</strong> 2 to 3 year(s)</li>
+                {% if "Junior" in jobad.title %}
+                  <li class="mb-2"><strong class="text-black">Experience:</strong> 1 to 2 year(s)</li>
+                {% elif "Senior" in jobad.title %}
+                  <li class="mb-2"><strong class="text-black">Experience:</strong> 6+ year(s)</li>
+                {% else %}
+                  <li class="mb-2"><strong class="text-black">Experience:</strong> 3 to 5 year(s)</li>
+                {% endif %}
                 <li class="mb-2"><strong class="text-black">Job Location:</strong> {{ location }}</li>
-                <li class="mb-2"><strong class="text-black">Salary:</strong> {{ jobad.salary }} BGN</li>
+                <li class="mb-2"><strong class="text-black">Salary:</strong> {{ jobad.salary | int(0) }} BGN</li>
                 
-                <li class="mb-2"><strong class="text-black">Application Deadline:</strong> April 28, 2019</li>
+                <li class="mb-2"><strong class="text-black">Application Deadline:</strong> {{ deadline.strftime('%Y-%m-%d') }}</li>
               </ul>
             </div>
 
