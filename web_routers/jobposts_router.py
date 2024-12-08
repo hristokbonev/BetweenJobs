@@ -5,10 +5,11 @@ from sqlmodel import Session
 from utils import auth as au
 from jobposts import jobpost_service as js
 from utils import attribute_service as ats
+from common.template_config import CustomJinja2Templates
 
 
 jobs_router = APIRouter(prefix='/jobposts')
-templates = Jinja2Templates(directory='templates')
+templates = CustomJinja2Templates(directory='templates')
 
 
 @jobs_router.get('/')

@@ -1,18 +1,12 @@
 from fastapi import APIRouter, Request, Depends
-from starlette.templating import Jinja2Templates
 from data.database import get_session
 from sqlmodel import Session
 from utils import attribute_service as ats
 from utils import auth as au
-
+from common.template_config import CustomJinja2Templates
 
 index_router = APIRouter(prefix='')
-templates = Jinja2Templates(directory='templates')
-
-
-@index_router.get('/')
-def index(request: Request):
-    return templates.TemplateResponse(request=request, name='index.html')
+templates = CustomJinja2Templates(directory='templates')
     
 
 @index_router.get('/home')
@@ -25,8 +19,7 @@ def index(request: Request, session: Session = Depends(get_session)):
         return templates.TemplateResponse(
             request=request, 
             name='home.html',                        
-            context={
-                'request': request, 
+            context={ 
                 'user': user,
                 'locations': locations
             })
