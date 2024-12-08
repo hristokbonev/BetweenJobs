@@ -25,6 +25,24 @@ def get_location_by_id(location_id: int, session: Session):
 def get_status_by_id(status_id: int, session: Session):
     statement = select(Status.name).where(Status.id == status_id)
     status = session.exec(statement).first()
+    return status
+
+# retrieves skill object by skill_id
+def get_skill_by_id(skil_id: int, session: Session):
+    statement = select(Skill).where(Skill.id == skil_id)
+    skill = session.exec(statement).first()
+    return skill
+
+# Gets all skills for jobad by job id
+def get_skills_for_job(job_id: int, session: Session):
+    statement = select(JobAdSkill.skill_id).where(JobAdSkill.jobad_id == job_id)
+    skill_ids = session.exec(statement).all()
+    skills = []
+    for skill_id in skill_ids:
+        skill = get_skill_by_id(skill_id, session)
+        skills.append(skill)
+    
+    return skills
 
 # Used to dynamically call column values for dynamic reference
 # Used for Education, EmploymentType, Skills, Location
