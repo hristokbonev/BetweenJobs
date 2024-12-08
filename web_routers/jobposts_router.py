@@ -87,7 +87,6 @@ def search(
         filter_args["location.name"] = region
     if jobtype:
         filter_args['employment.name'] = jobtype
-    print(filter_args.items())
     # Get job posts and sum of jobposts
     job_adds = js.show_all_posts(
         session=session,
