@@ -1,6 +1,6 @@
 from datetime import timedelta
 import os
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, Form, HTTPException, status
 from itsdangerous import URLSafeTimedSerializer
 from data.db_models import User
 from users.user_service import update_user
@@ -83,7 +83,7 @@ def logout(token: str = Depends(oauth2_scheme)):
 
 
 @router.post('/reset_password_request')
-def reset_password_request(email: str, session: Session = Depends(get_session)):
+def reset_password_request(email: str = Form(...), session: Session = Depends(get_session)):
     stm = select(User).where(User.email == email)
     user = session.exec(stm).first()
     

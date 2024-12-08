@@ -78,7 +78,7 @@
 
 
 
-
+    # form = await request.form()
     # email = request.form['email']
     # mailjet = Client(auth=(key_API, key_Secret), version='v3.1')
     # data = {
@@ -94,11 +94,11 @@
     #                     "Name": "",
     #                 }
     #             ],
-    #             "TemplateID": 6541657,
+    #             "TemplateID":  6541634,
     #             "TemplateLanguage": True,
     #             "Subject": "check",
     #             "Variables": {
-    #                 "firstname": ""
+    #                 "lastname": ""
     #             }
     #         }
     #     ]

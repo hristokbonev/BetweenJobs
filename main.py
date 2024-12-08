@@ -14,6 +14,7 @@ from matches.match_router import match_router
 # Add WEB Routers
 from web_routers.home_router import router as index_router
 from web_routers.jobposts_router import jobs_router
+from web_routers.match_router import match_router
 from web_routers.user_router import router as user_web_router
 
 load_dotenv()
@@ -41,6 +42,7 @@ app.include_router(match_router)
 app.include_router(index_router)
 app.include_router(jobs_router)
 app.include_router(user_web_router)
+app.include_router(match_router)
 
 
 if __name__ == "__main__":
