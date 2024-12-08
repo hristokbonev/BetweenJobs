@@ -113,6 +113,6 @@ def get_user(username: str, user_id: str, session: Session) -> UserCreate:
         last_name=user.last_name,
         email=user.email,
         is_admin=user.is_admin,
-        date_of_birth=user.date_of_birth
+        date_of_birth=user.date_of_birth,
     )
 

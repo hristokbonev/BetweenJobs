@@ -1,5 +1,4 @@
 from mailjet_rest import Client
-from django.http import HttpResponseRedirect
 from fastapi import APIRouter, HTTPException, Request, Form, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session, select
@@ -23,11 +22,14 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 key = os.getenv("SECRET_KEY")
 access_token_expire_minutes = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
 
-login_router = APIRouter(prefix='', tags=['Users'])
-templates = CustomJinja2Templates(directory='templates')
 
 router = APIRouter(prefix='', tags=['Users'])
 templates = CustomJinja2Templates(directory='templates')
+
+
+@router.get('/profile', response_model=None)
+def serve_profile(request: Request):
+    return templates.TemplateResponse(name="profile.html", request=request)
 
 
 @router.get('/register', response_model=None)
@@ -114,7 +116,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), request: Request = N
         {"request": request, "error": "Invalid username or password"}
     )
     
-    access_token = auth.create_access_token(data={'sub': user.username, "id": int(user.id)})
+    access_token = auth.create_access_token(data={'sub': user.username, "user_id": int(user.id)})
     response = RedirectResponse(url="/home", status_code=302)
     response.set_cookie(key="token", value=access_token, httponly=True, secure=True, samesite="Strict")  
     return response
