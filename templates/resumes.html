@@ -3,46 +3,58 @@
 {% block title %}Resumes{% endblock %}
 
 {% block content %}
-<section class="section-hero overlay bg-image" style="background-image: url('../static/images/hero_1.jpg');" id="resumes-section">
+<section class="section-hero overlay bg-image" style="background-image: url('../static/images/hero_1.jpg'); position: relative;" id="resumes-section">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-8 text-center">
-                <h1 class="text-white font-weight-bold">Browse Resumes</h1>
-                <p class="lead text-white">Find the best candidates for your job openings</p>
-            </div>
+           
         </div>
-    </div>
-</section>
-
-<section class="site-section bg-light">
-    <div class="container">
-        <div class="row mb-5 justify-content-center">
-            <div class="col-md-7 text-center">
-                <h2 class="section-title mb-2">Your Resumes</h2>
-            </div>
-        </div>
-        {% if resumes %}
-        <ul class="resume-listings mb-5">
-            {% for resume in resumes %}
-            <li class="resume-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center">
-                <a href="/resumes/{{ resume.id }}"></a>
-                <div class="resume-listing-about d-sm-flex custom-width w-100 justify-content-between mx-4">
-                    <div class="resume-listing-position custom-width w-50 mb-3 mb-sm-0">
-                        <h2>{{ resume.title }}</h2>
-                        <strong>{{ resume.job_title }}</strong>
+        <div class="row justify-content-center" style="position: absolute; top: 70%; left: 50%; transform: translate(-50%, -50%); width: 100%;">
+            <div class="col-md-12">
+                <div class="bg-light p-4 rounded">
+                    <div class="row mb-5 justify-content-center">
+                        <div class="col-md-7 text-center">
+                            <h2 class="section-title mb-2">Your Resumes</h2>
+                        </div>
                     </div>
-                    <div class="resume-listing-location mb-3 mb-sm-0 custom-width w-25">
-                        <span class="icon-room"></span> {{ resume.location }}
-                    </div>
-                    <div class="resume-listing-meta">
-                        <span class="badge badge-success p-2">{{ resume.status }}</span>
+                    {% if resumes %}
+                    <ul class="resume-listings mb-5">
+                        {% for resume in resumes %}
+                        <li class="resume-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center">
+                            <a href="/resumes/{{ resume.id }}" class="w-100 d-flex align-items-center">
+                                <div class="resume-listing-about d-sm-flex custom-width w-100 justify-content-between mx-4">
+                                    <div class="resume-listing-position custom-width w-50 mb-3 mb-sm-0">
+                                        <h2>{{ resume.title }}</h2>
+                                        <strong>{{ resume.job_title }}</strong>
+                                    </div>
+                                    <div class="resume-listing-location mb-3 mb-sm-0 custom-width w-25">
+                                        <span class="icon-room"></span> {{ resume.location }}
+                                    </div>
+                                    <div class="resume-listing-meta">
+                                        {% if resume.status == 'Active' %}
+                                        <span class="badge badge-success p-2">{{ resume.status }}</span>
+                                        {% elif resume.status == 'Hidden' %}
+                                        <span class="badge badge-warning p-2">{{ resume.status }}</span>
+                                        {% elif resume.status == 'Private' %}
+                                        <span class="badge badge-danger p-2">{{ resume.status }}</span>
+                                        {% elif resume.status == 'Matched' %}
+                                        <span class="badge badge-info p-2">{{ resume.status }}</span>
+                                        {% elif resume.status == 'Archived' %}
+                                        <span class="badge badge-secondary p-2">{{ resume.status }}</span>
+                                        {% elif resume.status == 'Busy' %}
+                                        <span class="badge badge-dark p-2">{{ resume.status }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p>No resumes found.</p>
+                    {% endif %}
                 </div>
-            </li>
-            {% endfor %}
-        </ul>
-        {% else %}
-        <p>No resumes found.</p>
-        {% endif %}
+            </div>
+        </div>
     </div>
 </section>
 
