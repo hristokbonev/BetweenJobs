@@ -11,7 +11,7 @@ $(document).ready(function () {
   });
 });
 
-// Listener function to update selected category in Home page and pass it as form action
+// >>> Listener function to update selected category in Home page and pass it as form action <<<
 function updateSearchFormAction() {
   // Get the selected radio button
   const selectedRadio = document.querySelector('form[name="toggleCategory"] input[name="nav"]:checked');
@@ -29,3 +29,28 @@ function updateSearchFormAction() {
 document.querySelectorAll('form[name="toggleCategory"] input[name="nav"]').forEach((radio) => {
   radio.addEventListener('change', updateSearchFormAction);
 });
+
+
+// >>> Resume selector function to hilight resume and store id <<<
+let selectedResumeId = null;
+
+/**
+ * Handles resume selection.
+ * @param {string} resumeId - The ID of the selected resume.
+ * @param {HTMLElement} element - The clicked list item element.
+ */
+function selectResume(resumeId, element) {
+  selectedResumeId = resumeId;
+
+  // Update the "Send Match" button link
+  const sendMatchButton = document.getElementById('sendMatchButton');
+  sendMatchButton.href = `{{ jobad.id }}/match/${selectedResumeId}`;
+
+  // Remove highlighting from previously selected resume
+  document.querySelectorAll('.job-listing').forEach(item => {
+    item.classList.remove('selected-resume');
+  });
+
+  // Add highlighting to the currently selected resume
+  element.classList.add('selected-resume');
+};

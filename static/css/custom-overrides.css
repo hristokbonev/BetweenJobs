@@ -58,3 +58,9 @@ div.spacing {
 .greeting-container .btn {
   margin: 0;
 }
+
+/* Custom styling for hilighting resumes listing in match-single.html */
+.selected-resume {
+  background-color: #f0f8ff; /* Light blue */
+  border-left: 5px solid #007bff; /* Blue highlight */
+}
