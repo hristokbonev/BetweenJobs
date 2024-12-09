@@ -212,3 +212,9 @@ class Variables(SQLModel, table=True):
     __tablename__ = "Variables"
     var_id: int= Field(primary_key=True, index=True)
     email_test_mode: bool
+
+
+class CompanyLogo(SQLModel, table=True):
+    __tablename__ = "CompanyLogos"
+    company_id: int= Field(primary_key=True, index=True)
+    logo_url: str

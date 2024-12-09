@@ -95,7 +95,9 @@
           <li class="job-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center">
             <a href="/jobposts/{{ job.id }}"></a>
             <div class="job-listing-logo">
-              <img src="../static/images/job_logo_1.jpg" alt="Image" class="img-fluid">
+          
+              <img src="{{ logo_dict[job.company_id] }}" alt="Logo for {{ job.company_name }}" class="img-fluid">
+              
             </div>
 
             <div class="job-listing-about d-sm-flex custom-width w-100 justify-content-between mx-4">

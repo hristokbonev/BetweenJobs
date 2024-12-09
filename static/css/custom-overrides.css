@@ -32,3 +32,29 @@ div.spacing {
   display: block !important;
 }
 
+/* Custom alignment of user greeting message and Login buttons */
+.greeting-container {
+  display: flex; 
+  align-items: center; 
+  gap: 15px; 
+}
+
+.greeting-text {
+  margin: 0; 
+  color: #ffffff; 
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.greeting-text a {
+  color: #0056b3;
+  text-decoration: none;
+}
+
+.greeting-text a:hover {
+  text-decoration: underline;
+}
+
+.greeting-container .btn {
+  margin: 0;
+}

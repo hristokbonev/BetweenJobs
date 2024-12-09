@@ -11,8 +11,9 @@
     <header class="site-navbar mt-3">
         <div class="container-fluid">
           <div class="row align-items-center">
-            <div class="site-logo col-6"><a href="/home">BetweenJobs</a></div>
-  
+            <!-- Site Logo -->
+            <div class="site-logo col-4"><a href="/home">BetweenJobs</a></div>
+            <!-- Navigation -->
             <nav class="mx-auto site-navigation">
               <ul class="site-menu js-clone-nav d-none d-xl-block ml-0 pl-0">
                 <li><a href="/home" class="nav-link active">Home</a></li>
@@ -25,25 +26,28 @@
                     <li><a href="/resumes">Browse Resumes</a></li>
                   </ul>
                 </li>
-
+              </ul>
             </nav>
-            
-            <div class="right-cta-menu text-right d-flex aligin-items-center col-6">
-              <div class="ml-auto">
+            <!-- Right Menu -->
+            <div class="right-cta-menu text-right d-flex align-items-center col-4">
+              <div class="ml-auto greeting-container">
                 {% if user %}
-
-                <p class="mb-0" style="color: #ffffff; font-size: 1.2rem; font-weight: bold;">Welcome, <a href="/profile">{{ user.first_name }}!</a></p>
-                <a href="post-job.html" class="btn btn-outline-white border-width-2 d-none d-lg-inline-block"><span class="mr-2 icon-add"></span>Post a Job</a>
-                <a href="/logout" class="btn btn-outline-white border-width-2 d-none d-lg-inline-block">Log out</a>
-
+                  <p class="greeting-text mb-0">
+                    Welcome, <a href="/profile">{{ user.first_name }}!</a>
+                  </p>
+                  <a href="post-job.html" class="btn btn-outline-white border-width-2 d-none d-lg-inline-block">
+                    <span class="mr-2 icon-add"></span>Post a Job
+                  </a>
+                  <a href="/logout" class="btn btn-outline-white border-width-2 d-none d-lg-inline-block">Log out</a>
                 {% else %}
-                    <a href="/login" class="btn btn-primary border-width-2 d-none d-lg-inline-block">Log in</a>
-                    <a href="/register" class="btn btn-outline-white border-width-2 d-none d-lg-inline-block">Sign up</a>
+                  <a href="/login" class="btn btn-primary border-width-2 d-none d-lg-inline-block">Log in</a>
+                  <a href="/register" class="btn btn-outline-white border-width-2 d-none d-lg-inline-block">Sign up</a>
                 {% endif %}
-                
               </div>
-              <a href="#" class="site-menu-toggle js-menu-toggle d-inline-block d-xl-none mt-lg-2 ml-3"><span class="icon-menu h3 m-0 p-0 mt-2"></span></a>
-            </div>
+              <a href="#" class="site-menu-toggle js-menu-toggle d-inline-block d-xl-none mt-lg-2 ml-3">
+                <span class="icon-menu h3 m-0 p-0 mt-2"></span>
+              </a>
+            </div>            
   
           </div>
         </div>
