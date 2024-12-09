@@ -1,5 +1,5 @@
 from sqlmodel import Session, select
-from data.db_models import User, Variables
+from data.db_models import Company, User, Variables
 from users.user_models import UserSearch, UserUpdate, UserModel, TestModeResponse, UserCreate
 from data.db_models import Skill
 from users.user_models import CreateSkillRequest
@@ -116,3 +116,7 @@ def get_user(username: str, user_id: str, session: Session) -> UserCreate:
         date_of_birth=user.date_of_birth,
     )
 
+def user_has_companies(user_id: int, session: Session) -> bool:
+    statement = select(User).where(User.id == user_id).join(Company, Company.author_id == User.id).limit(1)
+    user = session.exec(statement).first()
+    return bool(user)
