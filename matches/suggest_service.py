@@ -95,8 +95,7 @@ def suggest_job_ads(resume_id, session: Session) -> list:
         
 
     if matching_ads:
-        resume = get_resume_by_id(resume.id, session)
-        return matching_ads, resume
+        return matching_ads
     
     return None
 
@@ -157,7 +156,7 @@ def suggest_resumes(ad_id: int, session: Session) -> list:
         matching_resumes.append(resume)
 
     if matching_resumes:
-        return matching_resumes, ad
+        return matching_resumes
 
     
     return None

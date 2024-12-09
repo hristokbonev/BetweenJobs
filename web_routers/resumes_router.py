@@ -26,3 +26,20 @@ def my_resumes(request: Request, session: Session = Depends(get_session)):
         name='resumes.html',
         context=context
     )
+
+@router.get('/{id}')
+def view_resume(request: Request, id: int, session: Session = Depends(get_session)):
+    token = request.cookies.get('token')
+    user = au.get_current_user(token)
+    resume = rs.get_resume_by_id(id=id, session=session)
+    if resume.user_id != user.id:
+        return Response(status_code=403)
+    context = {
+        'request': request,
+        'resume': resume
+    }
+    return templates.TemplateResponse(
+        request=request,
+        name='portfolio-single.html',
+        context=context
+    )
