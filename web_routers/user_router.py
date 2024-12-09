@@ -2,6 +2,7 @@ from mailjet_rest import Client
 from django.http import HttpResponseRedirect
 from fastapi import APIRouter, HTTPException, Request, Form, Depends
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy import false
 from sqlmodel import Session, select
 from common.template_config import CustomJinja2Templates
 from fastapi.responses import RedirectResponse
@@ -136,55 +137,18 @@ def serve_reset_password(request: Request):
 
 @router.post('/reset_password')
 def mail(email: str = Form(...)):
+  
+    serializer = URLSafeTimedSerializer(key)
+    token = serializer.dumps({'email': email}, salt='reset-password')
+    send_email(email=email, name='', text="Click the link below to reset your password", 
+               subject="Reset your password", 
+               html=f"<h1>Reset your password</h1><p>Click the link below to reset your password</p><a href='http://localhost:8000/reset_password_form?token={token}'>Reset password</a>")
     
-    mailjet = Client(auth=(key_API, key_Secret))
-    
-    # Prepare email data for sending
-    data = {
-        'Messages': [
-            {
-                "From": {
-                    "Name": "BetweenJobs",
-                    "Email": "betweenjobsplatform@gmail.com",
-                },
-                "To": [
-                    {
-                        "Email": email
-                    }
-                ],
-                "TemplateID": 6541657,  # Use your specific template ID
-                "TemplateLanguage": True,
-                "Subject": "check",
-            }
-        ]
-    }
+    return RedirectResponse(url='/reset_password', status_code=303)
 
-    # Send the email using the Mailjet API
-    mailjet.send.create(data=data)
-
-    return RedirectResponse(url='/reset_password_form', status_code=303)
 
 
    
-# def reset_password(request: Request, email: str = Form(...), session: Session = Depends(get_session)):
-#     stm = select(User).where(User.email == email)
-#     user = session.exec(stm).first()
-
-#     if not user:
-#         return templates.TemplateResponse(
-#             "reset_password.html",
-#             {"request": request, "error": "User with this email does not exist."}
-#         )
-    
-#     serializer = URLSafeTimedSerializer(key)
-#     token = serializer.dumps({'user_id': user.id}, salt='reset-password')
-
-#     send_email(email=user.email, name=(user.first_name or '') + ' ' + (user.last_name or ''), text="Click the link below to reset your password", subject="Reset your password", html=f"<h1>Reset your password</h1><p>Click the link below to reset your password</p><a href='http://localhost:8000/reset_password_form'>Reset password</a>")
-#     return templates.TemplateResponse(
-#         "reset_password.html",
-#         {"request": request, "success": "Password reset email sent. Check your inbox."}
-#     )
-
 @router.get('/reset_password_form', response_model=None)
 def reset_password_form(request: Request):
     return templates.TemplateResponse(name="reset_password_form.html", context={"request": request})
@@ -232,3 +196,4 @@ def changed_password(request: Request, email: str = Form(...), new_password: str
             "reset_password_form.html",
             {"request": request, "error": "An error occurred while updating your password. Please try again."}
         )
+
