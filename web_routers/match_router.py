@@ -37,6 +37,7 @@ def match_preview(
 
     if token:
         user = au.get_current_user(token)
+        print(user)
         context['user'] = user
     else:
         return templates.TemplateResponse(

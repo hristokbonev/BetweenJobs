@@ -299,3 +299,9 @@ def get_resumes_by_user_id(user_id, session: Session):
         resumes_list.append(resume)
 
     return resumes_list if resumes_list else None
+
+
+def show_all_resumes(session: Session):
+    statement = select(Resume)
+    resumes = session.exec(statement).all()
+    return resumes
