@@ -108,6 +108,9 @@ def search(
     # Get locations and employment tyepes for dropdown list
     locations = list(ats.get_all_locations(session))
     employments = list(ats.get_all_employments(session))
+    # Map company logo by company ID
+    logos = ats.get_all_logos(session)
+    logo_dict = {company.company_id: company.logo_url for company in logos if company.logo_url}
 
     token = request.cookies.get('token')
     context={
@@ -123,7 +126,8 @@ def search(
         },
         'locations': locations,
         'employments': employments,
-        'filters': filter_args
+        'filters': filter_args,
+        'logo_dict': logo_dict
     }
 
     if token:
