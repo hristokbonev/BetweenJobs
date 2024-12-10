@@ -259,3 +259,49 @@ def get_all_resumes_with_skills_ids(session: Session):
     ) for resume in resumes]
 
     return resumes if resumes else None
+
+def get_resumes_by_user_id(user_id, session: Session):
+
+    statement = (
+        select(
+            Resume.id, Resume.user_id, Resume.full_name, Resume.title, Resume.summary,
+            User.username, EmploymentType.name, Education.degree_level, Location.name, Status.name
+            )
+        .join(User, User.id == Resume.user_id)
+        .join(EmploymentType, EmploymentType.id == Resume.employment_type_id)
+        .join(Education, Education.id == Resume.education_id, isouter=True)
+        .join(Status, Status.id == Resume.status_id)
+        .join(Location, Location.id == Resume.location_id, isouter=True)
+        ).where(Resume.user_id == user_id)
+    
+    resumes = session.exec(statement).all()
+
+    if not resumes:
+        return None
+
+    resumes_list = []
+
+    for resume in resumes:
+        resume = ResumeResponse(
+            id=resume[0],
+            user_id=resume[1],
+            full_name=resume[2],
+            title=resume[3],
+            summary=resume[4],
+            username=resume[5],
+            employment_type=resume[6],
+            education=resume[7],
+            location=resume[8],
+            status=resume[9])
+        
+        resume.skills = session.exec(select(Skill.name).join(ResumeSkill, ResumeSkill.skill_id==Skill.id).join(Resume, Resume.id==ResumeSkill.resume_id).where(Resume.id == resume.id)).all()
+        
+        resumes_list.append(resume)
+
+    return resumes_list if resumes_list else None
+
+
+def show_all_resumes(session: Session):
+    statement = select(Resume)
+    resumes = session.exec(statement).all()
+    return resumes

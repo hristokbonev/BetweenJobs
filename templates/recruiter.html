@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% block title %}Recruiter{% endblock %}
+
+{% block content %}
+<section class="section-hero overlay inner-page bg-image" style="background-image: url('images/hero_1.jpg');" id="home-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-7">
+        <h1 class="text-white font-weight-bold">Job Matches</h1>
+        <div class="custom-breadcrumbs">
+          <a href="/home">Home</a> <span class="mx-2 slash">/</span>
+          <span class="text-white"><strong>Job Matches</strong></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="site-section" id="matches-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div id="job-card" class="card">
+          <div class="card-body">
+            <h3 class="card-title" id="job-title">Job Title</h3>
+            <p class="card-text" id="job-description">Job Description</p>
+            <p class="card-text"><strong>Company:</strong> <span id="job-company">Company Name</span></p>
+            <p class="card-text"><strong>Location:</strong> <span id="job-location">Location</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Modal -->
+<div class="modal fade" id="jobModal" tabindex="-1" role="dialog" aria-labelledby="jobModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="jobModalLabel">Job Title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p id="modal-job-description">Job Description</p>
+        <p><strong>Company:</strong> <span id="modal-job-company">Company Name</span></p>
+        <p><strong>Location:</strong> <span id="modal-job-location">Location</span></p>
+        <!-- Add more job details here -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" id="modal-reject-btn">Reject</button>
+        <button type="button" class="btn btn-success" id="modal-accept-btn">Accept</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  #job-card {
+    position: relative;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+    border: 2px solid transparent; /* Default transparent border */
+  }
+
+  #job-card:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+  }
+
+  #job-card:hover.left {
+    transform: translateX(-40px);
+    border-color: red; /* Red border when hovering for rejection */
+  }
+
+  #job-card:hover.right {
+    transform: translateX(40px);
+    border-color: green; /* Green border when hovering for acceptance */
+  }
+
+
+</style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    let currentIndex = 0;
+    const jobMatches = [
+      { title: 'Software Engineer', description: 'Develop and maintain software applications.', company: 'Tech Corp', location: 'New York, NY' },
+      { title: 'Data Scientist', description: 'Analyze and interpret complex data.', company: 'Data Inc', location: 'San Francisco, CA' },
+      // Add more job matches here
+    ];
+
+    function loadJob(index) {
+      if (index < jobMatches.length) {
+        document.getElementById('job-title').innerText = jobMatches[index].title;
+        document.getElementById('job-description').innerText = jobMatches[index].description;
+        document.getElementById('job-company').innerText = jobMatches[index].company;
+        document.getElementById('job-location').innerText = jobMatches[index].location;
+
+        document.getElementById('jobModalLabel').innerText = jobMatches[index].title;
+        document.getElementById('modal-job-description').innerText = jobMatches[index].description;
+        document.getElementById('modal-job-company').innerText = jobMatches[index].company;
+        document.getElementById('modal-job-location').innerText = jobMatches[index].location;
+      } else {
+        document.getElementById('job-card').innerHTML = '<p>No more matches available.</p>';
+      }
+    }
+
+    function handleHover(event) {
+      const jobCard = document.getElementById('job-card');
+      const rect = jobCard.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+
+      if (x < rect.width / 3) {
+        jobCard.classList.add('left');
+        jobCard.classList.remove('right');
+      } else if (x > rect.width * 2 / 3) {
+        jobCard.classList.add('right');
+        jobCard.classList.remove('left');
+      } else {
+        jobCard.classList.remove('left');
+        jobCard.classList.remove('right');
+      }
+    }
+
+    function handleClick(event) {
+      const jobCard = document.getElementById('job-card');
+      const rect = jobCard.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+
+      if (x < rect.width / 3) {
+        currentIndex++;
+        loadJob(currentIndex);
+      } else if (x > rect.width * 2 / 3) {
+        currentIndex++;
+        loadJob(currentIndex);
+      } else {
+        $('#jobModal').modal('show');
+      }
+    }
+
+    const jobCard = document.getElementById('job-card');
+    jobCard.addEventListener('mousemove', handleHover);
+    jobCard.addEventListener('click', handleClick);
+
+    loadJob(currentIndex);
+  });
+</script>
+{% endblock %}

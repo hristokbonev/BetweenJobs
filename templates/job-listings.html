@@ -7,14 +7,13 @@
 {% endblock %}
 {% block content %}
     <!-- HOME -->
-  <section class="section-hero home-section overlay inner-page bg-image" style="background-image: url('images/hero_1.jpg');" id="home-section">
+  <section class="section-hero home-section overlay inner-page bg-image" style="background-image: url('../static/images/hero_1.jpg');" id="home-section">
 
       <div class="container">
         <div class="row align-items-center justify-content-center">
           <div class="col-md-12">
             <div class="mb-5 text-center">
               <h1 class="text-white font-weight-bold">The Easiest Way To Get Your Dream Job</h1>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cupiditate, quas fugit ex!</p>
             </div>
             <form method="post" class="search-jobs-form" action="/jobposts/">
               <div class="row mb-5">
@@ -96,7 +95,9 @@
           <li class="job-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center">
             <a href="/jobposts/{{ job.id }}"></a>
             <div class="job-listing-logo">
-              <img src="../static/images/job_logo_1.jpg" alt="Image" class="img-fluid">
+          
+              <img src="{{ logo_dict[job.company_id] }}" alt="Logo for {{ job.company_name }}" class="img-fluid">
+              
             </div>
 
             <div class="job-listing-about d-sm-flex custom-width w-100 justify-content-between mx-4">

@@ -32,3 +32,77 @@ div.spacing {
   display: block !important;
 }
 
+/* Custom alignment of user greeting message and Login buttons */
+.greeting-container {
+  display: flex; 
+  align-items: center; 
+  gap: 15px; 
+}
+
+.greeting-text {
+  margin: 0; 
+  color: #ffffff; 
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.greeting-text a {
+  color: #0056b3;
+  text-decoration: none;
+}
+
+.greeting-text a:hover {
+  text-decoration: underline;
+}
+
+.greeting-container .btn {
+  margin: 0;
+}
+
+/* Custom styling for hilighting resumes listing in match-single.html */
+.selected-resume {
+  background-color: #f0f8ff; 
+  border-left: 5px solid #007bff; 
+}
+
+/* Ensure equal spacing between sections in Home Navigation */
+.site-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.site-logo {
+  text-align: left;
+}
+
+.site-navigation {
+  text-align: center;
+}
+
+.right-cta-menu {
+  text-align: right;
+}
+
+.site-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 20px;
+}
+
+/* Adjust alignment for mobile views */
+@media (max-width: 991px) {
+  .site-logo,
+  .site-navigation,
+  .right-cta-menu {
+      text-align: center;
+      flex: 1 1 100%;
+  }
+
+  .right-cta-menu .btn {
+      display: block;
+      margin: 10px auto;
+  }
+}

@@ -9,60 +9,50 @@
 <body>
     {% macro load_header(user=None) %}
     <header class="site-navbar mt-3">
-        <div class="container-fluid">
-          <div class="row align-items-center">
-            <div class="site-logo col-6"><a href="/home">BetweenJobs</a></div>
-  
-            <nav class="mx-auto site-navigation">
-              <ul class="site-menu js-clone-nav d-none d-xl-block ml-0 pl-0">
-                <li><a href="/home" class="nav-link active">Home</a></li>
-                <li><a href="about.html">About</a></li>
-                <li class="has-children">
-                  <a href="jobposts">Job Listings</a>
-                  <ul class="dropdown">
-                    <li><a href="job-single.html">Job Single</a></li>
-                    <li><a href="post-job.html">Post a Job</a></li>
-                  </ul>
-                </li>
-                <li class="has-children">
-                  <a href="services.html">Pages</a>
-                  <ul class="dropdown">
-                    <li><a href="services.html">Services</a></li>
-                    <li><a href="service-single.html">Service Single</a></li>
-                    <li><a href="blog-single.html">Blog Single</a></li>
-                    <li><a href="portfolio.html">Portfolio</a></li>
-                    <li><a href="portfolio-single.html">Portfolio Single</a></li>
-                    <li><a href="testimonials.html">Testimonials</a></li>
-                    <li><a href="faq.html">Frequently Ask Questions</a></li>
-                    <li><a href="gallery.html">Gallery</a></li>
-                  </ul>
-                </li>
-                <li><a href="blog.html">Blog</a></li>
-                <li><a href="contact.html">Contact</a></li>
-
-              </ul>
-            </nav>
-            
-            <div class="right-cta-menu text-right d-flex aligin-items-center col-6">
-              <div class="ml-auto">
-                {% if user %}
-
-                <p class="mb-0" style="color: #ffffff; font-size: 1.2rem; font-weight: bold;">Welcome, {{ user.first_name }}!</p>
-                <a href="/logout" class="btn btn-outline-white border-width-2 d-none d-lg-inline-block">Log out</a>
-
-                {% else %}
-                    <a href="post-job.html" class="btn btn-outline-white border-width-2 d-none d-lg-inline-block"><span class="mr-2 icon-add"></span>Post a Job</a>
-                    <a href="/login" class="btn btn-primary border-width-2 d-none d-lg-inline-block">Log in</a>
-                    <a href="/register" class="btn btn-outline-white border-width-2 d-none d-lg-inline-block">Sign up</a>
-                {% endif %}
-                
+      <div class="container-fluid">
+          <div class="row align-items-center d-flex">
+              <!-- Site Logo -->
+              <div class="site-logo col-4 d-flex justify-content-start">
+                  <a href="/home">BetweenJobs</a>
               </div>
-              <a href="#" class="site-menu-toggle js-menu-toggle d-inline-block d-xl-none mt-lg-2 ml-3"><span class="icon-menu h3 m-0 p-0 mt-2"></span></a>
-            </div>
-  
+              <!-- Navigation -->
+              <nav class="col-4 site-navigation d-flex justify-content-center">
+                  <ul class="site-menu js-clone-nav d-none d-xl-flex ml-0 pl-0">
+                      <li><a href="/home" class="nav-link active">Home</a></li>
+                      <li><a href="/companies" class="nav-link">Companies</a></li>
+                      <li><a href="/jobposts" class="nav-link">Job Posts</a></li>
+                      <li class="has-children">
+                          <a href="#" class="nav-link">Resumes</a>
+                          <ul class="dropdown">
+                              <li><a href="/resumes/my_resumes">My Resumes</a></li>
+                              <li><a href="/resumes">Browse Resumes</a></li>
+                          </ul>
+                      </li>
+                  </ul>
+              </nav>
+              <!-- Right Menu -->
+              <div class="right-cta-menu col-4 d-flex justify-content-end align-items-center">
+                  <div class="greeting-container">
+                      {% if user %}
+                          <p class="greeting-text mb-0">
+                              Welcome, <a href="/profile">{{ user.first_name }}!</a>
+                          </p>
+                          <a href="post-job.html" class="btn btn-outline-white border-width-2 d-none d-lg-inline-block">
+                              <span class="mr-2 icon-add"></span>Post a Job
+                          </a>
+                          <a href="/logout" class="btn btn-outline-white border-width-2 d-none d-lg-inline-block">Log out</a>
+                      {% else %}
+                          <a href="/login" class="btn btn-primary border-width-2 d-none d-lg-inline-block">Log in</a>
+                          <a href="/register" class="btn btn-outline-white border-width-2 d-none d-lg-inline-block">Sign up</a>
+                      {% endif %}
+                  </div>
+                  <a href="#" class="site-menu-toggle js-menu-toggle d-inline-block d-xl-none mt-lg-2 ml-3">
+                      <span class="icon-menu h3 m-0 p-0 mt-2"></span>
+                  </a>
+              </div>
           </div>
-        </div>
-      </header>
+      </div>
+    </header>
     {% endmacro %}
 
     {% macro load_footer() %}
@@ -123,6 +113,57 @@
         </div>
       </div>
     </footer>
+    {% endmacro %}
+
+    {% macro load_search_controls(locations=None, employments=None, filters=None) %}
+    <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
+      <input 
+        type="text" 
+        name="keyword"
+        class="form-control form-control-lg" 
+        placeholder="Job title, Company..."
+        value="{{ keyword or '' }}">
+    </div>
+    <!-- Keyword selector Dropdown -->
+    <div class="col-12 col-sm-6 col-md-6 col-lg-2 mb-4 mb-lg-0">
+      <select name="search_field" class="form-control form-control-lg">
+        <option value="" {% if not filters.search_field %}selected{% endif %}>Select Search Field</option>
+        <option value="title" {% if filters.search_field == "title" %}selected{% endif %}>Job Title</option>
+        <option value="company_name" {% if filters.search_field == "company_name" %}selected{% endif %}>Company</option>
+      </select>
+  </div>
+    <div class="col-12 col-sm-6 col-md-6 col-lg-2 mb-4 mb-lg-0">
+      <select name="region" class="selectpicker" data-style="btn-white btn-lg" data-width="100%" data-live-search="true" title="Select Region">
+        {% for location in locations %}
+          <option>{{ location }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
+      <select name="job_type" class="selectpicker" data-style="btn-white btn-lg" data-width="100%" data-live-search="true" title="Select Job Type">
+        {% for employment in employments %}
+          <option>{{ employment }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-12 col-sm-6 col-md-6 col-lg-2 mb-4 mb-lg-0">
+      <button type="submit" class="btn btn-primary btn-lg btn-block text-white btn-search">
+        <span class="icon-search icon mr-2"></span>Search Job
+      </button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12 popular-keywords">
+      <h3>Filters Applied:</h3>
+      <ul class="keywords list-unstyled m-0 p-0" id="filters-applied">
+        <!-- Filtered keywords will be added here -->
+        {% for filter, value in filters.items() %}
+          {% if value %}
+            <li><a href="#" class="">{{ value }}</a></li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
     {% endmacro %}
 
 </body>
