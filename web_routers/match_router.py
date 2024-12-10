@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, Depends, Query, Form
-from starlette.templating import Jinja2Templates
+from common.template_config import CustomJinja2Templates
 from data.database import get_session
 from sqlmodel import Session
 from utils import auth as au
@@ -11,7 +11,7 @@ from datetime import timedelta
 
 
 match_router = APIRouter(prefix='/match')
-templates = Jinja2Templates(directory='templates')
+templates = CustomJinja2Templates(directory='templates')
 
 
 # Navigate to Match page where resume should be selected to match job ad
@@ -57,15 +57,14 @@ def match_preview(
     )
 
 
-@match_router.post('/match/{job_id}')
+@match_router.post('/{job_id}/match/{resume_id}')
 def match_job_w_resume(
     job_id: int,
+    resume_id: int,
     request: Request, 
     session: Session = Depends(get_session)
 ):
     # Retrieve job_id and user_id from cookies
-    resume_id = request.cookies.get('resume_id')
-
     print('JOb ID: ', job_id, ' Resume ID: ', resume_id)
     match_data = ms.match_with_job_ad(resume_id, job_id, session)
     token = request.cookies.get('token')
