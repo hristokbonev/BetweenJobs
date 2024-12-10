@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from companies.company_router import companies_router
 from jobposts.jobpost_router import job_post_router
 from dotenv import load_dotenv
-from data.database import create_db
+from data.database import create_db, engine
 # import uvicorn
 from users.user_router import router as user_router
 from resumes.resume_routers import router as resumes_router
@@ -25,9 +25,12 @@ load_dotenv()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     create_db()
-    yield
-    print("Shutting down...")
-
+    try:
+        yield 
+        
+    finally:
+        engine.dispose()
+        print("Database engine disposed and application shutting down...")
 
 app = FastAPI(lifespan=lifespan)
 
