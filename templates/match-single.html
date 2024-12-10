@@ -239,12 +239,12 @@
             const resumeId = element.getAttribute("data-id");
 
             // Update the form's action attribute dynamically
-            const applyForm = document.querySelector(".apply-now form");
-            const jobId = applyForm.querySelector("button").getAttribute("data-job-id");
+            const applyForm = document.querySelector("form[action]");
 
             if (applyForm) {
-                // Set the action URL with both jobId and resumeId
-                applyForm.setAttribute("action", `/apply/${jobId}/match/${resumeId}`);
+              const jobId = applyForm.querySelector("button").getAttribute("data-job-id");
+              // Set the action URL with both jobId and resumeId
+              applyForm.setAttribute("action", `/match/{{ jobad.id }}/match/${resumeId}`);
             }
 
             // Update the reference to the currently active item

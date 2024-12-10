@@ -1,23 +1,24 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>BetweenJobs</title>
+    <title>Match - BetweenJobs</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     
-    
-    <link rel="stylesheet" href="../static/css/custom-bs.css">
-    <link rel="stylesheet" href="../static/css/jquery.fancybox.min.css">
-    <link rel="stylesheet" href="../static/css/bootstrap-select.min.css">
-    <link rel="stylesheet" href="../static/fonts/icomoon/style.css">
-    <link rel="stylesheet" href="../static/fonts/line-icons/style.css">
-    <link rel="stylesheet" href="../static/css/owl.carousel.min.css">
-    <link rel="stylesheet" href="../static/css/animate.min.css">
-    <link rel="stylesheet" href="../static/css/quill.snow.css">
+    <link rel="stylesheet" href="{{ baseurl }}static/css/custom-bs.css">
+    <link rel="stylesheet" href="{{ baseurl }}static/css/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="{{ baseurl }}static/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="{{ baseurl }}static/fonts/icomoon/style.css">
+    <link rel="stylesheet" href="{{ baseurl }}static/fonts/line-icons/style.css">
+    <link rel="stylesheet" href="{{ baseurl }}static/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="{{ baseurl }}static/css/animate.min.css">
+    <link rel="stylesheet" href="{{ baseurl }}static/css/quill.snow.css">
     
 
     <!-- MAIN CSS -->
-    <link rel="stylesheet" href="../static/css/style.css">    
+    <link rel="stylesheet" href="{{ baseurl }}static/css/style.css">    
+    <link rel="stylesheet" href="{{ baseurl }}static/css/custom-overrides.css">
+
   </head>
   <body id="top">
 
@@ -42,64 +43,18 @@
     
 
     <!-- NAVBAR -->
-    <!-- THIS IS MATCH HTML PAGE -->
-    <header class="site-navbar mt-3">
-      <div class="container-fluid">
-        <div class="row align-items-center">
-          <div class="site-logo col-6"><a href="home.html">Between Jobs</a></div>
-
-          <nav class="mx-auto site-navigation">
-            <ul class="site-menu js-clone-nav d-none d-xl-block ml-0 pl-0">
-              <li><a href="home.html" class="nav-link">Home</a></li>
-              <li><a href="about.html">About</a></li>
-              <li class="has-children">
-                <a href="job-listings.html">Job Listings</a>
-                <ul class="dropdown">
-                  <li><a href="job-single.html">Job Single</a></li>
-                  <li><a href="post-job.html">Post a Job</a></li>
-                </ul>
-              </li>
-              <li class="has-children">
-                <a href="services.html">Pages</a>
-                <ul class="dropdown">
-                  <li><a href="services.html">Services</a></li>
-                  <li><a href="service-single.html">Service Single</a></li>
-                  <li><a href="blog-single.html">Blog Single</a></li>
-                  <li><a href="portfolio.html">Portfolio</a></li>
-                  <li><a href="portfolio-single.html">Portfolio Single</a></li>
-                  <li><a href="testimonials.html">Testimonials</a></li>
-                  <li><a href="faq.html">Frequently Ask Questions</a></li>
-                  <li><a href="gallery.html">Gallery</a></li>
-                </ul>
-              </li>
-              <li><a href="blog.html">Blog</a></li>
-              <li><a href="contact.html" class="active">Contact</a></li>
-              <li class="d-lg-none"><a href="post-job.html"><span class="mr-2">+</span> Post a Job</a></li>
-              <li class="d-lg-none"><a href="login.html">Log In</a></li>
-            </ul>
-          </nav>
-          
-          <div class="right-cta-menu text-right d-flex aligin-items-center col-6">
-            <div class="ml-auto">
-              <a href="post-job.html" class="btn btn-outline-white border-width-2 d-none d-lg-inline-block"><span class="mr-2 icon-add"></span>Post a Job</a>
-              <a href="login.html" class="btn btn-primary border-width-2 d-none d-lg-inline-block"><span class="mr-2 icon-lock_outline"></span>Log In</a>
-            </div>
-            <a href="#" class="site-menu-toggle js-menu-toggle d-inline-block d-xl-none mt-lg-2 ml-3"><span class="icon-menu h3 m-0 p-0 mt-2"></span></a>
-          </div>
-
-        </div>
-      </div>
-    </header>
+    {% from 'macros.html' import load_header %}
+    {{ load_header(user) }}
 
     <!-- HOME -->
-    <section class="section-hero overlay inner-page bg-image" style="background-image: url('images/hero_1.jpg');" id="home-section">
+    <section class="section-hero overlay inner-page bg-image" style="background-image: url('{{ baseurl }}static/images/hero_1.jpg');" id="home-section">
       <div class="container">
         <div class="row">
           <div class="col-md-7">
             <h1 class="text-white font-weight-bold">Match Data</h1>
             <div class="custom-breadcrumbs">
               <a href="#">Home</a> <span class="mx-2 slash">/</span>
-              <span class="text-white"><strong>Match Score {{ match.match_score }}</strong></span>
+              <span class="text-white"><strong style="font-size: 2rem;">Your Match Score is {{ (match.match_score * 100)|round(0) }}%</strong></span>
             </div>
           </div>
         </div>
@@ -126,86 +81,27 @@
                 </div>
               </div>
 
+            </form>
+          </div>
+
+          <div class="col-lg-5 ml-auto">
+            <form action="#" class="">
               <div class="row form-group">
-                
                 <div class="col-md-12 mb-4 mb-md-0">
-                    <h3 class="h5 d-flex align-items-center mb-4 text-primary"><span class="icon-align-left mr-3"></span>Match Resume</h3>
+                    <h3 class="h5 d-flex align-items-center mb-4 text-primary"><span class="icon-align-left mr-3"></span>Company Name</h3>
                     <p>{{ match.company_name }}</p>
                 </div>
               </div>
 
               <div class="row form-group">
-                <div class="col-md-12">
-                  <label class="text-black" for="message">Message</label> 
-                  <textarea name="message" id="message" cols="30" rows="7" class="form-control" placeholder="Write your notes or questions here..."></textarea>
+                <div class="col-md-12 mb-4 mb-md-0">
+                    <h3 class="h5 d-flex align-items-center mb-4 text-primary"><span class="icon-align-left mr-3"></span>Matched Position</h3>
+                    <p>{{ match.job_position }}</p>
                 </div>
               </div>
 
-              <div class="row form-group">
-                <div class="col-md-12">
-                  <input type="submit" value="Send Message" class="btn btn-primary btn-md text-white">
-                </div>
-              </div>
-
-  
             </form>
           </div>
-          <div class="col-lg-5 ml-auto">
-            <div class="p-4 mb-3 bg-white">
-              <p class="mb-0 font-weight-bold">Address</p>
-              <p class="mb-4">203 Fake St. Mountain View, San Francisco, California, USA</p>
-
-              <p class="mb-0 font-weight-bold">Phone</p>
-              <p class="mb-4"><a href="#">+1 232 3235 324</a></p>
-
-              <p class="mb-0 font-weight-bold">Email Address</p>
-              <p class="mb-0"><a href="#">youremail@domain.com</a></p>
-
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="site-section bg-light">
-      <div class="container">
-        <div class="row mb-5">
-          <div class="col-12 text-center" data-aos="fade">
-            <h2 class="section-title mb-3">Happy Candidates Says</h2>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-lg-6">
-            <div class="block__87154 bg-white rounded">
-              <blockquote>
-                <p>&ldquo;Ipsum harum assumenda in eum vel eveniet numquam cumque vero vitae enim cupiditate deserunt eligendi officia modi consectetur. Expedita tempora quos nobis earum hic ex asperiores quisquam optio nostrum sit&rdquo;</p>
-              </blockquote>
-              <div class="block__91147 d-flex align-items-center">
-                <figure class="mr-4"><img src="images/person_1.jpg" alt="Image" class="img-fluid"></figure>
-                <div>
-                  <h3>Elisabeth Smith</h3>
-                  <span class="position">Creative Director</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-6">
-            <div class="block__87154 bg-white rounded">
-              <blockquote>
-                <p>&ldquo;Ipsum harum assumenda in eum vel eveniet numquam, cumque vero vitae enim cupiditate deserunt eligendi officia modi consectetur. Expedita tempora quos nobis earum hic ex asperiores quisquam optio nostrum sit&rdquo;</p>
-              </blockquote>
-              <div class="block__91147 d-flex align-items-center">
-                <figure class="mr-4"><img src="images/person_2.jpg" alt="Image" class="img-fluid"></figure>
-                <div>
-                  <h3>Chris Peter</h3>
-                  <span class="position">Web Designer</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-
         </div>
       </div>
     </section>
@@ -269,26 +165,22 @@
     </footer>
   
   </div>
-
     <!-- SCRIPTS -->
-    <script src="../static/js/jquery.min.js"></script>
-    <script src="../static/js/bootstrap.bundle.min.js"></script>
-    <script src="../static/js/isotope.pkgd.min.js"></script>
-    <script src="../static/js/stickyfill.min.js"></script>
-    <script src="../static/js/jquery.fancybox.min.js"></script>
-    <script src="../static/js/jquery.easing.1.3.js"></script>
+    <script src="{{ baseurl }}static/js/jquery.min.js"></script>
+    <script src="{{ baseurl }}static/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ baseurl }}static/js/isotope.pkgd.min.js"></script>
+    <script src="{{ baseurl }}static/js/stickyfill.min.js"></script>
+    <script src="{{ baseurl }}static/js/jquery.fancybox.min.js"></script>
+    <script src="{{ baseurl }}static/js/jquery.easing.1.3.js"></script>
     
-    <script src="../static/js/jquery.waypoints.min.js"></script>
-    <script src="../static/js/jquery.animateNumber.min.js"></script>
-    <script src="../static/js/owl.carousel.min.js"></script>
-    <script src="../static/js/quill.min.js"></script>
+    <script src="{{ baseurl }}static/js/jquery.waypoints.min.js"></script>
+    <script src="{{ baseurl }}static/js/jquery.animateNumber.min.js"></script>
+    <script src="{{ baseurl }}static/js/owl.carousel.min.js"></script>
+    <script src="{{ baseurl }}static/js/quill.min.js"></script>
     
+    <script src="{{ baseurl }}static/js/bootstrap-select.min.js"></script>
     
-    <script src="../static/js/bootstrap-select.min.js"></script>
-    
-    <script src="../static/js/custom.js"></script>
-   
-   
+    <script src="{{ baseurl }}static/js/custom.js"></script>
      
   </body>
 </html>
