@@ -33,11 +33,11 @@ div.spacing {
 }
 
 /* Custom alignment of user greeting message and Login buttons */
-.greeting-container {
+/* .greeting-container {
   display: flex; 
   align-items: center; 
   gap: 15px; 
-}
+} */
 
 .greeting-text {
   margin: 0; 

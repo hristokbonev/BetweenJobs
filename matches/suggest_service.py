@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 import os
 from numpy import dot
 from numpy.linalg import norm
+from data.db_models import ResumeMatchJobAd
+from sqlmodel import select
 
 load_dotenv()
 
@@ -90,9 +92,14 @@ def suggest_job_ads(resume_id, session: Session) -> list:
         if not titles_match(resume.title, ad.title):
             continue
 
+        if ad.salary and resume.salary:
+            if ad.salary < resume.salary*0.7:
+                continue
+        
         ad = view_post_with_strings_and_skills(ad.id, session)
         matching_ads.append(ad)
-        
+
+    matching_ads = [match for match in matching_ads if not resume_has_matched_jobad_already(resume_id=resume.id, job_ad_id=match.id, session=session)]
 
     if matching_ads:
         return matching_ads
@@ -152,6 +159,10 @@ def suggest_resumes(ad_id: int, session: Session) -> list:
         if not titles_match(resume.title, ad.title):
             continue
 
+        if ad.salary and resume.salary:
+            if resume.salary*1.3 > ad.salary:
+                continue
+
         resume = get_resume_by_id(resume.id, session)
         matching_resumes.append(resume)
 
@@ -160,3 +171,21 @@ def suggest_resumes(ad_id: int, session: Session) -> list:
 
     
     return None
+
+def insert_match(resume_id: int, job_ad_id: int, accepted: bool, session: Session):
+    
+    match = ResumeMatchJobAd(resume_id=resume_id, jobad_id=job_ad_id, accepted=accepted)
+    session.add(match)
+    session.commit()
+
+    return match
+
+def resume_has_matched_jobad_already(resume_id: int, job_ad_id: int, session: Session) -> bool:
+
+    statement = select(ResumeMatchJobAd).where((ResumeMatchJobAd.resume_id == resume_id) & (ResumeMatchJobAd.jobad_id == job_ad_id))
+    match = session.exec(statement).first()
+
+    if match:
+        return True
+
+    return False

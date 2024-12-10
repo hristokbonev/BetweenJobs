@@ -115,6 +115,7 @@ def show_posts_with_names_not_id(session: Session):
     employment=row[3],
     location=row[2],
     status=row[4],
+    id=row[0].id,
     skills=row[5].split(', ') if row[5] else []
     ) for row in job_posts]
    
@@ -199,6 +200,7 @@ def view_post_with_strings_and_skills(ad_id: int, session: Session):
         employment=job_post[3],
         location=job_post[2],
         status=job_post[4],
+        id=job_post[0].id,
         skills=job_post[5].split(', ') if job_post[5] else []
     )
     
