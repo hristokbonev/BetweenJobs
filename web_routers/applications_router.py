@@ -27,6 +27,6 @@ def show_applications(request: Request, session: Session = Depends(get_session))
     return templates.TemplateResponse(
         request=request,
         name='applications.html',
-        context={'accepted': jsonable_encoder([application.model_dump() for application in accepted_applications] if accepted_applications else None), 
-                 'declined': jsonable_encoder([application.model_dump() for application in rejected_applications] if rejected_applications else None) }
+        context={'accepted_ads': jsonable_encoder([application.model_dump() for application in accepted_applications] if accepted_applications else None), 
+                 'declined_ads': jsonable_encoder([application.model_dump() for application in rejected_applications] if rejected_applications else None) }
     )
