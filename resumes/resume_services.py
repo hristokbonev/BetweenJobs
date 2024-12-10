@@ -1,7 +1,8 @@
+from fastapi import Form
 from sqlalchemy import Text, func
 from data.db_models import Resume, EmploymentType, Education, ResumeSkill, Status, User, Location, Skill
 from sqlmodel import cast, select, Session
-from resumes.resume_models import ResumeResponse, ResumeResponseWithIds
+from resumes.resume_models import ResumeRequest, ResumeResponse, ResumeResponseWithIds
 from users.user_models import UserModel
 
 def get_all_resumes(session: Session, name: str = None, location: str = None, employment_type: str = None, education: str = None, status: str = None, title: str = None, skills: list = None):
@@ -272,10 +273,10 @@ def get_resumes_by_user_id(user_id, session: Session):
             Resume.id, Resume.user_id, Resume.full_name, Resume.title, Resume.summary,
             User.username, EmploymentType.name, Education.degree_level, Location.name, Status.name, Resume.salary
             )
-        .join(User, User.id == Resume.user_id)
-        .join(EmploymentType, EmploymentType.id == Resume.employment_type_id)
+        .join(User, User.id == Resume.user_id, isouter=True)
+        .join(EmploymentType, EmploymentType.id == Resume.employment_type_id, isouter=True)
         .join(Education, Education.id == Resume.education_id, isouter=True)
-        .join(Status, Status.id == Resume.status_id)
+        .join(Status, Status.id == Resume.status_id, isouter=True)
         .join(Location, Location.id == Resume.location_id, isouter=True)
         ).where(Resume.user_id == user_id)
     
@@ -305,3 +306,11 @@ def get_resumes_by_user_id(user_id, session: Session):
         resumes_list.append(resume)
 
     return resumes_list if resumes_list else None
+
+
+def resume_create_form(full_name: str = Form(None), title: str = Form(...), summary: str = Form(None), 
+                       location: str = Form(None), employment_type: str = Form(None), 
+                       education: str = Form(None), status: str = Form(None), salary: int = Form(None), skills: list = Form(None)):
+    
+    return ResumeRequest(full_name=full_name, title=title, summary=summary, location=location, employment_type=employment_type, 
+                        education=education, status=status, salary=salary, skills=skills)

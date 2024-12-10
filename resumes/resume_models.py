@@ -53,6 +53,7 @@ class ResumeRequest(BaseModel):
     location: str | None = None
     skills: list[str] | None = None
     salary: int | None = None
+    
 
     @field_validator('education')
     @classmethod
