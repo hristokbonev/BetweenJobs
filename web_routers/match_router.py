@@ -68,7 +68,7 @@ def match_job_w_resume(
     # Retrieve job_id and user_id from cookies
     match_data = ms.match_with_job_ad(resume_id, job_id, session)
     token = request.cookies.get('token')
-    print(match_data)
+    
     base_url = os.getenv('base_url')
     context={
         'request': request, 

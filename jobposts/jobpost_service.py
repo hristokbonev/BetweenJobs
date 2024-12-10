@@ -74,7 +74,8 @@ def view_jobs_by_company_id(comp_id: int, session: Session):
         education=row.degree_level,
         salary=row.salary,
         employment=row.Employment,
-        location=row.Location
+        location=row.Location,
+        status=row.status
     ) for row in job_ads]
 
 

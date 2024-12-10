@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Request, Depends, Query, Form, Response
-from starlette.templating import Jinja2Templates
 from data.database import get_session
 from sqlmodel import Session
 from utils import auth as au
