@@ -1976,7 +1976,7 @@ Resumes Page Styles
   outline: none;
 }
 
-.matches-container {
+/* .matches-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1995,4 +1995,4 @@ Resumes Page Styles
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
-}
+} */

@@ -9,23 +9,23 @@
 <body>
     {% macro load_header(user=None) %}
     <header class="site-navbar mt-3">
-      <div class="container-fluid">
-          <div class="row align-items-center d-flex">
-              <!-- Site Logo -->
-              <div class="site-logo col-4 d-flex justify-content-start">
-                  <a href="/home">BetweenJobs</a>
-              </div>
-              <!-- Navigation -->
-              <nav class="col-4 site-navigation d-flex justify-content-center">
-                  <ul class="site-menu js-clone-nav d-none d-xl-flex ml-0 pl-0">
-                      <li><a href="/home" class="nav-link active">Home</a></li>
-                      <li><a href="/companies" class="nav-link">Companies</a></li>
-                      <li><a href="/jobposts" class="nav-link">Job Posts</a></li>
-                      <li class="has-children">
-                          <a href="#" class="nav-link">Resumes</a>
-                          <ul class="dropdown">
-                              <li><a href="/resumes/my_resumes">My Resumes</a></li>
-                              <li><a href="/resumes">Browse Resumes</a></li>
+
+        <div class="container-fluid">
+          <div class="row align-items-center">
+            <!-- Site Logo -->
+            <div class="site-logo col-4"><a href="/home">BetweenJobs</a></div>
+            <!-- Navigation -->
+            <nav class="mx-auto site-navigation">
+              <ul class="site-menu js-clone-nav d-none d-xl-block ml-0 pl-0">
+                <li><a href="/home" class="nav-link active">Home</a></li>
+                <li><a href="/companies" class="nav-link">Companies</a></li>
+                <li><a href="/jobposts" class="nav-link">Job Posts</a></li>
+                <li><a href="/applications" class="nav-link">My Applications</a></li>
+                <li class="has-children">
+                  <a href="#" class="nav-link">Resumes</a>
+                  <ul class="dropdown">
+                    <li><a href="/resumes/my_resumes">My Resumes</a></li>
+                    <li><a href="/resumes">Browse Resumes</a></li>
                           </ul>
                       </li>
                   </ul>
