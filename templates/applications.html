@@ -1,0 +1,124 @@
+
+{% extends 'base.html' %}
+{% block title %}My Applications{% endblock %}
+    
+{% block extra_css %}
+    <link rel="stylesheet" href="css/quill.snow.css">
+{% endblock %}
+
+{% block content %}
+
+    <!-- HOME -->
+    <section class="section-hero overlay inner-page bg-image" style="background-image: url('images/hero_1.jpg');" id="home-section">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-7">
+            <h1 class="text-white font-weight-bold">Portfolio (Extra Pages)</h1>
+            <div class="custom-breadcrumbs">
+              <a href="#">Home</a> <span class="mx-2 slash">/</span>
+              <span class="text-white"><strong>Portfolio</strong></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="site-section block__62272" id="next-section">
+      
+
+      <div class="container">
+
+        
+        <div class="row justify-content-center mb-5" data-aos="fade-up">
+          <div id="filters" class="filters text-center button-group col-md-7">
+            <button class="btn btn-primary active" data-filter="all">Matched</button>
+            <button class="btn btn-primary" data-filter="accepted">Accepted</button>
+            <button class="btn btn-primary" data-filter="rejected">Rejected</button>
+            <button class="btn btn-primary" data-filter="archived">Archived</button>
+          </div>
+        </div>  
+
+        <div id="posts" class="row no-gutter">
+        </div>
+
+        </div>
+      </div>
+
+    </section>
+
+{% endblock %}
+
+{% block extra_extra_css %}
+<style>
+  .item {
+    display: none;
+  }
+  .item.active {
+    display: block;
+  }
+</style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    
+document.addEventListener("DOMContentLoaded", () => {
+  // Example lists (these would come from your backend)
+  const matched = 
+  const accepted = 
+  const rejected = 
+  const archived = 
+
+  // Merge all items into a single array with a category
+  const allItems = [
+    ...matched.map(item => ({ ...item, category: "matched" })),
+    ...accepted.map(item => ({ ...item, category: "accepted" })),
+    ...rejected.map(item => ({ ...item, category: "rejected" })),
+    ...archived.map(item => ({ ...item, category: "archived" })),
+  ];
+
+  // Get the posts container
+  const postsContainer = document.getElementById("posts");
+
+  // Dynamically render items
+  allItems.forEach(item => {
+    const div = document.createElement("div");
+    div.className = `item ${item.category}`;
+    div.innerHTML = `
+      <h4>${item.title}</h4>
+      <p>${item.description}</p>
+    `;
+    postsContainer.appendChild(div);
+  });
+
+  // Add filtering logic
+  const filterButtons = document.querySelectorAll("#filters button");
+  filterButtons.forEach(button => {
+    button.addEventListener("click", () => {
+      // Remove active class from all buttons
+      filterButtons.forEach(btn => btn.classList.remove("active"));
+      button.classList.add("active");
+
+      // Get filter category
+      const filter = button.getAttribute("data-filter");
+
+      // Filter items
+      const items = document.querySelectorAll("#posts .item");
+      items.forEach(item => {
+        if (filter === "all" || item.classList.contains(filter)) {
+          item.classList.add("active");
+        } else {
+          item.classList.remove("active");
+        }
+      });
+    });
+  });
+
+  // Show all items initially
+  document.querySelectorAll("#posts .item").forEach(item => {
+    item.classList.add("active");
+  });
+});
+  </script>
+  
+{% endblock %}

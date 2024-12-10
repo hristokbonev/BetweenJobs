@@ -1,10 +1,11 @@
 from sqlmodel import Session, select
-from data.db_models import Company, User, Variables
+from data.db_models import Company, Resume, User, Variables, ResumeMatchJobAd, JobAd
 from users.user_models import UserSearch, UserUpdate, UserModel, TestModeResponse, UserCreate
 from data.db_models import Skill
 from users.user_models import CreateSkillRequest
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
+from jobposts.jobpost_service import view_post_with_strings_and_skills
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/users/login', auto_error=False)
@@ -120,3 +121,19 @@ def user_has_companies(user_id: int, session: Session) -> bool:
     statement = select(User).where(User.id == user_id).join(Company, Company.author_id == User.id).limit(1)
     user = session.exec(statement).first()
     return bool(user)
+
+def rejected_jobs(user_id: int, session: Session):
+    statement = select(JobAd).join(ResumeMatchJobAd, ResumeMatchJobAd.jobad_id == JobAd.id).join
+    (Resume, ResumeMatchJobAd.resume_id == Resume.id).join(User, Resume.user_id == User.id).where
+    (User.id == user_id).where(ResumeMatchJobAd.accepted is False)
+    jobs = session.exec(statement).all()
+    jobs = [view_post_with_strings_and_skills(job.id, session) for job in jobs]
+    return jobs
+
+def accepted_jobs(user_id: int, session: Session):
+    statement = select(JobAd).join(ResumeMatchJobAd, ResumeMatchJobAd.jobad_id == JobAd.id).join
+    (Resume, ResumeMatchJobAd.resume_id == Resume.id).join(User, Resume.user_id == User.id).where
+    (User.id == user_id).where(ResumeMatchJobAd.accepted is True)
+    jobs = session.exec(statement).all()
+    jobs = [view_post_with_strings_and_skills(job.id, session) for job in jobs]
+    return jobs
