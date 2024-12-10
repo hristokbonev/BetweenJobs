@@ -32,25 +32,33 @@ document.querySelectorAll('form[name="toggleCategory"] input[name="nav"]').forEa
 
 
 // >>> Resume selector function to hilight resume and store id <<<
-let selectedResumeId = null;
-
+// Variable to store the currently selected list item
+let activeItem = null;
+      
 /**
- * Handles resume selection.
- * @param {string} resumeId - The ID of the selected resume.
+ * Function to handle the addition of the "active" class to a clicked <li>,
+ * and update the color of the <a> tag inside it.
  * @param {HTMLElement} element - The clicked list item element.
  */
-function selectResume(resumeId, element) {
-  selectedResumeId = resumeId;
+function setActive(element) {
+  // Remove "active" class and reset <a> color for the previously selected item, if any
+  if (activeItem) {
+    activeItem.classList.remove("active");
+    const previousLink = activeItem.querySelector("a");
+    if (previousLink) {
+      previousLink.style.color = ""; // Reset to default color
+    }
+  }
 
-  // Update the "Send Match" button link
-  const sendMatchButton = document.getElementById('sendMatchButton');
-  sendMatchButton.href = `{{ jobad.id }}/match/${selectedResumeId}`;
+  // Add "active" class to the newly clicked item
+  element.classList.add("active");
 
-  // Remove highlighting from previously selected resume
-  document.querySelectorAll('.job-listing').forEach(item => {
-    item.classList.remove('selected-resume');
-  });
+  // Change the color of the <a> tag inside the clicked item to white
+  const activeLink = element.querySelector("a");
+  if (activeLink) {
+    activeLink.style.color = "white";
+  }
 
-  // Add highlighting to the currently selected resume
-  element.classList.add('selected-resume');
-};
+  // Update the reference to the currently active item
+  activeItem = element;
+}

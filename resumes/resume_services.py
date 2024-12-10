@@ -314,3 +314,9 @@ def resume_create_form(full_name: str = Form(None), title: str = Form(...), summ
     
     return ResumeRequest(full_name=full_name, title=title, summary=summary, location=location, employment_type=employment_type, 
                         education=education, status=status, salary=salary, skills=skills)
+
+
+def show_all_resumes(session: Session):
+    statement = select(Resume)
+    resumes = session.exec(statement).all()
+    return resumes

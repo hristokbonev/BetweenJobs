@@ -44,63 +44,18 @@
     
 
     <!-- NAVBAR -->
-    <header class="site-navbar mt-3">
-      <div class="container-fluid">
-        <div class="row align-items-center">
-          <div class="site-logo col-6"><a href="index.html">JobBoard</a></div>
-
-          <nav class="mx-auto site-navigation">
-            <ul class="site-menu js-clone-nav d-none d-xl-block ml-0 pl-0">
-              <li><a href="index.html" class="nav-link">Home</a></li>
-              <li><a href="about.html">About</a></li>
-              <li class="has-children">
-                <a href="job-listings.html">Job Listings</a>
-                <ul class="dropdown">
-                  <li><a href="job-single.html">Job Single</a></li>
-                  <li><a href="post-job.html">Post a Job</a></li>
-                </ul>
-              </li>
-              <li class="has-children">
-                <a href="services.html" class="active">Pages</a>
-                <ul class="dropdown">
-                  <li><a href="services.html">Services</a></li>
-                  <li><a href="service-single.html">Service Single</a></li>
-                  <li><a href="blog-single.html">Blog Single</a></li>
-                  <li><a href="portfolio.html">Portfolio</a></li>
-                  <li><a href="portfolio-single.html" class="active">Portfolio Single</a></li>
-                  <li><a href="testimonials.html">Testimonials</a></li>
-                  <li><a href="faq.html">Frequently Ask Questions</a></li>
-                  <li><a href="gallery.html">Gallery</a></li>
-                </ul>
-              </li>
-              <li><a href="blog.html">Blog</a></li>
-              <li><a href="contact.html">Contact</a></li>
-              <li class="d-lg-none"><a href="post-job.html"><span class="mr-2">+</span> Post a Job</a></li>
-              <li class="d-lg-none"><a href="login.html">Log In</a></li>
-            </ul>
-          </nav>
-          
-          <div class="right-cta-menu text-right d-flex aligin-items-center col-6">
-            <div class="ml-auto">
-              <a href="post-job.html" class="btn btn-outline-white border-width-2 d-none d-lg-inline-block"><span class="mr-2 icon-add"></span>Post a Job</a>
-              <a href="login.html" class="btn btn-primary border-width-2 d-none d-lg-inline-block"><span class="mr-2 icon-lock_outline"></span>Log In</a>
-            </div>
-            <a href="#" class="site-menu-toggle js-menu-toggle d-inline-block d-xl-none mt-lg-2 ml-3"><span class="icon-menu h3 m-0 p-0 mt-2"></span></a>
-          </div>
-
-        </div>
-      </div>
-    </header>
+    {% from 'macros.html' import load_header %}
+    {{ load_header(user) }}
 
     <!-- HOME -->
-    <section class="section-hero overlay inner-page bg-image" style="background-image: url('images/hero_1.jpg');" id="home-section">
+    <section class="section-hero overlay inner-page bg-image" style="background-image: url('../statoc/images/hero_1.jpg');" id="home-section">
       <div class="container">
         <div class="row">
           <div class="col-md-7">
             <h1 class="text-white font-weight-bold">Match Resume</h1>
             <div class="custom-breadcrumbs">
-              <a href="index.html">Home</a> <span class="mx-2 slash">/</span>
-              <a href="portfolio.html">{{ user.username }}</a> <span class="mx-2 slash">/</span>
+              <a href="index.html" style="color: white">Home</a> <span class="mx-2 slash">/</span>
+              <a href="portfolio.html" style="color: white">{{ user.username }}</a> <span class="mx-2 slash">/</span>
               <span class="text-white"><strong><a href="/profile">{{ user.first_name }}</a></strong></span>
             </div>
           </div>
@@ -117,20 +72,26 @@
             <ul class="job-listings mb-5 col-lg-8">
             {% if resumes %}
                 {% for resume in resumes %}
-                <li class="job-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center">
-                    <a href="/resumes/{{ resume.id }}"></a>
+                <li class="job-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center list-group-item list-group-item-action"
+                data-id="{{ resume.id }}"    
+                onclick="setActive(this)"
+                    style="cursor: pointer">
                     <div class="job-listing-logo">
                         <img src="https://xjlwrdolhwpgdikznbcs.supabase.co/storage/v1/object/public/logos/Resume_logo.png?t=2024-12-09T08%3A48%3A15.359Z" 
                             alt="Resume Logo" class="img-fluid">
                     </div>
             
                     <div class="resume-listing-about d-sm-flex custom-width w-100 justify-content-between mx-4">
-                    <div class="resume-listing-position custom-width w-50 mb-3 mb-sm-0">
-                        <h2>{{ resume.title }}</h2>
-                        <strong>{{ resume.full_name }}</strong>
-                    </div>
-                    <div class="job-listing-location mb-3 mb-sm-0 custom-width w-25">
-                        <span class="icon-room"></span> {{ resume.location }}
+                        <div class="resume-listing-position custom-width w-50 mb-3 mb-sm-0">
+                            <h2>{{ resume.title }}</h2>
+                            <strong>{{ resume.full_name }}</strong>
+                        </div>
+                        <div class="resume-listing-position custom-width w-50 mb-3 mb-sm-0">
+                            <a href="/resumes/{{ resume.id }}">Resume</a>
+                        </div>
+                        <div class="job-listing-location mb-3 mb-sm-0 custom-width w-25">
+                            <span class="icon-room"></span> {{ resume.location }}
+                        </div>
                     </div>
                 </li>
                 {% endfor %}
@@ -173,91 +134,16 @@
               </div>
               <div class="col-sm-12 col-md-12 mb-4 col-lg-12">
                 <strong class="d-block text-black mb-3">Apply Now</strong>
-                <a href="{job_id}/match/{resume_id}" class="btn btn-outline-primary border-width-2">Send Match</a>
+                <form method="POST" action="">
+                    <button class="btn btn-primary" type="submit" data-job-id="{{ jobad.id }}">Send Match</button>
+                </form>
               </div>
             </div>
 
-            <div class="block__87154 mb-0">
-                
-                <blockquote>
-                  <p>Ipsum harum assumenda in eum vel eveniet numquam, cumque vero vitae enim cupiditate deserunt eligendi officia modi consectetur. Expedita tempora quos nobis earum hic ex asperiores quisquam optio nostrum sit</p>
-                </blockquote>
-                <div class="block__91147 d-flex align-items-center">
-                  <figure class="mr-4"><img src="images/person_2.jpg" alt="Image" class="img-fluid"></figure>
-                  <div>
-                    <h3>Chris Peter</h3>
-                    <span class="position">Web Designer</span>
-                  </div>
-                </div>
-              </div>
 
           </div>
         </div>
-
-        
-
-        
-      </div>
-    </section>
-    <section class=" py-3 site-section mb-5">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-4 text-center">
-            <a href="#" class="btn btn-md btn-outline-primary border-width-2 d-block">Previous Project</a>
-          </div>
-          <div class="col-md-4 text-center">
-            <a href="#" class="btn btn-md btn-primary border-width-2 d-block">All Projects</a>
-          </div>
-          <div class="col-md-4 text-center">
-            <a href="#" class="btn btn-md btn-outline-primary border-width-2 d-block">Next Project</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-
-    <section class="site-section bg-light">
-      <div class="container">
-        <div class="row mb-5">
-          <div class="col-12 text-center" data-aos="fade">
-            <h2 class="section-title mb-3">Happy Candidates Says</h2>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-lg-6">
-            <div class="block__87154 bg-white rounded">
-              <blockquote>
-                <p>Ipsum harum assumenda in eum vel eveniet numquam cumque vero vitae enim cupiditate deserunt eligendi officia modi consectetur. Expedita tempora quos nobis earum hic ex asperiores quisquam optio nostrum sit</p>
-              </blockquote>
-              <div class="block__91147 d-flex align-items-center">
-                <figure class="mr-4"><img src="images/person_1.jpg" alt="Image" class="img-fluid"></figure>
-                <div>
-                  <h3>Elisabeth Smith</h3>
-                  <span class="position">Creative Director</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-6">
-            <div class="block__87154 bg-white rounded">
-              <blockquote>
-                <p>Ipsum harum assumenda in eum vel eveniet numquam, cumque vero vitae enim cupiditate deserunt eligendi officia modi consectetur. Expedita tempora quos nobis earum hic ex asperiores quisquam optio nostrum sit</p>
-              </blockquote>
-              <div class="block__91147 d-flex align-items-center">
-                <figure class="mr-4"><img src="images/person_2.jpg" alt="Image" class="img-fluid"></figure>
-                <div>
-                  <h3>Chris Peter</h3>
-                  <span class="position">Web Designer</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-
-        </div>
-      </div>
-    </section>
+    </div>
     
     <footer class="site-footer">
 
@@ -336,8 +222,35 @@
     <script src="../static/js/bootstrap-select.min.js"></script>
     
     <script src="../static/js/custom.js"></script>
-   
-   
+    <script>
+        // Variable to store the currently selected list item
+        let activeItem = null;
+
+        function setActive(element) {
+            // Remove the "active" class from the previously selected item, if any
+            if (activeItem) {
+                activeItem.classList.remove("active");
+            }
+
+            // Add the "active" class to the clicked item
+            element.classList.add("active");
+
+            // Get the resume ID from the clicked item
+            const resumeId = element.getAttribute("data-id");
+
+            // Update the form's action attribute dynamically
+            const applyForm = document.querySelector(".apply-now form");
+            const jobId = applyForm.querySelector("button").getAttribute("data-job-id");
+
+            if (applyForm) {
+                // Set the action URL with both jobId and resumeId
+                applyForm.setAttribute("action", `/apply/${jobId}/match/${resumeId}`);
+            }
+
+            // Update the reference to the currently active item
+            activeItem = element;
+        }
+      </script>
      
   </body>
 </html>
