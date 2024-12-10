@@ -60,6 +60,7 @@ class JobAdResponseWithNamesNotId(BaseModel):
     location: str
     status: str | None = None
     skills: list[str] | None = None
+    id: int | None = None
 
     class Config:
         orm_mode = True

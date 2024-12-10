@@ -24,7 +24,7 @@
                 </div>
               </form>
             </div>
-            <form id="searchForm" method="post" action="/jobposts/" class="search-jobs-form">
+            <form id="searchForm" method="get" action="/jobposts/" class="search-jobs-form">
               <div class="row mb-5">
                 {{ load_search_controls(locations, employments, filters) }}
               </div>
@@ -179,6 +179,11 @@
         </div>
       </div>
     </section> -->
-   {% endblock %}
 
+{% endblock %}
+  
+{% block extra_scripts %}
+  <script src="../static/js/quill.min.js"></script>
+  <script src="../static/js/custom-scripts.js"></script>
+{% endblock %}
     

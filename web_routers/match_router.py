@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Request, Depends, Query, Form
+import os
+from fastapi import APIRouter, Request, Depends, Form
 from common.template_config import CustomJinja2Templates
 from data.database import get_session
 from sqlmodel import Session
@@ -65,13 +66,14 @@ def match_job_w_resume(
     session: Session = Depends(get_session)
 ):
     # Retrieve job_id and user_id from cookies
-    print('JOb ID: ', job_id, ' Resume ID: ', resume_id)
     match_data = ms.match_with_job_ad(resume_id, job_id, session)
     token = request.cookies.get('token')
     
+    base_url = os.getenv('base_url')
     context={
         'request': request, 
-        'match': match_data
+        'match': match_data,
+        'baseurl': base_url
     }
 
     if token:
