@@ -152,3 +152,13 @@ def get_all_logos(session: Session):
     statement = select(CompanyLogo)
     logos = session.exec(statement).all()
     return logos if logos else None
+
+def get_all_educations(session: Session):
+    statement = select(Education.degree_level)
+    educations = session.exec(statement).all()
+    return educations if educations else None
+
+def get_all_statuses(session: Session):
+    statement = select(Status.name)
+    statuses = session.exec(statement).all()
+    return statuses if statuses else None

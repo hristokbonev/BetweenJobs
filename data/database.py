@@ -1,10 +1,9 @@
-from sqlmodel import SQLModel, Session
+from sqlmodel import SQLModel, Session, create_engine
 from data.config import DATABASE_URL
-from sqlalchemy.pool import NullPool
-from sqlalchemy import create_engine
+
 
 # Database engine setup
-engine = create_engine(DATABASE_URL, echo=True, poolclass=NullPool)
+engine = create_engine(DATABASE_URL, echo=True)
 
 # Function to create all tables
 def create_db():
