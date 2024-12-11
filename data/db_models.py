@@ -225,3 +225,9 @@ class ResumeMatchJobAd(SQLModel, table=True):
     resume_id: int = Field(foreign_key="Resumes.id", primary_key=True)
     jobad_id: int = Field(foreign_key="JobAds.id", primary_key=True)
     accepted: bool
+
+class JobAdMatchResume(SQLModel, table=True):
+    __tablename__ = "JobAdsMatchResumes"
+    jobad_id: int = Field(foreign_key="JobAds.id", primary_key=True)
+    resume_id: int = Field(foreign_key="Resumes.id", primary_key=True)
+    accepted: bool

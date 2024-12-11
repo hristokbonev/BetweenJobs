@@ -13,10 +13,10 @@
       <div class="container">
         <div class="row">
           <div class="col-md-7">
-            <h1 class="text-white font-weight-bold"> My Companies Applications</h1>
+            <h1 class="text-white font-weight-bold">My Companies' Applications</h1>
             <div class="custom-breadcrumbs">
               <a href="#">Home</a> <span class="mx-2 slash">/</span>
-              <span class="text-white"><strong>Applications</strong></span>
+              <span class="text-white"><strong>Company Applications</strong></span>
             </div>
           </div>
         </div>
@@ -31,7 +31,7 @@
         
         <div class="row justify-content-center mb-5" data-aos="fade-up">
           <div id="filters" class="filters text-center button-group col-md-7">
-            <button class="btn btn-primary active" data-filter="all">Total Applied</button>
+            <button class="btn btn-primary active" data-filter="all">Total</button>
             <button class="btn btn-primary" data-filter="matched">Matched</button>
             <button class="btn btn-primary" data-filter="accepted">Accepted</button>
             <button class="btn btn-primary" data-filter="rejected">Rejected</button>
@@ -124,5 +124,98 @@
 {% endblock %}
 
 {% block extra_scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // Debug logging for initial data
+  console.log('Raw accepted resumes:', {{ accepted_resumes|tojson }});
+  console.log('Raw rejected resumes:', {{ declined_resumes|tojson }});
+  console.log('Raw matched resumes:', {{ matched_resumes|tojson }});
 
+  // Parse the data with error handling
+  let accepted, rejected, matched;
+  try {
+    accepted = {{ accepted_resumes|tojson|safe }};
+    rejected = {{ declined_resumes|tojson|safe }};
+    matched = {{ matched_resumes|tojson|safe }};
+
+    // Ensure arrays
+    accepted = Array.isArray(accepted) ? accepted : [];
+    rejected = Array.isArray(rejected) ? rejected : [];
+    matched = Array.isArray(matched) ? matched : [];
+
+  } catch (error) {
+    accepted = [];
+    rejected = [];
+    matched = [];
+  }
+
+  // Get the posts container
+  const postsContainer = document.getElementById("posts");
+
+  // Clear any existing content
+  postsContainer.innerHTML = '';
+
+  // Merge all items into a single array with a category
+  const allItems = [
+    ...accepted.map(item => ({ ...item, category: "accepted" })),
+    ...rejected.map(item => ({ ...item, category: "rejected" })),
+    ...matched.map(item => ({ ...item, category: "matched" })),
+  ];
+
+
+  // Dynamically render items
+  allItems.forEach(item => {
+    const div = document.createElement("div");
+    div.className = `col-md-4 item ${item.category}`;
+    div.innerHTML = `
+      <div class="card mb-4">
+        <div class="card-body">
+          <h4 class="card-title">
+          <a href="/resumes/${item.id}" class="text-decoration-none">${item.title || 'No Title'}</a>          <small class="text-muted">Category: ${item.category}</small>
+          </h4>
+        </div>
+      </div>
+    `;
+    postsContainer.appendChild(div);
+  });
+
+
+  // Add filtering logic
+  const filterButtons = document.querySelectorAll("#filters button");
+  filterButtons.forEach(button => {
+    button.addEventListener("click", () => {
+      // Remove active class from all buttons
+      filterButtons.forEach(btn => btn.classList.remove("active"));
+      button.classList.add("active");
+
+      // Get filter category
+      const filter = button.getAttribute("data-filter");
+ 
+
+      // Filter items
+      const items = document.querySelectorAll("#posts .item");
+
+      let visibleItemsExist = false;
+
+
+      items.forEach(item => {
+        const shouldShow = filter === "all" || item.classList.contains(filter);
+        
+        if (shouldShow) {
+          item.style.display = "block";
+          visibleItemsExist = true;
+        } else {
+          item.style.display = "none";
+        }
+      });
+    });
+  });
+
+
+  // Trigger initial filter
+  if (filterButtons.length > 0) {
+    filterButtons[0].click();
+  }
+});
+</script>
 {% endblock %}
