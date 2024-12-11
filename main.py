@@ -19,7 +19,7 @@ from web_routers.user_router import router as user_web_router
 from web_routers.resumes_router import router as resumes_web_router
 from web_routers.recruiter_router import router as recruiter_router
 from web_routers.applications_router import router as applications_router
-from web_routers.companies_router import router as companies_router
+# from web_routers.companies_router import router as companies_router
 from web_routers.companies_router import company_router
 
 
@@ -54,7 +54,7 @@ app.include_router(match_router)
 app.include_router(resumes_web_router)
 app.include_router(recruiter_router)
 app.include_router(applications_router)
-app.include_router(companies_router)
+# app.include_router(companies_router)
 app.include_router(company_router)
 
 
