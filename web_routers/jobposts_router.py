@@ -225,7 +225,7 @@ def _get_search_data(
     description: str = Form(...),
     job_type: str = Form(...)
 ):
-    return keyword, search_field, region, job_type
+    return title, company, description, job_type
 
 
 @jobs_router.post('/create')
