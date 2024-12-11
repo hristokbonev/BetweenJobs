@@ -1,6 +1,8 @@
+from typing import List
 from fastapi import APIRouter, Request, Depends, Query, Form, Response
 from data.database import get_session
 from sqlmodel import Session
+from jobposts.jobpost_models import CreateJobAdRequest
 from utils import auth as au
 from jobposts import jobpost_service as js
 from utils import attribute_service as ats
@@ -151,6 +153,7 @@ def display_create_view(
     employments = list(ats.get_all_employments(session))
     companies = list(ats.get_all_companies(session))
     educations = list(ats.get_all_educations(session))
+    skills = ats.get_all_skills(session)
 
 
     token = request.cookies.get('token')
@@ -159,6 +162,7 @@ def display_create_view(
         'employments': employments,
         'companies': companies,
         'educations': educations,
+        'skills': skills
     }
 
     if token:
@@ -177,7 +181,6 @@ def display_create_view(
 def show_jobpost(
     id: int,
     request: Request,
-    response: Response, 
     session: Session = Depends(get_session)
 ):
 
@@ -207,9 +210,6 @@ def show_jobpost(
         user = au.get_current_user(token)
         context['user'] = user
     
-    # store job id and user id in cookies
-    response.set_cookie(key="job_id", value=str(target_job.id))
-    response.set_cookie(key="resume_id", value="6")
 
     return templates.TemplateResponse(
         request=request,
@@ -219,18 +219,60 @@ def show_jobpost(
 
 
 # Utility function for collecting inputs for CREATE JOBPOST
-def _get_search_data(
+def _get_crete_data(
     title: str = Form(...),
-    company: str = Form(...),
+    company: int = Form(...),
     description: str = Form(...),
-    job_type: str = Form(...)
+    education: int = Form(...),
+    employment: int = Form(...),
+    location: int = Form(...),
+    salary: float = Form(...),
+    skills: List[int] = Form(...)
 ):
-    return title, company, description, job_type
+    return title, company, description, education, employment, location, salary, skills
 
 
 @jobs_router.post('/create')
 def create_new_job_post(
     request: Request, 
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_session),
+    form_data = Depends(_get_crete_data)
 ):
-    pass
+    # Obtain form inputs and dump them in JobPost Create model
+    title, company, description, education, employment, location, salary, skills = form_data
+
+    job_post_data = CreateJobAdRequest(
+        title=title,
+        company_id=company,
+        description=description,
+        education_id=education,
+        salary=salary,
+        employment_type_id=employment,
+        location_id=location,
+        skill_ids=skills,
+        skill_levels=[],  # Optional field; adjust as necessary
+    )
+
+    # Create new Job object
+    new_company = js.create_job_post(data=job_post_data, session=session)
+    # Get additional data for the context
+    skills = ats.get_skills_for_job(new_company.id, session)
+    logo = ats.get_company_logo(new_company.company_id, session)
+    deadline = new_company.created_at + timedelta(days=30)
+    token = request.cookies.get('token')
+    context={
+        'request': request, 
+        'jobad': new_company,
+        'min': min,
+        'location': location,
+        'employment': employment,
+        'skills': skills,
+        'deadline': deadline,
+        'logo': logo
+    }
+
+    if token:
+        user = au.get_current_user(token)
+        context['user'] = user
+
+    return show_jobpost(new_company.id)

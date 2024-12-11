@@ -72,7 +72,7 @@ def get_employment_type_by_id(employment_id: int, session: Session):
 
 
 def get_all_locations(session: Session):
-    statement = select(Location.name)
+    statement = select(Location)
     locations = session.exec(statement).all()
     return locations if locations else None
 
@@ -84,7 +84,7 @@ def get_location_by_id(location_id: int, session: Session):
 
 
 def get_all_employments(session: Session):
-    statement = select(EmploymentType.name)
+    statement = select(EmploymentType)
     employments = session.exec(statement).all()
     return employments if employments else None
 
@@ -111,6 +111,12 @@ def status_exists(status, session: Session):
     statement = select(Status.name).where(Status.name == status)
     status_type = session.exec(statement).first()
     return bool(status_type)
+
+
+def get_all_skills(session: Session):
+    statement = select(Skill)
+    skills = session.exec(statement).all()
+    return skills if skills else None
 
 
 def assign_skills(company_id: int,
@@ -160,7 +166,7 @@ def get_all_logos(session: Session):
     return logos if logos else None
 
 def get_all_educations(session: Session):
-    statement = select(Education.degree_level)
+    statement = select(Education)
     educations = session.exec(statement).all()
     return educations if educations else None
 

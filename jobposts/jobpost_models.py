@@ -20,7 +20,7 @@ class JobAddResponse(BaseModel):
 class CreateJobAdRequest(BaseModel):
     title: str
     company_id: int
-    company_name: str
+    company_name: Optional[str]
     description: Optional[str]
     education_id: Optional[int]
     salary: Optional[float]
