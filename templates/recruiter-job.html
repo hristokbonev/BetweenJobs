@@ -61,12 +61,12 @@
         </button>
       </div>
       <div class="modal-body">
-        <p id="modal-resume-summary">Resume Summary</p>
-        <p><strong>Full Name:</strong> <span id="modal-resume-fullname"></span></p>
+        <p id="modal-resume-description">Resume Description</p>
+        <p><strong>Company:</strong> <span id="modal-resume-company"></span></p>
         <p><strong>Location:</strong> <span id="modal-resume-location">Location</span></p>
         <p><strong>Salary:</strong> <span id="modal-resume-salary">Salary</span></p>
-        <p><strong>Education:</strong> <span id="modal-resume-education">Education</span></p>
-        <p><strong>Skills:</strong> <span id="modal-resume-skill">Skills</span></p>
+        <p><strong>Education Needed:</strong> <span id="modal-resume-education">Requirements</span></p>
+        <p><strong>Requirements:</strong> <span id="modal-resume-requirements">Requirements</span></p>
         <p><strong>Employment:</strong> <span id="modal-resume-employment">Employment</span></p>
         <p><strong>Status:</strong> <span id="modal-resume-status">Status</span></p>
         <p><strong>Created At:</strong> <span id="modal-resume-createdat">Created At</span></p>
@@ -252,12 +252,12 @@
         document.getElementById('resume-salary').innerText = resume.salary;
 
         document.getElementById('resumeModalLabel').innerText = resume.title;
-        document.getElementById('modal-resume-summary').innerText = resume.summary;
-        document.getElementById('modal-resume-fullname').innerText = resume.full_name;
+        document.getElementById('modal-resume-description').innerText = resume.description;
+        document.getElementById('modal-resume-company').innerText = resume.company;
         document.getElementById('modal-resume-location').innerText = resume.location;
         document.getElementById('modal-resume-salary').innerText = resume.salary;
         document.getElementById('modal-resume-education').innerText = resume.education;
-        document.getElementById('modal-resume-skills').innerText = resume.skills;
+        document.getElementById('modal-resume-requirements').innerText = resume.skills;
         document.getElementById('modal-resume-employment').innerText = resume.employment;
         document.getElementById('modal-resume-status').innerText = resume.status;
         document.getElementById('modal-resume-createdat').innerText = resume.created_at;
