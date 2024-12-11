@@ -1,5 +1,5 @@
 from sqlmodel import Session, select
-from data.db_models import Company, Resume, User, Variables, ResumeMatchJobAd, JobAd
+from data.db_models import Company, Resume, User, Variables, ResumeMatchJobAd, JobAd, JobAdMatchResume
 from users.user_models import UserSearch, UserUpdate, UserModel, TestModeResponse, UserCreate
 from data.db_models import Skill
 from users.user_models import CreateSkillRequest
@@ -43,6 +43,7 @@ def create_new_skill(data: CreateSkillRequest, session: Session):
     find_new_skill = select(Skill).where(Skill.id == new_skill.id)
     response = session.execute(find_new_skill).scalars().first()
     return response
+
 
 def get_filtered_users(search_criteria: UserSearch, page: int, limit: int, session: Session):
     statement = select(User)
@@ -117,10 +118,12 @@ def get_user(username: str, user_id: str, session: Session) -> UserCreate:
         date_of_birth=user.date_of_birth,
     )
 
+
 def user_has_companies(user_id: int, session: Session) -> bool:
     statement = select(User).where(User.id == user_id).join(Company, Company.author_id == User.id).limit(1)
     user = session.exec(statement).first()
     return bool(user)
+
 
 def rejected_jobs(user_id: int, session: Session):
     statement = select(JobAd).join(ResumeMatchJobAd, ResumeMatchJobAd.jobad_id == JobAd.id)\
@@ -132,6 +135,7 @@ def rejected_jobs(user_id: int, session: Session):
     jobs = [view_post_with_strings_and_skills(job.id, session) for job in jobs]
     return jobs
 
+
 def accepted_jobs(user_id: int, session: Session):
     statement = select(JobAd).join(ResumeMatchJobAd, ResumeMatchJobAd.jobad_id == JobAd.id)\
     .join(Resume, ResumeMatchJobAd.resume_id == Resume.id)\
@@ -140,7 +144,26 @@ def accepted_jobs(user_id: int, session: Session):
     jobs = [view_post_with_strings_and_skills(job.id, session) for job in jobs]
     return jobs
 
+
 def owns_job_ad(user_id: int, job_ad_id: int, session: Session) -> bool:
     statement = select(JobAd).join(Company, Company.id == JobAd.company_id).where(JobAd.id == job_ad_id, Company.author_id == user_id).limit(1)
     job = session.exec(statement).first()
     return bool(job)
+
+
+def accepted_resumes(user_id: int, session: Session):
+    statement = select(Resume).join(JobAdMatchResume, JobAdMatchResume.resume_id == Resume.id)\
+    .join(JobAd, JobAdMatchResume.jobad_id == JobAd.id).join(Company, Company.id == JobAd.company_id)\
+    .where(Company.author_id == user_id, JobAdMatchResume.accepted == True)
+
+    resumes = session.exec(statement).all()
+    return resumes
+    
+
+def rejected_resumes(user_id: int, session: Session):
+    statement = select(Resume).join(JobAdMatchResume, JobAdMatchResume.resume_id == Resume.id)\
+    .join(JobAd, JobAdMatchResume.jobad_id == JobAd.id).join(Company, Company.id == JobAd.company_id)\
+    .where(Company.author_id == user_id, JobAdMatchResume.accepted == False)
+
+    resumes = session.exec(statement).all()
+    return resumes
