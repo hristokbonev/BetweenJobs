@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="../static/css/custom-overrides.css">
 {% endblock %}
 {% block content %}
+
     <!-- HOME -->
   <section class="section-hero home-section overlay inner-page bg-image" style="background-image: url('../static/images/hero_1.jpg');" id="home-section">
 
@@ -31,9 +32,6 @@
                     <option value="" {% if not filters.search_field %}selected{% endif %}>Select Search Field</option>
                     <option value="title" {% if filters.search_field == "title" %}selected{% endif %}>Job Title</option>
                     <option value="company_name" {% if filters.search_field == "company_name" %}selected{% endif %}>Company</option>
-                    <!-- <option value="education" {% if filters.search_field == "education" %}selected{% endif %}>Education Level</option>
-                    <option value="status" {% if filters.search_field == "status" %}selected{% endif %}>Status</option>
-                    <option value="skills" {% if filters.search_field == "skills" %}selected{% endif %}>Skills</option> -->
                   </select>
               </div>
                 <div class="col-12 col-sm-6 col-md-6 col-lg-2 mb-4 mb-lg-0">

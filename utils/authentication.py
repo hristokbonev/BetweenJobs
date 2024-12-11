@@ -127,4 +127,4 @@ def reset_password_direct(email: str,  new_password: str, confirm_password: str,
     
     return {"message": "Password successfully updated"}
 
-
+    

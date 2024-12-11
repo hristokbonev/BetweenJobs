@@ -7,7 +7,8 @@ from common.template_config import CustomJinja2Templates
 from fastapi.responses import RedirectResponse
 from data.database import get_session
 from data.db_models import User
-from users.user_service import get_password_hash
+from users.user_models import UserUpdate
+from users.user_service import get_password_hash, update_user
 from utils import auth
 from utils.auth import authenticate_user
 from passlib.context import CryptContext
@@ -28,9 +29,7 @@ router = APIRouter(prefix='', tags=['Users'])
 templates = CustomJinja2Templates(directory='templates')
 
 
-@router.get('/profile', response_model=None)
-def serve_profile(request: Request):
-    return templates.TemplateResponse(name="profile.html", request=request)
+
 
 
 @router.get('/register', response_model=None)
@@ -199,3 +198,49 @@ def changed_password(request: Request, email: str = Form(...), new_password: str
             {"request": request, "error": "An error occurred while updating your password. Please try again."}
         )
 
+
+@router.get('/profile', response_model=None)
+def update_profile(request: Request):
+    return templates.TemplateResponse(name="profile.html", request=request)
+
+@router.post('/profile')
+def post_profile(
+    request: Request,
+    id: int = Form(...),
+    username: str = Form(None),
+    first_name: str = Form(None),
+    last_name: str = Form(None),
+    email: str = Form(None),
+    new_password: str = Form(None),
+    confirm_password: str = Form(None),
+    session: Session = Depends(get_session)
+):
+    try:
+        user_update = UserUpdate(
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            new_password=new_password,
+            confirm_password=confirm_password
+        )
+        user = update_user(id, user_update, session)
+        if not user:
+            return templates.TemplateResponse(
+                "profile.html",
+                {"request": request, "error": "User not found"}
+            )
+        return templates.TemplateResponse(
+            "profile.html",
+            {"request": request, "user": user, "success": "Profile updated successfully"}
+        )
+    except ValueError as ve:
+        return templates.TemplateResponse(
+            "profile.html",
+            {"request": request, "error": str(ve)}
+        )
+    except Exception as e:
+        return templates.TemplateResponse(
+            "profile.html",
+            {"request": request, "error": f"An error occurred: {str(e)}"}
+        )

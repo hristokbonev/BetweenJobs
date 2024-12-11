@@ -1,0 +1,21 @@
+
+.form-select {
+    font-size: 1rem; /* Adjust the font size for readability */
+    padding: 10px; /* Add some padding for better spacing */
+    border: 1px solid #ced4da; /* Add a subtle border */
+    border-radius: 4px; /* Smooth corners */
+    background-color: #ffffff; /* Set a white background for visibility */
+    color: #495057; /* Dark text color for contrast */
+}
+
+.form-select:focus {
+    outline: none; /* Remove the default focus outline */
+    border-color: #80bdff; /* Add a blue border when focused */
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Add a subtle shadow */
+}
+
+.form-select option {
+    background-color: #ffffff; /* Ensure dropdown options have a white background */
+    color: #495057; /* Maintain consistent text color */
+}
+
