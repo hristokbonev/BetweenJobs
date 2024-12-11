@@ -278,5 +278,5 @@ def create_new_job_post(
     if token:
         user = au.get_current_user(token)
         context['user'] = user
-    print(new_company)
+    
     return show_jobpost(id=new_company.id, request=request, session=session)
