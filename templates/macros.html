@@ -164,14 +164,14 @@
     <div class="col-12 col-sm-6 col-md-6 col-lg-2 mb-4 mb-lg-0">
       <select name="region" class="selectpicker" data-style="btn-white btn-lg" data-width="100%" data-live-search="true" title="Select Region">
         {% for location in locations %}
-          <option>{{ location }}</option>
+          <option value="{{ location.id }}">{{ location.name }}</option>
         {% endfor %}
       </select>
     </div>
     <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
       <select name="job_type" class="selectpicker" data-style="btn-white btn-lg" data-width="100%" data-live-search="true" title="Select Job Type">
         {% for employment in employments %}
-          <option>{{ employment }}</option>
+          <option value="{{ employment.id }}">{{ employment.name }}</option>
         {% endfor %}
       </select>
     </div>

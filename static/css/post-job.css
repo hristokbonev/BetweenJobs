@@ -1,0 +1,9 @@
+.bootstrap-select .dropdown-menu {
+    top: auto !important; /* Reset Bootstrap's auto-positioning */
+    bottom: auto !important; /* Avoid upward expansion */
+    transform: translateY(0) !important; /* Ensure dropdown starts below the button */
+}
+
+.bootstrap-select .dropdown-toggle {
+    overflow: visible !important; /* Ensure no clipping of the dropdown */
+}

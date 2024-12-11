@@ -28,7 +28,7 @@ class CreateJobAdRequest(BaseModel):
     location_id: Optional[int]
     status_id: int = 1
     skill_ids: list[int]
-    skill_levels: Optional[list[int]]
+    skill_levels: Optional[list[int]] = None
 
     class Config:
         orm_mode = True
