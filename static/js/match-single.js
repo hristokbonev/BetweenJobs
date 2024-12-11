@@ -18,8 +18,10 @@ function setActive(element) {
 
     if (applyForm) {
       const jobId = applyForm.querySelector("button").getAttribute("data-job-id");
-      // Set the action URL with both jobId and resumeId
-      applyForm.setAttribute("action", `/match/{{ jobad.id }}/match/${resumeId}`);
+      if (jobId){
+        // Set the action URL with both jobId and resumeId
+        applyForm.setAttribute("action", `/match/${jobId}/match/${resumeId}`);
+      }
     }
 
     // Update the reference to the currently active item
