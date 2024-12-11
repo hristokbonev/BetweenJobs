@@ -8,12 +8,13 @@ from resumes import resume_services as rs
 from matches import suggest_service as ss
 from common.template_config import CustomJinja2Templates
 from matches.match_models import JobFeedback
+from jobposts.jobpost_service import view_job_post_by_id
 
 templates = CustomJinja2Templates(directory='templates')
 router = APIRouter(prefix='/recruiter')
 
 @router.get('/resume/{id}')
-def recruit(request: Request, id: int, session: Session = Depends(get_session)):
+def recruit_resume(request: Request, id: int, session: Session = Depends(get_session)):
     token = request.cookies.get('token')
     user = au.get_current_user(token)
     resume = rs.get_resume_by_id(id=id, session=session)
@@ -30,6 +31,22 @@ def recruit(request: Request, id: int, session: Session = Depends(get_session)):
         context=context
     )
 
+@router.get('/job/{id}')
+def recruit_job(request: Request, id: int, session: Session = Depends(get_session)):
+    token = request.cookies.get('token')
+    user = au.get_current_user(token)
+    job = view_job_post_by_id(id=id, session=session)
+    matches = ss.suggest_resumes(job_id=id, session=session)
+    context = {
+        'job': jsonable_encoder(job.model_dump()) if job else None,
+        'matches': jsonable_encoder([match.model_dump() for match in matches] if matches else None)
+    }
+    return templates.TemplateResponse(
+        request=request,
+        name='recruiter-job.html',
+        context=context
+    )
+
 @router.post('/feedback')
 def recruiter_feedback(request: Request, feedback: JobFeedback, session: Session = Depends(get_session)):
     token = request.cookies.get('token')
@@ -38,6 +55,3 @@ def recruiter_feedback(request: Request, feedback: JobFeedback, session: Session
         return Response(status_code=403)
     
     insert_match(resume_id=feedback.resume_id, job_ad_id=feedback.job_id, accepted=feedback.accepted, session=session)
-    print('Feedback received')
-    
-    
