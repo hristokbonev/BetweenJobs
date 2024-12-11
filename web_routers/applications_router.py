@@ -46,6 +46,6 @@ def show_companies_applications(request: Request, session: Session = Depends(get
     
     return templates.TemplateResponse(
         request=request,
-        name='companyapplications.html',
+        name='company-applications.html',
         context={'company': companies}
     )
