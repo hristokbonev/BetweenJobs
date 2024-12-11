@@ -91,7 +91,7 @@ def suggest_resumes(job_id: int, session: Session = Depends(get_session), curren
         raise HTTPException(status_code=401, detail="You must be logged in to view resumes")
     try:
         resumes = ms.suggest_resumes(job_id, session)
-        print(b-a)
+    
         return resumes
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")

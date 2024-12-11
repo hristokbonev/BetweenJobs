@@ -9,6 +9,7 @@ from datetime import timedelta
 
 
 jobs_router = APIRouter(prefix='/jobposts')
+jobs_edit_router = APIRouter()
 templates = CustomJinja2Templates(directory='templates')
 
 
@@ -139,6 +140,39 @@ def search(
         context=context
     )
 
+
+@jobs_router.get('/create')
+def display_create_view(
+    request: Request, 
+    session: Session = Depends(get_session)
+):
+    # Get locations and employment tyepes for dropdown list
+    locations = list(ats.get_all_locations(session))
+    employments = list(ats.get_all_employments(session))
+    companies = list(ats.get_all_companies(session))
+    educations = list(ats.get_all_educations(session))
+
+
+    token = request.cookies.get('token')
+    context={
+        'locations': locations, 
+        'employments': employments,
+        'companies': companies,
+        'educations': educations,
+    }
+
+    if token:
+        user = au.get_current_user(token)
+        context['user'] = user
+    
+    return templates.TemplateResponse(
+        request=request,
+        name='post-job.html', 
+        context=context
+    )
+    
+
+
 @jobs_router.get('/{id}')
 def show_jobpost(
     id: int,
@@ -183,4 +217,20 @@ def show_jobpost(
         context=context
     )
 
-    
+
+# Utility function for collecting inputs for CREATE JOBPOST
+def _get_search_data(
+    title: str = Form(...),
+    company: str = Form(...),
+    description: str = Form(...),
+    job_type: str = Form(...)
+):
+    return keyword, search_field, region, job_type
+
+
+@jobs_router.post('/create')
+def create_new_job_post(
+    request: Request, 
+    session: Session = Depends(get_session)
+):
+    pass

@@ -1,7 +1,7 @@
 from typing import Optional
 
 from sqlmodel import Session, select
-from data.db_models import CompanyLogo, Education, EmploymentType, Location, Skill, Status, JobAdSkill, SkillLevel, ResumeSkill
+from data.db_models import Company, CompanyLogo, Education, EmploymentType, Location, Skill, Status, JobAdSkill, SkillLevel, ResumeSkill
 
 
 def view_education_by_id(education_id: int, session: Session):
@@ -87,6 +87,12 @@ def get_all_employments(session: Session):
     statement = select(EmploymentType.name)
     employments = session.exec(statement).all()
     return employments if employments else None
+
+
+def get_all_companies(session: Session):
+    statement = select(Company)
+    companies = session.exec(statement).all()
+    return companies if companies else None
 
 
 def location_exists(location, session: Session):

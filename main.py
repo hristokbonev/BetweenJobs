@@ -21,6 +21,7 @@ from web_routers.recruiter_router import router as recruiter_router
 from web_routers.applications_router import router as applications_router
 from web_routers.companies_router import company_router
 
+
 load_dotenv()
 
 @asynccontextmanager
@@ -57,8 +58,8 @@ app.include_router(company_router)
 
 
 
-# if __name__ == "__main__":
-#     import uvicorn
-#     uvicorn.run("main:app", host="127.0.0.1", port=8000)
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="127.0.0.1", port=8000)
 
 
