@@ -118,14 +118,16 @@ def get_user(username: str, user_id: str, session: Session) -> UserCreate:
     )
 
 def user_has_companies(user_id: int, session: Session) -> bool:
-    statement = select(User).where(User.id == user_id).join(Company, Company.author_id == User.id).limit(1)
+    statement = select(User).where(User.id == user_id).join(Company, Company.author_id == User.id, isouter=True).limit(1)
     user = session.exec(statement).first()
     return bool(user)
 
 def rejected_jobs(user_id: int, session: Session):
     statement = select(JobAd).join(ResumeMatchJobAd, ResumeMatchJobAd.jobad_id == JobAd.id, isouter=True)\
-    .join(Resume, ResumeMatchJobAd.resume_id == Resume.id, isouter=True).join(User, Resume.user_id == User.id, isouter=True)\
+    .join(Resume, ResumeMatchJobAd.resume_id == Resume.id, isouter=True)\
+    .join(User, Resume.user_id == User.id, isouter=True)\
     .where(User.id == user_id, ResumeMatchJobAd.accepted == False)
+
     jobs = session.exec(statement).all()
     jobs = [view_post_with_strings_and_skills(job.id, session) for job in jobs]
     return jobs

@@ -8,7 +8,7 @@ from utils import auth
 from users.user_models import UserCreate, UserSchema, Token, UserUpdate
 from utils.auth import  create_access_token
 from users.user_service import get_password_hash
-from data.database import engine, create_db
+from data.database import get_session
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlmodel import Session, select
 from common.mailjet_functions import send_email
@@ -20,12 +20,6 @@ router = APIRouter(prefix='/api/users', tags=["Users"])
 key = os.getenv("SECRET_KEY")
 algorithm = os.getenv("ALGORITHM")
 access_token_expire_minutes = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
-
-create_db()
-
-def get_session():
-    with Session(engine) as session:
-        yield session
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/users/login', auto_error=False)   
