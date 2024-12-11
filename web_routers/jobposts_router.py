@@ -1,4 +1,3 @@
-from typing import List
 from fastapi import APIRouter, Request, Depends, Query, Form, Response
 from data.database import get_session
 from sqlmodel import Session
@@ -6,6 +5,7 @@ from jobposts.jobpost_models import CreateJobAdRequest
 from utils import auth as au
 from jobposts import jobpost_service as js
 from utils import attribute_service as ats
+from companies import company_service as cs
 from common.template_config import CustomJinja2Templates
 from datetime import timedelta
 
@@ -151,7 +151,6 @@ def display_create_view(
     # Get locations and employment tyepes for dropdown list
     locations = list(ats.get_all_locations(session))
     employments = list(ats.get_all_employments(session))
-    companies = list(ats.get_all_companies(session))
     educations = list(ats.get_all_educations(session))
     skills = ats.get_all_skills(session)
 
@@ -160,7 +159,6 @@ def display_create_view(
     context={
         'locations': locations, 
         'employments': employments,
-        'companies': companies,
         'educations': educations,
         'skills': skills
     }
@@ -168,6 +166,10 @@ def display_create_view(
     if token:
         user = au.get_current_user(token)
         context['user'] = user
+
+        companies = cs.get_companies_by_owner_id(user.id, session)
+        context['companies'] = companies
+
     
     return templates.TemplateResponse(
         request=request,
@@ -227,7 +229,7 @@ def _get_crete_data(
     employment: int = Form(...),
     location: int = Form(...),
     salary: float = Form(...),
-    skills: List[int] = Form(...)
+    skills: list[int] = Form(...)
 ):
     return title, company, description, education, employment, location, salary, skills
 
@@ -241,22 +243,24 @@ def create_new_job_post(
     # Obtain form inputs and dump them in JobPost Create model
     title, company, description, education, employment, location, salary, skills = form_data
 
+    skills = [int(skill) for skill in skills]
+    company_name = cs.view_company_by_id(comp_id=company, session=session)
+    
     job_post_data = CreateJobAdRequest(
         title=title,
         company_id=company,
+        company_name=company_name.name,
         description=description,
         education_id=education,
         salary=salary,
         employment_type_id=employment,
         location_id=location,
-        skill_ids=skills,
-        skill_levels=[],  # Optional field; adjust as necessary
+        skill_ids=skills
     )
 
     # Create new Job object
     new_company = js.create_job_post(data=job_post_data, session=session)
     # Get additional data for the context
-    skills = ats.get_skills_for_job(new_company.id, session)
     logo = ats.get_company_logo(new_company.company_id, session)
     deadline = new_company.created_at + timedelta(days=30)
     token = request.cookies.get('token')
@@ -274,5 +278,5 @@ def create_new_job_post(
     if token:
         user = au.get_current_user(token)
         context['user'] = user
-
-    return show_jobpost(new_company.id)
+    print(new_company)
+    return show_jobpost(id=new_company.id, request=request, session=session)

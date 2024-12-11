@@ -20,7 +20,7 @@ class JobAddResponse(BaseModel):
 class CreateJobAdRequest(BaseModel):
     title: str
     company_id: int
-    company_name: Optional[str]
+    company_name: str
     description: Optional[str]
     education_id: Optional[int]
     salary: Optional[float]
@@ -28,7 +28,7 @@ class CreateJobAdRequest(BaseModel):
     location_id: Optional[int]
     status_id: int = 1
     skill_ids: list[int]
-    skill_levels: Optional[list[int]]
+    skill_levels: Optional[list[int]] = None
 
     class Config:
         orm_mode = True
