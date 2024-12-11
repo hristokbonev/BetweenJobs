@@ -68,6 +68,24 @@ def default_view(
     )
 
 
+@company_router.get('/my_companies')
+def my_companies(request: Request, session: Session = Depends(get_session)):
+    token = request.cookies.get('token')
+    user = au.get_current_user(token)
+    companies = get_companies_by_owner_id(user.id, session)
+    all_companies = len(companies)
+    context = {
+        'request': request,
+        'companies': companies,
+        'all_companies': all_companies
+    }
+    return templates.TemplateResponse(
+        request=request,
+        name='my_companies.html',
+        context=context
+    )
+
+
 @company_router.get('/{id}')
 def show_jobpost(
     id: int,
@@ -96,24 +114,7 @@ def show_jobpost(
         name='company-single.html', 
         context=context
     )
-  
-  
-#   @router.get('/my_companies')
-# def my_companies(request: Request, session: Session = Depends(get_session)):
-#     token = request.cookies.get('token')
-#     user = au.get_current_user(token)
-#     companies = get_companies_by_owner_id(user.id, session)
-#     all_companies = len(companies)
-#     context = {
-#         'request': request,
-#         'companies': companies,
-#         'all_companies': all_companies
-#     }
-#     return templates.TemplateResponse(
-#         request=request,
-#         name='my_companies.html',
-#         context=context
-#     )
+
 
 # @router.get('/{id}')
 # def view_company(request: Request, id: int, session: Session = Depends(get_session)):
