@@ -1,7 +1,6 @@
-from fastapi import APIRouter, Request, Depends, Query, Form, Response
+from fastapi import APIRouter, Request, Depends, Response
 from starlette import status
 from fastapi.responses import RedirectResponse
-from starlette.templating import Jinja2Templates
 from data.database import get_session
 from sqlmodel import Session
 from resumes.resume_models import ResumeRequest

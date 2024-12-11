@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}Resumes{% endblock %}
+
+{% block content %}
+<div class="page-wrapper d-flex flex-column min-vh-100">
+   
+    <section class="section-hero overlay bg-image flex-shrink-0" style="background-image: url('../static/images/hero_1.jpg');" id="resumes-section">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-md-12">
+                    <div class="bg-light p-4 rounded">
+                        <div class="row mb-5 justify-content-center">
+                            <div class="col-md-7 text-center">
+                                <h2 class="section-title mb-2">Your Companies</h2>
+                            </div>
+                        </div>
+                        {% if companies %}
+                        <ul class="company-listings mb-5">
+                            {% for company in companies %}
+                            <li class="company-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center">
+                                <a href="/companies/{{ company.id }}" class="w-100 d-flex align-items-center">
+                                    <div class="company-listing-about d-sm-flex custom-width w-100 justify-content-between mx-4">
+                                        <div class="company-listing-position custom-width w-50 mb-3 mb-sm-0">
+                                            <h2>{{ company.name }}</h2>
+                                        </div>
+                                        <div class="resume-listing-location mb-3 mb-sm-0 custom-width w-25">
+                                            <span class="icon-room"></span> {{ company.created_at }}
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <p>No companies found.</p>
+                        {% endif %}
+                        <a href="/company/create" class="btn btn-primary btn-lg btn-block">+ Register A Company</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+ 
+</div>
+{% endblock %}
+
+{% block extra_extra_css %}
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+
+    .page-wrapper {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    header {
+        flex-shrink: 0; /* Prevents header from shrinking */
+    }
+
+    footer {
+        flex-shrink: 0; /* Prevents footer from shrinking */
+        margin-top: auto; /* Pushes footer to the bottom */
+    }
+
+    .section-hero {
+        flex: 1; /* Ensures this section takes up remaining space and allows for dynamic resizing */
+    }
+
+    .container {
+        flex: 1 0 auto; /* Allow content to grow/shrink dynamically */
+    }
+
+    .section-hero {
+        padding-top: 50px; /* Adjust padding as needed */
+    }
+
+
+.company-listings {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.company-listing {
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  margin-bottom: 20px;
+  padding: 20px !important;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.company-listing:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.company-listing a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.company-listing-logo {
+  flex: 0 0 auto;
+}
+
+.company-listing-about {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-left: 20px;
+}
+
+.company-listing-position {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.company-listing-position h2 {
+  font-size: 1.25rem;
+  margin: 0;
+  color: var(--primary-color);
+}
+
+.company-listing-position strong {
+  display: block;
+  font-size: 1rem;
+  color: #666;
+}
+
+.company-listing-location {
+  font-size: 0.875rem;
+  color: #999;
+}
+
+.company-listing-meta .badge {
+  padding: 0.5em 0.75em;
+  font-weight: 500;
+}
+
+.company-listing-meta .badge-success {
+  background-color: #28a745;
+  color: #000000;
+}
+
+.badge-success {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.badge-warning {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.badge-danger {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.badge-info {
+  background-color: #17a2b8;
+  color: #fff;
+}
+
+.badge-secondary {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.badge-dark {
+  background-color: #343a40;
+  color: #fff;
+}
+</style>
+{% endblock %}
