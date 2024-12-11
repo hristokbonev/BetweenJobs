@@ -123,17 +123,24 @@ def user_has_companies(user_id: int, session: Session) -> bool:
     return bool(user)
 
 def rejected_jobs(user_id: int, session: Session):
-    statement = select(JobAd).join(ResumeMatchJobAd, ResumeMatchJobAd.jobad_id == JobAd.id, isouter=True)\
-    .join(Resume, ResumeMatchJobAd.resume_id == Resume.id, isouter=True).join(User, Resume.user_id == User.id, isouter=True)\
+    statement = select(JobAd).join(ResumeMatchJobAd, ResumeMatchJobAd.jobad_id == JobAd.id)\
+    .join(Resume, ResumeMatchJobAd.resume_id == Resume.id)\
+    .join(User, Resume.user_id == User.id)\
     .where(User.id == user_id, ResumeMatchJobAd.accepted == False)
+
     jobs = session.exec(statement).all()
     jobs = [view_post_with_strings_and_skills(job.id, session) for job in jobs]
     return jobs
 
 def accepted_jobs(user_id: int, session: Session):
-    statement = select(JobAd).join(ResumeMatchJobAd, ResumeMatchJobAd.jobad_id == JobAd.id, isouter=True)\
-    .join(Resume, ResumeMatchJobAd.resume_id == Resume.id, isouter=True)\
-    .join(User, Resume.user_id == User.id, isouter=True).where(User.id == user_id, ResumeMatchJobAd.accepted == True)
+    statement = select(JobAd).join(ResumeMatchJobAd, ResumeMatchJobAd.jobad_id == JobAd.id)\
+    .join(Resume, ResumeMatchJobAd.resume_id == Resume.id)\
+    .join(User, Resume.user_id == User.id).where(User.id == user_id, ResumeMatchJobAd.accepted == True)
     jobs = session.exec(statement).all()
     jobs = [view_post_with_strings_and_skills(job.id, session) for job in jobs]
     return jobs
+
+def owns_job_ad(user_id: int, job_ad_id: int, session: Session) -> bool:
+    statement = select(JobAd).join(Company, Company.id == JobAd.company_id).where(JobAd.id == job_ad_id, Company.author_id == user_id).limit(1)
+    job = session.exec(statement).first()
+    return bool(job)

@@ -13,9 +13,9 @@ def get_all_resumes(session: Session, name: str = None, location: str = None, em
             User.username, EmploymentType.name, Education.degree_level, Location.name, Status.name, Resume.salary
             )
         .join(User, User.id == Resume.user_id)
-        .join(EmploymentType, EmploymentType.id == Resume.employment_type_id)
+        .join(EmploymentType, EmploymentType.id == Resume.employment_type_id, isouter=True)
         .join(Education, Education.id == Resume.education_id, isouter=True)
-        .join(Status, Status.id == Resume.status_id)
+        .join(Status, Status.id == Resume.status_id, isouter=True)
         .join(Location, Location.id == Resume.location_id, isouter=True)
         )
    
@@ -38,8 +38,8 @@ def get_all_resumes(session: Session, name: str = None, location: str = None, em
         statement = statement.where(Status.name == status)
 
     if skills:
-        statement = statement.join(ResumeSkill, ResumeSkill.resume_id == Resume.id)
-        statement = statement.join(Skill, Skill.id == ResumeSkill.skill_id)
+        statement = statement.join(ResumeSkill, ResumeSkill.resume_id == Resume.id, isouter=True)
+        statement = statement.join(Skill, Skill.id == ResumeSkill.skill_id, isouter=True)
 
         statement = statement.group_by(
             Resume.id, 
@@ -81,7 +81,9 @@ def get_all_resumes(session: Session, name: str = None, location: str = None, em
             status=resume[9],
             salary=resume[10])
         
-        resume.skills = session.exec(select(Skill.name).join(ResumeSkill, ResumeSkill.skill_id==Skill.id).join(Resume, Resume.id==ResumeSkill.resume_id).where(Resume.id == resume.id)).all()
+        resume.skills = session.exec(select(Skill.name).
+                                     join(ResumeSkill, ResumeSkill.skill_id==Skill.id, isouter=True).
+                                     join(Resume, Resume.id==ResumeSkill.resume_id, isouter=True).where(Resume.id == resume.id)).all()
         
         resumes_list.append(resume)
 
@@ -91,11 +93,12 @@ def get_all_resumes(session: Session, name: str = None, location: str = None, em
 def get_resume_by_id(id, session: Session):
 
     statement = (select(Resume.id, Resume.user_id, Resume.full_name, Resume.title, Resume.summary,
-                        User.username, EmploymentType.name, Education.degree_level, Location.name, Status.name, Resume.salary).join
-                        (User, User.id == Resume.user_id).join
-                        (EmploymentType,EmploymentType.id == Resume.employment_type_id, isouter=True).join
-                        (Education, Education.id == Resume.education_id, isouter=True).join(Status, Status.id == Resume.status_id).join
-                        (Location, Location.id == Resume.location_id, isouter=True).where(Resume.id == id)).limit(1)
+                        User.username, EmploymentType.name, Education.degree_level, Location.name, Status.name, Resume.salary)
+                        .join(User, User.id == Resume.user_id)
+                        .join(EmploymentType,EmploymentType.id == Resume.employment_type_id, isouter=True)
+                        .join(Education, Education.id == Resume.education_id, isouter=True)
+                        .join(Status, Status.id == Resume.status_id, isouter=True)
+                        .join(Location, Location.id == Resume.location_id, isouter=True).where(Resume.id == id)).limit(1)
 
 
     resume = session.exec(statement).first()
@@ -106,7 +109,8 @@ def get_resume_by_id(id, session: Session):
     resume = ResumeResponse(id=resume[0], user_id=resume[1], full_name=resume[2], title=resume[3], summary=resume[4],
                             username=resume[5], employment_type=resume[6], education=resume[7], location=resume[8], status=resume[9], salary=resume[10])
     
-    resume.skills = session.exec(select(Skill.name).join(ResumeSkill, ResumeSkill.skill_id==Skill.id).join(Resume, Resume.id==ResumeSkill.resume_id).where(Resume.id == resume.id)).all()
+    resume.skills = session.exec(select(Skill.name).join(ResumeSkill, ResumeSkill.skill_id==Skill.id, isouter=True)
+                                 .join(Resume, Resume.id==ResumeSkill.resume_id, isouter=True).where(Resume.id == resume.id)).all()
 
     return resume if resume else None
 
@@ -224,7 +228,8 @@ def get_resume_with_ids_instead_of_names(id, session: Session):
     resume = ResumeResponseWithIds(id=resume.id, user_id=resume.user_id, full_name=resume.full_name, title=resume.title, summary=resume.summary,
                                    employment_type=resume.employment_type_id, education=resume.education_id, location=resume.location_id, status=resume.status_id, salary=resume.salary)
     
-    resume.skills = session.exec(select(Skill.id).join(ResumeSkill, ResumeSkill.skill_id==Skill.id).join(Resume, Resume.id==ResumeSkill.resume_id).where(Resume.id == resume.id)).all()
+    resume.skills = session.exec(select(Skill.id).join(ResumeSkill, ResumeSkill.skill_id==Skill.id, isouter=True)
+                                 .join(Resume, Resume.id==ResumeSkill.resume_id, isouter=True).where(Resume.id == resume.id)).all()
 
     return resume if resume else None
 
@@ -273,7 +278,7 @@ def get_resumes_by_user_id(user_id, session: Session):
             Resume.id, Resume.user_id, Resume.full_name, Resume.title, Resume.summary,
             User.username, EmploymentType.name, Education.degree_level, Location.name, Status.name, Resume.salary
             )
-        .join(User, User.id == Resume.user_id, isouter=True)
+        .join(User, User.id == Resume.user_id)
         .join(EmploymentType, EmploymentType.id == Resume.employment_type_id, isouter=True)
         .join(Education, Education.id == Resume.education_id, isouter=True)
         .join(Status, Status.id == Resume.status_id, isouter=True)
@@ -301,7 +306,8 @@ def get_resumes_by_user_id(user_id, session: Session):
             status=resume[9],
             salary=resume[10])
         
-        resume.skills = session.exec(select(Skill.name).join(ResumeSkill, ResumeSkill.skill_id==Skill.id).join(Resume, Resume.id==ResumeSkill.resume_id).where(Resume.id == resume.id)).all()
+        resume.skills = session.exec(select(Skill.name).join(ResumeSkill, ResumeSkill.skill_id==Skill.id, isouter=True)
+                                     .join(Resume, Resume.id==ResumeSkill.resume_id, isouter=True).where(Resume.id == resume.id)).all()
         
         resumes_list.append(resume)
 

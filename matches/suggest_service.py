@@ -182,7 +182,7 @@ def insert_match(resume_id: int, job_ad_id: int, accepted: bool, session: Sessio
 
 def resume_has_matched_jobad_already(resume_id: int, job_ad_id: int, session: Session) -> bool:
 
-    statement = select(ResumeMatchJobAd).where((ResumeMatchJobAd.resume_id == resume_id) & (ResumeMatchJobAd.jobad_id == job_ad_id))
+    statement = select(ResumeMatchJobAd).where(ResumeMatchJobAd.resume_id == resume_id, ResumeMatchJobAd.jobad_id == job_ad_id).limit(1)
     match = session.exec(statement).first()
 
     if match:

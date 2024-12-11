@@ -10,26 +10,46 @@
     {% macro load_header(user=None) %}
     <header class="site-navbar mt-3">
 
+      
         <div class="container-fluid">
           <div class="row align-items-center">
             <!-- Site Logo -->
             <div class="site-logo col-4"><a href="/home">BetweenJobs</a></div>
             <!-- Navigation -->
+             {% if user %}
             <nav class="mx-auto site-navigation">
               <ul class="site-menu js-clone-nav d-none d-xl-block ml-0 pl-0">
                 <li><a href="/home" class="nav-link active">Home</a></li>
-                <li><a href="/companies" class="nav-link">Companies</a></li>
-                <li><a href="/jobposts" class="nav-link">Job Posts</a></li>
-                <li><a href="/applications" class="nav-link">My Applications</a></li>
                 <li class="has-children">
-                  <a href="#" class="nav-link">Resumes</a>
+                  <a class="nav-link">Companies</a>
+                  <ul class="dropdown">
+                    {% if user and has_company(user.id) %}
+                    <li><a href="/companies/my_companies">My Companies</a></li>
+                    {% endif %}
+                    <li><a href="/companies">Browse Companies</a></li>            
+                  </ul>
+                </li>
+                <li><a href="/jobposts" class="nav-link">Job Posts</a></li>
+                <li class="has-children">
+                  <a class="nav-link">Applications</a>
+                  <ul class="dropdown">
+                      <li><a href="/applications/my_applications">My Applications</a></li>
+                    {% if user and has_company(user.id) %}
+                      <li><a href="/applications/company">My Company Applications</a></li>
+                    {% endif %}
+                  </ul>
+                <li class="has-children">
+                  <a class="nav-link">Resumes</a>
                   <ul class="dropdown">
                     <li><a href="/resumes/my_resumes">My Resumes</a></li>
-                    <li><a href="/resumes">Browse Resumes</a></li>
+                    {% if user and has_company(user.id) %}
+                      <li><a href="/resumes">Browse Resumes</a></li>
+                    {% endif %}
                           </ul>
                       </li>
                   </ul>
               </nav>
+              {% endif %}
               <!-- Right Menu -->
               <div class="right-cta-menu col-4 d-flex justify-content-end align-items-center">
                   <div class="greeting-container">
@@ -37,12 +57,18 @@
                           <p class="greeting-text mb-0">
                               Welcome, <a href="/profile">{{ user.first_name }}!</a>
                           </p>
-                          <a href="/resumes/create" class="btn btn-outline-white border-width-2 d-none d-lg-inline-block">
-                            <span class="mr-2 icon-add"></span>Post a Resume
-                        </a>
+                          {% endif %}
+                          {% if user and has_company(user.id) %}
                           <a href="/jobposts/create" class="btn btn-outline-white border-width-2 d-none d-lg-inline-block">
                               <span class="mr-2 icon-add"></span>Post a Job
                           </a>
+                          {% endif %}
+                          {% if user and not has_company(user.id) %}
+                          <a href="/comapnies/create" class="btn btn-outline-white border-width-2 d-none d-lg-inline-block">
+                            <span class="mr-2 icon-add"></span>Register a Company
+                        </a>
+                        {% endif %}
+                          {% if user %}
                           <a href="/logout" class="btn btn-outline-white border-width-2 d-none d-lg-inline-block">Log out</a>
                       {% else %}
                           <a href="/login" class="btn btn-primary border-width-2 d-none d-lg-inline-block">Log in</a>
