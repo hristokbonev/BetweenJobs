@@ -1,0 +1,348 @@
+{% extends 'base.html' %}
+{% block title %}Recruiter{% endblock %}
+
+{% block content %}
+<section class="section-hero overlay inner-page bg-image" style="background-image: url('images/hero_1.jpg');" id="home-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-7">
+        <h1 class="text-white font-weight-bold">Job Matches</h1>
+        <div class="custom-breadcrumbs">
+          <a href="/home">Home</a> <span class="mx-2 slash">/</span>
+          <span class="text-white"><strong>Job Matches</strong></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if matches %}
+<section class="site-section" id="matches-section">
+  <div class="container">
+    <div class="hover-text reject-text">Reject</div>
+    <div class="hover-text accept-text">Accept</div>
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div id="job-card" class="card">
+          <div class="card-body">
+            <h3 class="card-title" id="job-title"></h3>
+            <p class="card-text"><strong>Location:</strong> <span id="job-location"></span></p>
+            <p class="card-text"><strong>Salary:</strong> <span id="job-salary"></span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% else %}
+<section class="site-section" id="matches-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card">
+          <div class="card-body">
+            <p>No more job matches available.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- Modal -->
+<div class="modal fade" id="jobModal" tabindex="-1" role="dialog" aria-labelledby="jobModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="jobModalLabel">Job Title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p id="modal-job-description">Job Description</p>
+        <p><strong>Company:</strong> <span id="modal-job-company"></span></p>
+        <p><strong>Location:</strong> <span id="modal-job-location">Location</span></p>
+        <p><strong>Salary:</strong> <span id="modal-job-salary">Salary</span></p>
+        <p><strong>Education Needed:</strong> <span id="modal-job-education">Requirements</span></p>
+        <p><strong>Requirements:</strong> <span id="modal-job-requirements">Requirements</span></p>
+        <p><strong>Employment:</strong> <span id="modal-job-employment">Employment</span></p>
+        <p><strong>Status:</strong> <span id="modal-job-status">Status</span></p>
+        <p><strong>Created At:</strong> <span id="modal-job-createdat">Created At</span></p>
+        <!-- Add more job details here -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" id="modal-reject-btn">Reject</button>
+        <button type="button" class="btn btn-success" id="modal-accept-btn">Accept</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+{% block extra_css %}
+<style>
+  /* Hover Text Styles */
+  .hover-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 4rem;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.3s ease, left 0.3s ease;
+    z-index: 9999;
+    pointer-events: none;
+  }
+
+  .reject-text {
+    left: calc(50% - 30%);
+    color: red;
+  }
+
+  .accept-text {
+    left: calc(50% + 30%);
+    color: green;
+  }
+
+  #matches-section {
+    position: relative;
+  }
+
+  #job-card {
+    position: relative;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+    border: 2px solid transparent;
+  }
+
+  #job-card:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+  }
+
+  #matches-section:hover .reject-text,
+  #job-card:hover + .reject-text {
+    opacity: 0.5;
+    left: calc(50% - 35%);
+  }
+
+  #matches-section:hover .accept-text,
+  #job-card:hover + .accept-text {
+    opacity: 0.5;
+    left: calc(50% + 35%);
+  }
+
+  #job-card:hover.left {
+    transform: translateX(-40px);
+    border-color: red;
+  }
+
+  #job-card:hover.right {
+    transform: translateX(40px);
+    border-color: green;
+  }
+
+  /* Original Job Card Styles */
+  #job-card {
+    transition: transform 0.3s ease, border-color 0.3s ease;
+  }
+
+  #job-card:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+  }
+
+  /* Section Hero Styles */
+  .section-hero {
+    position: relative;
+    padding: 9rem 0 6rem 0;
+    background-size: cover;
+    background-position: center center;
+  }
+
+  .section-hero.inner-page {
+    background-position: 50% 50%;
+  }
+
+  .section-hero h1 {
+    color: #fff;
+    font-size: 2.5rem;
+  }
+
+  /* Custom Breadcrumbs */
+  .custom-breadcrumbs a {
+    color: #fff;
+    text-decoration: none;
+  }
+
+  .custom-breadcrumbs .slash {
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0 0.5rem;
+  }
+
+  /* Site Section */
+  .site-section {
+    padding: 7rem 0;
+  }
+
+  /* Card Styles */
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 0.25rem;
+  }
+
+  .card-body {
+    flex: 1 1 auto;
+    min-height: 1px;
+    padding: 1.25rem;
+  }
+
+  .card-title {
+    margin-bottom: 0.75rem;
+  }
+
+  .site-section .no-matches {
+  pointer-events: none;
+  cursor: default;
+  transition: none !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+  .site-section:hover .no-matches .hover-text {
+  opacity: 0 !important;
+  pointer-events: none;
+  display: none;
+}
+
+.no-matches .hover-text {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+
+  </style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  const jobMatches = {{ matches|tojson }};
+  const theResume = {{ resume|tojson }};
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    let currentIndex = 0;
+    const jobCard = document.getElementById('job-card');
+   
+    function loadJob(index) {
+      if (index < jobMatches.length) {  
+        const job = jobMatches[index];
+        document.getElementById('job-title').innerText = job.title;
+        document.getElementById('job-location').innerText = job.location;
+        document.getElementById('job-salary').innerText = job.salary;
+
+        document.getElementById('jobModalLabel').innerText = job.title;
+        document.getElementById('modal-job-description').innerText = job.description;
+        document.getElementById('modal-job-company').innerText = job.company;
+        document.getElementById('modal-job-location').innerText = job.location;
+        document.getElementById('modal-job-salary').innerText = job.salary;
+        document.getElementById('modal-job-education').innerText = job.education;
+        document.getElementById('modal-job-requirements').innerText = job.skills;
+        document.getElementById('modal-job-employment').innerText = job.employment;
+        document.getElementById('modal-job-status').innerText = job.status;
+        document.getElementById('modal-job-createdat').innerText = job.created_at;
+
+        jobCard.addEventListener('mousemove', handleHover);
+        jobCard.addEventListener('click', handleClick);
+        
+      } else {
+        document.getElementById('job-card').innerHTML = '<p>No more matches available.</p>';
+        jobCard.removeEventListener('mousemove', handleHover);
+        jobCard.removeEventListener('click', handleClick);
+        jobCard.classList.remove('left', 'right');
+        jobCard.classList.add('no-matches');
+        
+      }
+    }
+    
+
+    function handleHover(event) {
+
+      const jobCard = document.getElementById('job-card');
+      const rect = jobCard.getBoundingClientRect();
+      const rejectText = document.querySelector('.reject-text');
+      const acceptText = document.querySelector('.accept-text');
+      const x = event.clientX - rect.left;
+
+      if (x < rect.width / 3) {
+        jobCard.classList.add('left');
+        jobCard.classList.remove('right');
+      } else if (x > rect.width * 2 / 3) {
+        jobCard.classList.add('right');
+        jobCard.classList.remove('left');
+      } else {
+        jobCard.classList.remove('left');
+        jobCard.classList.remove('right');
+      }
+    }
+
+    async function sendFeedback(jobId, accepted, resumeId) {
+      const feedbackData = { job_id: jobId, accepted: accepted, resume_id: resumeId };
+      console.log("Sending Feedback:", feedbackData);
+    try {
+        const response = await fetch('/recruiter/feedback', {
+          
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(feedbackData)
+        });
+
+        if (!response.ok) {
+            console.error('Failed to send feedback:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Error sending feedback:', error);
+    }
+}
+
+    function handleClick(event) {
+      
+      const jobCard = document.getElementById('job-card');
+      const rect = jobCard.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+
+      if (currentIndex < jobMatches.length) {
+        const currentJob = jobMatches[currentIndex];
+      if (x < rect.width / 3) {
+        console.log('current job', currentJob);
+        sendFeedback(currentJob.id, false, theResume.id);
+        currentIndex++;
+        loadJob(currentIndex);
+      } else if (x > rect.width * 2 / 3) {
+        console.log('current job', currentJob);
+        sendFeedback(currentJob.id, true, theResume.id);
+        currentIndex++;
+        loadJob(currentIndex);
+      } else {
+        $('#jobModal').modal('show');
+      }
+    }
+    }
+
+
+    loadJob(currentIndex);
+  });
+</script>
+{% endblock %}

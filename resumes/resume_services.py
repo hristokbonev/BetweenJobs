@@ -12,7 +12,7 @@ def get_all_resumes(session: Session, name: str = None, location: str = None, em
             Resume.id, Resume.user_id, Resume.full_name, Resume.title, Resume.summary,
             User.username, EmploymentType.name, Education.degree_level, Location.name, Status.name, Resume.salary
             )
-        .join(User, User.id == Resume.user_id, isouter=True)
+        .join(User, User.id == Resume.user_id)
         .join(EmploymentType, EmploymentType.id == Resume.employment_type_id, isouter=True)
         .join(Education, Education.id == Resume.education_id, isouter=True)
         .join(Status, Status.id == Resume.status_id, isouter=True)
@@ -94,7 +94,7 @@ def get_resume_by_id(id, session: Session):
 
     statement = (select(Resume.id, Resume.user_id, Resume.full_name, Resume.title, Resume.summary,
                         User.username, EmploymentType.name, Education.degree_level, Location.name, Status.name, Resume.salary)
-                        .join(User, User.id == Resume.user_id, isouter=True)
+                        .join(User, User.id == Resume.user_id)
                         .join(EmploymentType,EmploymentType.id == Resume.employment_type_id, isouter=True)
                         .join(Education, Education.id == Resume.education_id, isouter=True)
                         .join(Status, Status.id == Resume.status_id, isouter=True)
@@ -278,7 +278,7 @@ def get_resumes_by_user_id(user_id, session: Session):
             Resume.id, Resume.user_id, Resume.full_name, Resume.title, Resume.summary,
             User.username, EmploymentType.name, Education.degree_level, Location.name, Status.name, Resume.salary
             )
-        .join(User, User.id == Resume.user_id, isouter=True)
+        .join(User, User.id == Resume.user_id)
         .join(EmploymentType, EmploymentType.id == Resume.employment_type_id, isouter=True)
         .join(Education, Education.id == Resume.education_id, isouter=True)
         .join(Status, Status.id == Resume.status_id, isouter=True)
