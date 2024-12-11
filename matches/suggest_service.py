@@ -161,7 +161,7 @@ def suggest_resumes(ad_id: int, session: Session) -> list:
             continue
 
         if ad.salary and resume.salary:
-            if resume.salary*1.3 > ad.salary:
+            if resume.salary > ad.salary*1.3:
                 continue
 
         resume = get_resume_by_id(resume.id, session)
@@ -173,6 +173,8 @@ def suggest_resumes(ad_id: int, session: Session) -> list:
         return matching_resumes
 
     return None
+
+
 
 def insert_match_resume_to_job(resume_id: int, job_ad_id: int, accepted: bool, session: Session):
     
