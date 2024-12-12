@@ -15,7 +15,7 @@
             <div class="mb-5 text-center">
               <h1 class="text-white font-weight-bold">Review Companies</h1>
             </div>
-            <form id="searchForm" method="post" action="/companies/" class="search-jobs-form">
+            <form id="searchForm" method="get" action="/companies/" class="search-jobs-form">
                 <div class="row mb-5">
                   {{ load_search_controls(locations, employments, filters) }}
                 </div>

@@ -52,22 +52,3 @@ def serve_home(request: Request, session: Session = Depends(get_session)):
         context=context
     )
         
-
-# # Utility function for rendering search resuls in search()
-# def _get_search_data(
-#     btnjobs: str = Form(...),
-#     btncompanies: str = Form(...),
-#     btnresumes: str = Form(...),
-#     region: str = Form(...),
-#     job_type: str = Form(...)
-# ):
-#     return btnjobs, btncompanies, btnresumes, region, job_type
-
-
-# @index_router.post('/home')
-# def search_category(
-#     request: Request, 
-#     session: Session = Depends(get_session),
-#     form_data = Depends(_get_search_data)
-# ):
-#     # Unpack selected url navigation

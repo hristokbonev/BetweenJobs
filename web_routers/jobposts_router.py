@@ -58,6 +58,12 @@ def default_view(
     if token:
         user = au.get_current_user(token)
         context['user'] = user
+    else:
+        return templates.TemplateResponse(
+            request=request,
+            name='login.html', 
+            context=context
+        ) 
 
     return templates.TemplateResponse(
         request=request,
@@ -84,8 +90,8 @@ def search(
     form_data = Depends(_get_search_data)
 ):
     # Obtain filtered elements
+    print(form_data)
     keyword, search_field, region, jobtype = form_data
-   
     # Map search_field to function arguments
     filter_args = {}
     if search_field and keyword:
@@ -211,6 +217,12 @@ def show_jobpost(
     if token:
         user = au.get_current_user(token)
         context['user'] = user
+    else:
+        return templates.TemplateResponse(
+            request=request,
+            name='login.html', 
+            context=context
+        ) 
     
 
     return templates.TemplateResponse(
