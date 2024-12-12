@@ -1,16 +1,12 @@
-from fastapi import APIRouter, Request, Depends, Query, Form, Response
+from fastapi import APIRouter, HTTPException, Request, Depends, Query, Form, Response
 from data.database import get_session
 from sqlmodel import Session
 from common.template_config import CustomJinja2Templates
+from users.user_models import UserModel
 from utils import auth as au
 from companies import company_service as cs
 from utils import attribute_service as ats
 from jobposts import jobpost_service as js
-from fastapi import APIRouter, Request, Depends
-from data.database import get_session
-from sqlmodel import Session
-from utils import auth as au
-from common.template_config import CustomJinja2Templates
 from companies.company_service import get_companies_by_owner_id, view_company_by_id
 
 
@@ -140,3 +136,82 @@ def show_jobpost(
 #     return templates.TemplateResponse(
 #         request=request,
 #         name='company-single.html',
+
+
+@company_router.get('/create', response_class=None)
+def create_company(request: Request):
+    return templates.TemplateResponse(
+        name='reg_company.html',
+        context={'request': request}    
+    )
+
+@company_router.get('/edit/{id}', response_class=None)
+def edit_company(request: Request, id: int, session: Session = Depends(get_session)):
+    company = view_company_by_id(id, session)
+    location = ats.get_location_by_id(company.id, session)
+    logo = ats.get_company_logo(company.id, session)
+    skills = ats.get_skills_for_job(company.id, session)
+    token = request.cookies.get('token')
+    context = {
+        'request': request,
+        'company': company,
+        'min': min,
+        'location': location,
+        'logo': logo,
+        'skills': skills
+    }
+
+    if token:
+        user = au.get_current_user(token)
+        context['user'] = user
+
+    return templates.TemplateResponse(
+        name='company-single.html',
+        context=context
+    )
+
+@company_router.post('/create')   
+def create_company_form(
+    request: Request,
+    name: str = Form(...),
+    industry: str = Form(...),
+    location: str = Form(...),
+    description: str = Form(...),
+    email: str = Form(...),
+    phone_number: str = Form(...),
+    company_website: str = Form(None),
+    session: Session = Depends(get_session)
+):
+    token = request.cookies.get('token')
+    user = au.get_current_user(token)
+    if not user:
+        return templates.TemplateResponse(
+            request=request,
+            name='login.html',
+            context={}
+        )
+    
+    # Validate form data
+    if not name or not industry or not location or not description or not email or not phone_number:
+        return templates.TemplateResponse(
+            request=request,
+            name='reg_company.html',
+            context={'request': request, 'error': 'All fields are required.'}
+        )
+    
+    company = cs.create_company(
+        name=name,
+        industry=industry,
+        location=location,
+        description=description,
+        email=email,
+        phone_number=phone_number,
+        company_website=company_website,
+        owner_id=user.id,  # Ensure owner_id is set correctly
+        session=session
+    )
+    return templates.TemplateResponse(
+        request=request,
+        name='company-single.html',
+        context={'company': company}
+    )
