@@ -6,7 +6,7 @@ from sqlmodel import Session
 from utils import auth as au
 from users.user_service import accepted_jobs, rejected_jobs, accepted_resumes, rejected_resumes
 from companies.company_service import get_companies_by_owner_id
-from matches.suggest_service import matched_applications, matched_resumes
+from matches.suggest_service import matched_jobs, matched_resumes
 
 templates = CustomJinja2Templates(directory='templates')
 router = APIRouter(prefix='/applications')
@@ -23,9 +23,10 @@ def show_my_applications(request: Request, session: Session = Depends(get_sessio
             context={}
         )
     
-    accepted_applications = accepted_jobs(session=session, user_id=user.id)
+    matched = matched_jobs(session=session, user_id=user.id)
+    accepted_applications = [job for job in accepted_jobs(session=session, user_id=user.id) if job not in matched]
     rejected_applications = rejected_jobs(session=session, user_id=user.id)
-    matched = matched_applications(session=session, user_id=user.id)
+    
 
     return templates.TemplateResponse(
         request=request,
@@ -45,9 +46,11 @@ def show_companies_applications(request: Request, session: Session = Depends(get
             name='login.html',
             context={}
         )
-    accepted = accepted_resumes(session=session, user_id=user.id)
-    rejected = rejected_resumes(session=session, user_id=user.id)
+    
     matched = matched_resumes(session=session, user_id=user.id)
+    accepted = [resume for resume in accepted_resumes(session=session, user_id=user.id) if resume not in matched]
+    rejected = rejected_resumes(session=session, user_id=user.id)
+
     
     return templates.TemplateResponse(
         request=request,

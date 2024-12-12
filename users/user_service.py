@@ -129,7 +129,7 @@ def rejected_jobs(user_id: int, session: Session):
     statement = select(JobAd).join(ResumeMatchJobAd, ResumeMatchJobAd.jobad_id == JobAd.id)\
     .join(Resume, ResumeMatchJobAd.resume_id == Resume.id)\
     .join(User, Resume.user_id == User.id)\
-    .where(User.id == user_id, ResumeMatchJobAd.accepted == False)
+    .where(User.id == user_id, ResumeMatchJobAd.accepted == False).distinct()
 
     jobs = session.exec(statement).all()
     jobs = [view_post_with_strings_and_skills(job.id, session) for job in jobs]
@@ -139,7 +139,7 @@ def rejected_jobs(user_id: int, session: Session):
 def accepted_jobs(user_id: int, session: Session):
     statement = select(JobAd).join(ResumeMatchJobAd, ResumeMatchJobAd.jobad_id == JobAd.id)\
     .join(Resume, ResumeMatchJobAd.resume_id == Resume.id)\
-    .join(User, Resume.user_id == User.id).where(User.id == user_id, ResumeMatchJobAd.accepted == True)
+    .join(User, Resume.user_id == User.id).where(User.id == user_id, ResumeMatchJobAd.accepted == True).distinct()
     jobs = session.exec(statement).all()
     jobs = [view_post_with_strings_and_skills(job.id, session) for job in jobs]
     return jobs
@@ -154,7 +154,7 @@ def owns_job_ad(user_id: int, job_ad_id: int, session: Session) -> bool:
 def accepted_resumes(user_id: int, session: Session):
     statement = select(Resume).join(JobAdMatchResume, JobAdMatchResume.resume_id == Resume.id)\
     .join(JobAd, JobAdMatchResume.jobad_id == JobAd.id).join(Company, Company.id == JobAd.company_id)\
-    .where(Company.author_id == user_id, JobAdMatchResume.accepted == True)
+    .where(Company.author_id == user_id, JobAdMatchResume.accepted == True).distinct()
 
     resumes = session.exec(statement).all()
     return resumes
@@ -163,7 +163,7 @@ def accepted_resumes(user_id: int, session: Session):
 def rejected_resumes(user_id: int, session: Session):
     statement = select(Resume).join(JobAdMatchResume, JobAdMatchResume.resume_id == Resume.id)\
     .join(JobAd, JobAdMatchResume.jobad_id == JobAd.id).join(Company, Company.id == JobAd.company_id)\
-    .where(Company.author_id == user_id, JobAdMatchResume.accepted == False)
+    .where(Company.author_id == user_id, JobAdMatchResume.accepted == False).distinct()
 
     resumes = session.exec(statement).all()
     return resumes

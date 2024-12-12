@@ -7,7 +7,7 @@ import os
 from numpy import dot
 from numpy.linalg import norm
 from data.db_models import Company, JobAd, JobAdMatchResume, Resume, ResumeMatchJobAd, User
-from sqlmodel import select
+from sqlmodel import select, and_
 from resumes.resume_services import get_resume_by_id
 
 load_dotenv()
@@ -221,22 +221,46 @@ def jobad_has_matched_resume_already(resume_id: int, job_ad_id: int, session: Se
     return False
 
 
-def matched_applications(session: Session, user_id: int) -> list:
+def matched_jobs(session: Session, user_id: int) -> list:
 
-    statement = select(JobAd).join(ResumeMatchJobAd, ResumeMatchJobAd.jobad_id == JobAd.id)\
-    .join(Resume, ResumeMatchJobAd.resume_id == Resume.id)\
-    .join(User, Resume.user_id == User.id)\
-    .where(User.id == user_id, ResumeMatchJobAd.accepted == True)
+    statement = (
+        select(JobAd)
+        .join(JobAdMatchResume)
+        .join(Resume)
+        .join(ResumeMatchJobAd)
+        .where(
+            JobAdMatchResume.resume_id == ResumeMatchJobAd.resume_id,
+            JobAdMatchResume.jobad_id == ResumeMatchJobAd.jobad_id,
+            JobAdMatchResume.accepted == True,
+            ResumeMatchJobAd.accepted == True,
+            Resume.user_id == user_id
+        )
+    ).distinct()
+
+    results = session.exec(statement).all()
+    return results
+
+        
     jobs = session.exec(statement).all()
-    jobs = [view_post_with_strings_and_skills(job.id, session) for job in jobs]
 
     return jobs
 
 def matched_resumes(session: Session, user_id: int):
     
-    statement = select(Resume).join(JobAdMatchResume, JobAdMatchResume.resume_id == Resume.id)\
-    .join(JobAd, JobAdMatchResume.jobad_id == JobAd.id).join(Company, Company.id == JobAd.company_id)\
-    .where(Company.author_id == user_id, JobAdMatchResume.accepted == True)
+    statement = (
+        select(Resume)
+        .join(ResumeMatchJobAd)
+        .join(JobAd)
+        .join(JobAdMatchResume)
+        .join(Company, Company.id == JobAd.company_id)
+        .where(
+            ResumeMatchJobAd.resume_id == JobAdMatchResume.resume_id,
+            ResumeMatchJobAd.jobad_id == JobAdMatchResume.jobad_id,
+            ResumeMatchJobAd.accepted == True,
+            JobAdMatchResume.accepted == True,
+            Company.author_id == user_id
+        )
+    ).distinct()
 
     resumes = session.exec(statement).all()
     resumes = [get_resume_by_id(resume.id, session) for resume in resumes]
