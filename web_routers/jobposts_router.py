@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Request, Depends, Query, Form
+from fastapi.responses import RedirectResponse
 from data.database import get_session
 from sqlmodel import Session
 from jobposts.jobpost_models import CreateJobAdRequest
@@ -238,6 +239,10 @@ def show_jobpost(
         'deadline': deadline,
         'logo': logo
     }
+
+
+    if not token:
+        return RedirectResponse('/login')
 
     if token:
         user = au.get_current_user(token)
