@@ -29,7 +29,15 @@
                     <li><a href="/companies">Browse Companies</a></li>            
                   </ul>
                 </li>
-                <li><a href="/jobposts" class="nav-link">Job Posts</a></li>
+                  <li class="has-children">
+                  <a class="nav-link">Job Posts</a>
+                  <ul class="dropdown">
+                    <li><a href="/jobposts">Job Posts</a></li>
+                    {% if user and has_company(user.id) %}
+                    <li><a href="/jobposts/my_jobposts">My Job Posts</a></li>
+                    {% endif %}
+                  </ul>
+                </li>
                 <li class="has-children">
                   <a class="nav-link">Applications</a>
                   <ul class="dropdown">

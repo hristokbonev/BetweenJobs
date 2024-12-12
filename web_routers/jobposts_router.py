@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Request, Depends, Query, Form, Response
+from fastapi import APIRouter, Request, Depends, Query, Form
+from fastapi.responses import RedirectResponse
 from data.database import get_session
 from sqlmodel import Session
 from jobposts.jobpost_models import CreateJobAdRequest
@@ -8,7 +9,7 @@ from utils import attribute_service as ats
 from companies import company_service as cs
 from common.template_config import CustomJinja2Templates
 from datetime import timedelta
-
+from fastapi.encoders import jsonable_encoder
 
 jobs_router = APIRouter(prefix='/jobposts')
 jobs_edit_router = APIRouter()
@@ -178,6 +179,37 @@ def display_create_view(
     )
     
 
+@jobs_router.get('/my_jobposts')
+def show_my_jobposts(
+    request: Request, 
+    session: Session = Depends(get_session)
+):
+    token = request.cookies.get('token')
+    user = au.get_current_user(token)
+    if not user:
+        return templates.TemplateResponse(
+            request=request,
+            name='login.html',
+            context={}
+        )
+    
+    companies = cs.get_companies_by_owner_id(user.id, session)
+    
+    job_adds = [job for company in companies for job in js.view_jobs_by_company_id_with_strings(company.id, session)]
+    all_jobs = len(job_adds)
+
+    context = {
+        'jobadds': job_adds,
+        'alladds': all_jobs
+    }
+
+    return templates.TemplateResponse(
+        request=request,
+        name='my-jobposts.html',
+        context=context
+    )
+
+
 
 @jobs_router.get('/{id}')
 def show_jobpost(
@@ -207,6 +239,10 @@ def show_jobpost(
         'deadline': deadline,
         'logo': logo
     }
+
+
+    if not token:
+        return RedirectResponse('/login')
 
     if token:
         user = au.get_current_user(token)
