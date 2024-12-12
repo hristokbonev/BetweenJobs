@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Between Jobs Job Ads{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet" href="../static/css/quill.snow.css">  
+    <link rel="stylesheet" href="../static/css/job-post.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select/dist/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="../static/css/post-job.css">
+{% endblock %}
+{% block content %}
+
+    <!-- HOME -->
+    <section class="section-hero overlay inner-page bg-image" style="background-image: url('../static/images/hero_1.jpg');" id="home-section">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-7">
+            <h1 class="text-white font-weight-bold">Post A Job</h1>
+            <div class="custom-breadcrumbs">
+              <a href="#">Home</a> <span class="mx-2 slash">/</span>
+              <a href="#">Job</a> <span class="mx-2 slash">/</span>
+              <span class="text-white"><strong>Post a Job</strong></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="site-section">
+      <div class="container">
+
+        <div class="row align-items-center mb-5">
+          <div class="col-lg-8 mb-4 mb-lg-0">
+            <div class="d-flex align-items-center">
+              <div>
+                <h2>Post A Job</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="postJobModalLabel">Post a Job</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                  <form action="/jobposts/create" method="POST">
+                      <div class="mb-3">
+                          <label for="jobTitle" class="form-label">Please fill in the form</label>
+                          <input type="text" class="form-control" id="jobTitle" name="title" required>
+                      </div>
+                      <div class="mb-3">
+                          <label for="jobCompany" class="form-label">Company</label>
+                          <select class="form-select" id="jobCompany" name="company" required>
+                              {% for company in companies %}
+                                  <option value="{{ company.id }}">{{ company.name }}</option>
+                              {% endfor %}
+                          </select>
+                      </div>
+                      <div class="mb-3">
+                          <label for="jobDescription" class="form-label">Job Description</label>
+                          <textarea class="form-control" id="jobDescription" name="description" rows="4" required></textarea>
+                      </div>
+                      <div class="mb-3">
+                          <label for="jobEducation" class="form-label">Education</label>
+                          <select class="form-select" id="jobEducation" name="education" required>
+                              {% for education in educations %}
+                                  <option value="{{ education.id }}">{{ education.degree_level }}</option>
+                              {% endfor %}
+                          </select>
+                      </div>
+                      <div class="mb-3">
+                          <label for="jobEmployment" class="form-label">Employment Type</label>
+                          <select class="form-select" id="jobEmployment" name="employment" required>
+                              {% for employment in employments %}
+                                  <option value="{{ employment.id }}">{{ employment.name }}</option>
+                              {% endfor %}
+                          </select>
+                      </div>
+                      <div class="mb-3">
+                          <label for="jobLocation" class="form-label">Location</label>
+                          <select class="form-select" id="jobLocation" name="location" required>
+                              {% for location in locations %}
+                                  <option value="{{ location.id }}">{{ location.name }}</option>
+                              {% endfor %}
+                          </select>
+                      </div>
+                      <div class="mb-3">
+                          <label for="skills" class="form-label">Required Skills</label>
+                          <select name="skills" class="selectpicker dropup-auto" data-style="btn-white btn-lg" data-width="100%" data-live-search="true" multiple>
+                            {% for skill in skills %}
+                              <option value="{{ skill.id }}">{{ skill.name }}</option>
+                            {% endfor %}
+                          </select>
+                      </div>
+                      <div class="mb-3">
+                          <label for="jobSalary" class="form-label">Salary</label>
+                          <input type="text" class="form-control" id="jobSalary" name="salary" required>
+                      </div>
+                      <button type="submit" class="btn btn-primary">Submit</button>
+                  </form>
+              </div>
+          </div>
+      </div>
+    </section>
+    {% block extra_scripts %}
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+    {% endblock %}
+    
+    {% endblock %}

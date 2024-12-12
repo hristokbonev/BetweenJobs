@@ -28,7 +28,7 @@ class CreateJobAdRequest(BaseModel):
     location_id: Optional[int]
     status_id: int = 1
     skill_ids: list[int]
-    skill_levels: Optional[list[int]]
+    skill_levels: Optional[list[int]] = None
 
     class Config:
         orm_mode = True
@@ -60,6 +60,7 @@ class JobAdResponseWithNamesNotId(BaseModel):
     location: str
     status: str | None = None
     skills: list[str] | None = None
+    id: int | None = None
 
     class Config:
         orm_mode = True

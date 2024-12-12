@@ -5,12 +5,13 @@ from jose import jwt, JWTError
 from fastapi import HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
-from sqlmodel import Session
+from sqlmodel import Session, select
 from data.database import engine
+from data.db_models import User
 from users import user_service as us
+import logging
 
-
-
+logger = logging.getLogger(__name__)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/users/login', auto_error=False)
 
@@ -26,12 +27,26 @@ def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def authenticate_user(username: str, password: str):
+def authenticate_user(identifier: str, password: str):
     with Session(engine) as session:
-        user = us.get_user_by_username(session, username)
-        if not user or not verify_password(password, user.password):
+        user = None
+        if identifier.isdigit():  
+            user = us.view_user_by_id(int(identifier), session)
+        else: 
+            statement = select(User).where(User.username == identifier)
+            user = session.exec(statement).first()
+
+        if not user:
+            logger.debug(f"Authentication failed: User '{identifier}' not found.")
             return None
+
+        if not verify_password(password, user.password):
+            logger.debug(f"Authentication failed: Incorrect password for user '{identifier}'.")
+            return None
+
+        logger.debug(f"User '{identifier}' authenticated successfully.")
         return user
+
 
 def create_access_token(data:dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
@@ -62,21 +77,10 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         return None
     payload = verify_token(token)
     username = payload.get('sub') if payload else None
-    if not username:
+    user_id = payload.get('user_id') if payload else None
+    if not username or not user_id:
         return None
-    return us.get_user(username, session=Session(engine))
+    return us.get_user(username, user_id, session=Session(engine))
 
 
-# def get_current_admin_user(user: User = Depends(get_current_user)):
-#     if not user.is_admin:
-#         raise HTTPException(status_code=403, detail="User is not an admin")
-#     return user
 
-
-def get_current_admin_user(token: str = Depends(oauth2_scheme)):
-    user = get_current_user(token)  # Assuming this function returns a User or None
-    if user is None:
-        raise HTTPException(status_code=401, detail="User not authenticated")
-    if not user.is_admin:
-        raise HTTPException(status_code=403, detail="User is not an admin")
-    return None

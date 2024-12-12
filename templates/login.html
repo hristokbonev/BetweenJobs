@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Between Jobs</title>
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="../static/css/custom-bs.css">
+    <link rel="stylesheet" href="../static/css/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="../static/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="../static/fonts/icomoon/style.css">
+    <link rel="stylesheet" href="../static/fonts/line-icons/style.css">
+    <link rel="stylesheet" href="../static/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="../static/css/animate.min.css">
+    <link rel="stylesheet" href="../static/css/style.css">
+    <!-- <link rel="stylesheet" href="../static/css/user.css">  -->
+</head>
+
+<body id="top">
+
+<!-- Loader -->
+  <div id="overlayer"></div>
+  <div class="loader">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+
+
+    <div class="site-wrap">
+        <!-- Header -->
+        <header class="site-navbar mt-9">
+            <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="site-logo col-6"><a href="/home">BetweenJobs</a></div>
+                    <nav class="mx-auto site-navigation">
+                        <ul class="site-menu js-clone-nav d-none d-xl-block ml-0 pl-0">
+                            <li><a href="/home">Home</a></li>
+                        </ul>
+                    </nav>             
+                </div>
+            </div>
+
+            
+        </header>
+
+        <!-- Login Section -->
+        <section class="section-hero overlay bg-image" style="background-image: url('../static/images/hero_1.jpg'); background-size: cover; background-repeat: no-repeat; background-position: center center; height: 100vh; width: 100%; position: relative;">
+            <div class="container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-md-10">
+                        <div class="form-box login-container">
+                            <h2 class="text-white text-center mb-4">Log In to Your Account</h2>
+
+
+                            <!-- Login Form -->
+                            <form method="post" action="/login" class="p-4 bg-light">
+                              <input type="hidden" name="next" value="/login-home.html">
+                                <div class="form-group">
+                                  <label for="username">Username</label>
+                                  <input type="username" id="username" name="username" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <input type="password" id="password" name="password" required>
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary btn-block">Log In</button>
+                                </div>
+                                <div class="text-center footer">
+                                    <p>Don't have an account? <a href="/register">Sign up</a></p>
+                                </div>
+
+                                <div class="form-group text-right">
+                                    <a href="/reset_password" class="forgot-password-link">Forgot your password?</a>
+                                </div>
+                            </form>
+
+                            <!-- Error Message -->
+                            {% if error %}
+                            <section id="errors">
+                                <p style="color: red;">{{ error }}</p>
+                            </section>
+                            {% endif %}                         
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="container">
+                <div class="row text-center">
+                    <div class="col-12">
+                        <p class="copyright">
+                            &copy; <script>document.write(new Date().getFullYear());</script> All rights reserved | Between Jobs
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../static/js/jquery.min.js"></script>
+    <script src="../static/js/bootstrap.bundle.min.js"></script>
+    <script src="../static/js/jquery.fancybox.min.js"></script>
+    <script src="../static/js/custom.js"></script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% block title %}Create a Resume{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="css/quill.snow.css">
+{% endblock %}
+
+{% block content %}
+
+    <!-- HOME -->
+    <section class="section-hero overlay inner-page bg-image" style="background-image: url('images/hero_1.jpg');" id="home-section">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-7">
+            <h1 class="text-white font-weight-bold">Create A Resume</h1>
+            <div class="custom-breadcrumbs">
+              <a href="#">Home</a> <span class="mx-2 slash">/</span>
+              <a href="/resumes/my_resumes">My Resumes</a> <span class="mx-2 slash">/</span>
+              <span class="text-white"><strong>Create A Resume</strong></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="site-section">
+      <div class="container">
+
+        <div class="row align-items-center mb-5">
+          <div class="col-lg-8 mb-4 mb-lg-0">
+            <div class="d-flex align-items-center">
+              <div>
+                <h2>Create A Resume</h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="row">
+              <div class="col-6">
+                <a href="#" class="btn btn-block btn-primary btn-md">Save Resume</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mb-5">
+          <div class="col-lg-12">
+            <form class="p-4 p-md-5 border rounded" method="post" id="resume-form" action="/resumes/create">
+              <h3 class="text-black mb-5 border-bottom pb-2">Resume Details</h3>
+
+              <div class="form-group">
+                <label for="title">Resume Title</label>
+                <input type="text" class="form-control" id="title" name="title" placeholder="Product Designer">
+              </div>
+
+              <div class="form-group">
+                <label for="full-name">Full Name</label>
+                <input type="text" class="form-control" id="full-name" placeholder="e.g. Tom Smith" name="full_name">
+                </div>
+
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="text" class="form-control" id="email" placeholder="you@yourdomain.com" name="email">
+              </div>
+
+              <div class="form-group">
+                <label for="location">Location</label>
+                <select class="selectpicker border rounded" id="location" data-style="btn-black" 
+                data-width="100%" data-live-search="true" title="Select Location" name="location">
+                  {% for location in locations %}
+                    <option>{{ location.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+                <div class="form-group">
+                <label for="education">Education</label>
+                <select class="selectpicker border rounded" id="education" data-style="btn-black" 
+                data-width="100%" data-live-search="true" title="Select Education" name="education">
+                    {% for education in educations %}
+                        <option>{{ education.degree_level }}</option>
+                    {% endfor %}
+                </select>
+                </div>
+                    
+
+              <div class="form-group">
+                <label for="employment">Employment</label>
+                <select class="selectpicker border rounded" id="employment" data-style="btn-black" 
+                data-width="100%" data-live-search="true" title="Select Employment Type" name="employment">
+                    {% for employment in employments %}
+                        <option>{{ employment.name }}</option>
+                    {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="status">Status</label>
+                <br>
+                <div class="btn-group" data-toggle="buttons">
+                <label class="btn btn-outline-primary">
+                    <input type="radio" name="status" value="Active" checked> Active
+                </label>
+                <label class="btn btn-outline-primary">
+                    <input type="radio" name="status" value="Hidden"> Hidden
+                </label>
+                <label class="btn btn-outline-primary">
+                    <input type="radio" name="status" value="Private"> Private
+                </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="summary">Resume Summary</label>
+                <div class="editor" id="editor-1">
+                    <textarea id="summary" name="summary" rows="5" required></textarea>
+                </div>
+            </div>
+
+            </form>
+          </div>
+
+         
+        </div>
+        <div class="row align-items-center mb-5">
+          
+          <div class="col-lg-4 ml-auto">
+            <div class="row">
+              <div class="col-6">
+                <button type="submit" class="btn btn-block btn-primary btn-md" id="submit-button">Create Resume</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+{% endblock %}
+
+{% block extra_extra_css %}
+<style>
+    #summary {
+      width: 100%; /* Makes the textarea extend to fill its container */
+    }
+  </style>
+{% endblock %}
+    
+{% block extra_scripts %}
+    <script src="js/quill.min.js"></script>
+    <script>
+        document.getElementById('submit-button').addEventListener('click', function() {
+            document.getElementById('resume-form').submit();
+        });
+    </script>
+{% endblock %}
+    
+    

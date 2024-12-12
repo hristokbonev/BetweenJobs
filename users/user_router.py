@@ -11,19 +11,6 @@ from utils.auth import get_current_user
 
 router = APIRouter(prefix='/api/users', tags=["Users"])
 
-@router.get('/', response_model=List[UsersResponse])
-def show_users(session: Session = Depends(get_session), current_user: UserModel = Depends(get_current_user)):
-
-    if not current_user:
-        raise UnauthorizedException(detail='You must be logged in to view users')
-
-    users = us.view_users(session)
-
-    if not users:
-        raise NotFoundException(detail='No users found')
-
-    return users
-    
     
 @router.get('/users/{user_id}', response_model=UsersResponse)
 def get_user_by_id(user_id: int, session: Session = Depends(get_session), current_user: UserModel = Depends(get_current_user)):

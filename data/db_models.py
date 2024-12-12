@@ -129,6 +129,7 @@ class Resume(SQLModel, table=True):
     status_id: int = Field(index=True, foreign_key="Statuses.id", default=1)
     employment_type_id: int = Field(foreign_key="EmploymentTypes.id", index=True)
     id: int = Field(primary_key=True, index=True)
+    salary: Optional[int] = Field(default=None, index=True)
 
 
     user: "User" = Relationship(back_populates="resumes")
@@ -212,3 +213,21 @@ class Variables(SQLModel, table=True):
     __tablename__ = "Variables"
     var_id: int= Field(primary_key=True, index=True)
     email_test_mode: bool
+
+
+class CompanyLogo(SQLModel, table=True):
+    __tablename__ = "CompanyLogos"
+    company_id: int= Field(primary_key=True, index=True)
+    logo_url: str
+
+class ResumeMatchJobAd(SQLModel, table=True):
+    __tablename__ = "ResumesMatchJobAds"
+    resume_id: int = Field(foreign_key="Resumes.id", primary_key=True)
+    jobad_id: int = Field(foreign_key="JobAds.id", primary_key=True)
+    accepted: bool
+
+class JobAdMatchResume(SQLModel, table=True):
+    __tablename__ = "JobAdsMatchResumes"
+    jobad_id: int = Field(foreign_key="JobAds.id", primary_key=True)
+    resume_id: int = Field(foreign_key="Resumes.id", primary_key=True)
+    accepted: bool

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+{% set user = get_user(request) %}
+{% block content %}
+
+<section class="section-hero overlay bg-image" style="background-image: url('../static/images/hero_1.jpg');" id="profile-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">User Profile</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if error %}
+                        <div class="alert alert-danger">{{ error }}</div>
+                        {% endif %}
+                        {% if success %}
+                        <div class="alert alert-success">{{ success }}</div>
+                        {% endif %}
+                        <form method="post" action="/profile">
+                            <input type="hidden" name="id" value="{{ user.id }}">
+                            <div class="mb-3">
+                                <label class="form-label">Username</label>
+                                <input type="text" class="form-control" name="username" value="{{ user.username }}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" value="{{ user.email }}" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">First Name</label>
+                                <input type="text" class="form-control" name="first_name" value="{{ user.first_name }}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" class="form-control" name="last_name" value="{{ user.last_name }}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">New Password</label>
+                                <input type="password" class="form-control" name="new_password">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Confirm Password</label>
+                                <input type="password" class="form-control" name="confirm_password">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Job Title</label>
+                                <input type="text" class="form-control" name="job_title" value="{{ user.job_title }}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Location</label>
+                                <input type="text" class="form-control" name="location" value="{{ user.location }}">
+                            </div>
+                            <div class="mb-3">
+                                <button type="submit" class="btn btn-primary">Update Profile</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="site-section bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h3 class="mb-4">My Applications</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Job Title</th>
+                            <th>Company</th>
+                            <th>Applied Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for application in user.job_applications %}
+                        <tr>
+                            <td>{{ application.job_title }}</td>
+                            <td>{{ application.company_name }}</td>
+                            <td>{{ application.applied_date }}</td>
+                            <td>
+                                {% if application.status == 'Pending' %}
+                                <span class="badge bg-warning">{{ application.status }}</span>
+                                {% elif application.status == 'Accepted' %}
+                                <span class="badge bg-success">{{ application.status }}</span>
+                                {% elif application.status == 'Rejected' %}
+                                <span class="badge bg-danger">{{ application.status }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

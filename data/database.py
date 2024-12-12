@@ -1,4 +1,4 @@
-from sqlmodel import SQLModel, create_engine, Session
+from sqlmodel import SQLModel, Session, create_engine
 from data.config import DATABASE_URL
 
 # Database engine setup
@@ -12,6 +12,7 @@ def create_db():
 def get_session():
     with Session(engine) as session:
         yield session
+        
 
 # # Optional: Function to dispose engine after use
 # def start_db():

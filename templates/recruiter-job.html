@@ -1,0 +1,348 @@
+{% extends 'base.html' %}
+{% block title %}Recruiter{% endblock %}
+
+{% block content %}
+<section class="section-hero overlay inner-page bg-image" style="background-image: url('images/hero_1.jpg');" id="home-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-7">
+        <h1 class="text-white font-weight-bold">Resume Matches</h1>
+        <div class="custom-breadcrumbs">
+          <a href="/home">Home</a> <span class="mx-2 slash">/</span>
+          <span class="text-white"><strong>Resume Matches</strong></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if matches %}
+<section class="site-section" id="matches-section">
+  <div class="container">
+    <div class="hover-text reject-text">Reject</div>
+    <div class="hover-text accept-text">Accept</div>
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div id="resume-card" class="card">
+          <div class="card-body">
+            <h3 class="card-title" id="resume-title"></h3>
+            <p class="card-text"><strong>Location:</strong> <span id="resume-location"></span></p>
+            <p class="card-text"><strong>Salary:</strong> <span id="resume-salary"></span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% else %}
+<section class="site-section" id="matches-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card">
+          <div class="card-body">
+            <p>No more resume matches available.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- Modal -->
+<div class="modal fade" id="resumeModal" tabindex="-1" role="dialog" aria-labelledby="resumeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="resumeModalLabel">Resume Title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p id="modal-resume-description">Resume Description</p>
+        <p><strong>Company:</strong> <span id="modal-resume-company"></span></p>
+        <p><strong>Location:</strong> <span id="modal-resume-location">Location</span></p>
+        <p><strong>Salary:</strong> <span id="modal-resume-salary">Salary</span></p>
+        <p><strong>Education Needed:</strong> <span id="modal-resume-education">Requirements</span></p>
+        <p><strong>Requirements:</strong> <span id="modal-resume-requirements">Requirements</span></p>
+        <p><strong>Employment:</strong> <span id="modal-resume-employment">Employment</span></p>
+        <p><strong>Status:</strong> <span id="modal-resume-status">Status</span></p>
+        <p><strong>Created At:</strong> <span id="modal-resume-createdat">Created At</span></p>
+        <!-- Add more resume details here -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" id="modal-reject-btn">Reject</button>
+        <button type="button" class="btn btn-success" id="modal-accept-btn">Accept</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+{% block extra_css %}
+<style>
+  /* Hover Text Styles */
+  .hover-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 4rem;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.3s ease, left 0.3s ease;
+    z-index: 9999;
+    pointer-events: none;
+  }
+
+  .reject-text {
+    left: calc(50% - 30%);
+    color: red;
+  }
+
+  .accept-text {
+    left: calc(50% + 30%);
+    color: green;
+  }
+
+  #matches-section {
+    position: relative;
+  }
+
+  #resume-card {
+    position: relative;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+    border: 2px solid transparent;
+  }
+
+  #resume-card:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+  }
+
+  #matches-section:hover .reject-text,
+  #resume-card:hover + .reject-text {
+    opacity: 0.5;
+    left: calc(50% - 35%);
+  }
+
+  #matches-section:hover .accept-text,
+  #resume-card:hover + .accept-text {
+    opacity: 0.5;
+    left: calc(50% + 35%);
+  }
+
+  #resume-card:hover.left {
+    transform: translateX(-40px);
+    border-color: red;
+  }
+
+  #resume-card:hover.right {
+    transform: translateX(40px);
+    border-color: green;
+  }
+
+  /* Original resume Card Styles */
+  #resume-card {
+    transition: transform 0.3s ease, border-color 0.3s ease;
+  }
+
+  #resume-card:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+  }
+
+  /* Section Hero Styles */
+  .section-hero {
+    position: relative;
+    padding: 9rem 0 6rem 0;
+    background-size: cover;
+    background-position: center center;
+  }
+
+  .section-hero.inner-page {
+    background-position: 50% 50%;
+  }
+
+  .section-hero h1 {
+    color: #fff;
+    font-size: 2.5rem;
+  }
+
+  /* Custom Breadcrumbs */
+  .custom-breadcrumbs a {
+    color: #fff;
+    text-decoration: none;
+  }
+
+  .custom-breadcrumbs .slash {
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0 0.5rem;
+  }
+
+  /* Site Section */
+  .site-section {
+    padding: 7rem 0;
+  }
+
+  /* Card Styles */
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 0.25rem;
+  }
+
+  .card-body {
+    flex: 1 1 auto;
+    min-height: 1px;
+    padding: 1.25rem;
+  }
+
+  .card-title {
+    margin-bottom: 0.75rem;
+  }
+
+  .site-section .no-matches {
+  pointer-events: none;
+  cursor: default;
+  transition: none !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+  .site-section:hover .no-matches .hover-text {
+  opacity: 0 !important;
+  pointer-events: none;
+  display: none;
+}
+
+.no-matches .hover-text {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+
+  </style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  const resumeMatches = {{ matches|tojson }};
+  const theJob = {{ job|tojson }};
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    let currentIndex = 0;
+    const resumeCard = document.getElementById('resume-card');
+   
+    function loadResume(index) {
+      if (index < resumeMatches.length) {  
+        const resume = resumeMatches[index];
+        document.getElementById('resume-title').innerText = resume.title;
+        document.getElementById('resume-location').innerText = resume.location;
+        document.getElementById('resume-salary').innerText = resume.salary;
+
+        document.getElementById('resumeModalLabel').innerText = resume.title;
+        document.getElementById('modal-resume-description').innerText = resume.description;
+        document.getElementById('modal-resume-company').innerText = resume.company;
+        document.getElementById('modal-resume-location').innerText = resume.location;
+        document.getElementById('modal-resume-salary').innerText = resume.salary;
+        document.getElementById('modal-resume-education').innerText = resume.education;
+        document.getElementById('modal-resume-requirements').innerText = resume.skills;
+        document.getElementById('modal-resume-employment').innerText = resume.employment;
+        document.getElementById('modal-resume-status').innerText = resume.status;
+        document.getElementById('modal-resume-createdat').innerText = resume.created_at;
+
+        resumeCard.addEventListener('mousemove', handleHover);
+        resumeCard.addEventListener('click', handleClick);
+        
+      } else {
+        document.getElementById('resume-card').innerHTML = '<p>No more matches available.</p>';
+        resumeCard.removeEventListener('mousemove', handleHover);
+        resumeCard.removeEventListener('click', handleClick);
+        resumeCard.classList.remove('left', 'right');
+        resumeCard.classList.add('no-matches');
+        
+      }
+    }
+    
+
+    function handleHover(event) {
+
+      const resumeCard = document.getElementById('resume-card');
+      const rect = resumeCard.getBoundingClientRect();
+      const rejectText = document.querySelector('.reject-text');
+      const acceptText = document.querySelector('.accept-text');
+      const x = event.clientX - rect.left;
+
+      if (x < rect.width / 3) {
+        resumeCard.classList.add('left');
+        resumeCard.classList.remove('right');
+      } else if (x > rect.width * 2 / 3) {
+        resumeCard.classList.add('right');
+        resumeCard.classList.remove('left');
+      } else {
+        resumeCard.classList.remove('left');
+        resumeCard.classList.remove('right');
+      }
+    }
+
+    async function sendFeedback(resumeId, accepted, jobId) {
+      const feedbackData = { resume_id: resumeId, accepted: accepted, job_id: jobId };
+      console.log("Sending Feedback:", feedbackData);
+    try {
+        const response = await fetch('/recruiter/feedback/job', {
+          
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(feedbackData)
+        });
+
+        if (!response.ok) {
+            console.error('Failed to send feedback:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Error sending feedback:', error);
+    }
+}
+
+    function handleClick(event) {
+      
+      const resumeCard = document.getElementById('resume-card');
+      const rect = resumeCard.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+
+      if (currentIndex < resumeMatches.length) {
+        const currentResume = resumeMatches[currentIndex];
+      if (x < rect.width / 3) {
+        console.log('current resume', currentResume);
+        sendFeedback(currentResume.id, false, theJob.id);
+        currentIndex++;
+        loadResume(currentIndex);
+      } else if (x > rect.width * 2 / 3) {
+        console.log('current resume', currentResume);
+        sendFeedback(currentResume.id, true, theJob.id);
+        currentIndex++;
+        loadResume(currentIndex);
+      } else {
+        $('#resumeModal').modal('show');
+      }
+    }
+    }
+
+
+    loadResume(currentIndex);
+  });
+</script>
+{% endblock %}

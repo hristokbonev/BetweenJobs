@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}My Resume{% endblock %}
+    
+{% block content %}
+    <!-- HOME -->
+    <section class="section-hero overlay inner-page bg-image" style="background-image: url('images/hero_1.jpg');" id="home-section">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-7">
+            <h1 class="text-white font-weight-bold">My Resume</h1>
+            <div class="custom-breadcrumbs">
+              <a href="/home">Home</a> <span class="mx-2 slash">/</span>
+              <a href="/resumes">Resumes</a> <span class="mx-2 slash">/</span>
+              <span class="text-white"><strong>Resume</strong></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="site-section pb-0 portfolio-single d-flex align-items-center justify-content-center" id="next-section" style="min-height: 80vh;">
+      <div class="container">
+        <div class="row mb-5 mt-5">
+          <div class="col-lg-8 mx-auto">
+            <div class="mb-4">
+              <h3 class="mb-4 h4 border-bottom">{{ resume.title }}</h3>
+              <p class="mb-0">{{ resume.summary }}</p>
+            </div>
+            <div class="row mb-4">
+              <div class="col-sm-12 col-md-12 mb-4 col-lg-12">
+                <strong class="d-block text-black">Full Name</strong>
+                {{ resume.full_name }}
+              </div>
+              <div class="col-sm-12 col-md-12 mb-4 col-lg-12">
+                <strong class="d-block text-black">Location</strong>
+                {{ resume.location }}
+              </div>
+              <div class="col-sm-12 col-md-12 mb-4 col-lg-12">
+                <strong class="d-block text-black">Education</strong>
+                {{ resume.education }}
+              </div>
+              <div class="col-sm-12 col-md-12 mb-4 col-lg-12">
+                <strong class="d-block text-black mb-3">Employment Type</strong>
+                {{ resume.employment_type }}
+              </div>
+              <div class="col-sm-12 col-md-12 mb-4 col-lg-12">
+                <strong class="d-block text-black mb-3">Expected Salary:</strong>
+                {{ resume.salary }}
+              </div>
+              <div class="col-sm-12 col-md-12 mb-4 col-lg-12">
+                <strong class="d-block text-black mb-3">Status</strong>
+                {{ resume.status }}
+              </div>
+              <div class="col-sm-12 col-md-12 mb-4 col-lg-12">
+                <strong class="d-block text-black mb-3">Skills</strong>
+                {{ resume.skills | join(', ') }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-3 site-section mb-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4 text-center">
+            <a href="#" class="btn btn-md btn-outline-primary border-width-2 d-block">Previous Resume</a>
+          </div>
+          <div class="col-md-4 text-center" id="recruit-button">
+            <a href="/recruiter/resume/{{ resume.id }}" class="btn btn-md btn-primary border-width-2 d-block">Do Your Magic</a>
+          </div>
+          <div class="col-md-4 text-center">
+            <a href="/resume" class="btn btn-md btn-outline-primary border-width-2 d-block">Next Resume</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+{% endblock %}
+{% block extra_css %}
+    <script src="js/quill.min.js"></script>
+{% endblock %}

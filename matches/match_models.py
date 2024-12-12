@@ -9,3 +9,14 @@ class MatchResponse(BaseModel):
     company_id: int
     company_name: str
     match_score: float
+
+
+class JobFeedback(BaseModel):
+    job_id: int
+    accepted: bool
+    resume_id: int
+
+class ResumeFeedback(BaseModel):
+    resume_id: int
+    accepted: bool
+    job_id: int

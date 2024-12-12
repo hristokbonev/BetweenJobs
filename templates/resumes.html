@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Resumes{% endblock %}
+
+{% block content %}
+<div class="page-wrapper d-flex flex-column min-vh-100">
+
+    <section class="section-hero overlay bg-image flex-shrink-0" style="background-image: url('../static/images/hero_1.jpg');" id="resumes-section">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-md-12">
+                    <div class="bg-light p-4 rounded">
+                        <div class="row mb-5 justify-content-center">
+                            <div class="col-md-7 text-center">
+                                <h2 class="section-title mb-2">Your Resumes</h2>
+                            </div>
+                        </div>
+                        {% if resumes %}
+                        <ul class="resume-listings mb-5">
+                            {% for resume in resumes %}
+                            <li class="resume-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center">
+                                <a href="/resumes/{{ resume.id }}" class="w-100 d-flex align-items-center">
+                                    <div class="resume-listing-about d-sm-flex custom-width w-100 justify-content-between mx-4">
+                                        <div class="resume-listing-position custom-width w-50 mb-3 mb-sm-0">
+                                            <h2>{{ resume.title }}</h2>
+                                            <strong>{{ resume.job_title }}</strong>
+                                        </div>
+                                        <div class="resume-listing-location mb-3 mb-sm-0 custom-width w-25">
+                                            <span class="icon-room"></span> {{ resume.location }}
+                                        </div>
+                                        <div class="resume-listing-meta">
+                                            {% if resume.status == 'Active' %}
+                                            <span class="badge badge-success p-2">{{ resume.status }}</span>
+                                            {% elif resume.status == 'Hidden' %}
+                                            <span class="badge badge-warning p-2">{{ resume.status }}</span>
+                                            {% elif resume.status == 'Private' %}
+                                            <span class="badge badge-danger p-2">{{ resume.status }}</span>
+                                            {% elif resume.status == 'Matched' %}
+                                            <span class="badge badge-info p-2">{{ resume.status }}</span>
+                                            {% elif resume.status == 'Archived' %}
+                                            <span class="badge badge-secondary p-2">{{ resume.status }}</span>
+                                            {% elif resume.status == 'Busy' %}
+                                            <span class="badge badge-dark p-2">{{ resume.status }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <p>No resumes found.</p>
+                        {% endif %}
+                        <a href="/resumes/create" class="btn btn-primary btn-lg btn-block">+ Create a Resume</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+{% endblock %}
+
+{% block extra_extra_css %}
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+
+    .page-wrapper {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    header {
+        flex-shrink: 0; /* Prevents header from shrinking */
+    }
+
+    footer {
+        flex-shrink: 0; /* Prevents footer from shrinking */
+        margin-top: auto; /* Pushes footer to the bottom */
+    }
+
+    .section-hero {
+        flex: 1; /* Ensures this section takes up remaining space and allows for dynamic resizing */
+    }
+
+    .container {
+        flex: 1 0 auto; /* Allow content to grow/shrink dynamically */
+    }
+
+    .section-hero {
+        padding-top: 50px; /* Adjust padding as needed */
+    }
+</style>
+{% endblock %}

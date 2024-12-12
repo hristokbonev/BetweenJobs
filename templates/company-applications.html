@@ -1,0 +1,221 @@
+
+{% extends 'base.html' %}
+{% block title %}My Applications{% endblock %}
+    
+{% block extra_css %}
+    <link rel="stylesheet" href="css/quill.snow.css">
+{% endblock %}
+
+{% block content %}
+
+    <!-- HOME -->
+    <section class="section-hero overlay inner-page bg-image" style="background-image: url('images/hero_1.jpg');" id="home-section">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-7">
+            <h1 class="text-white font-weight-bold">My Companies' Applications</h1>
+            <div class="custom-breadcrumbs">
+              <a href="#">Home</a> <span class="mx-2 slash">/</span>
+              <span class="text-white"><strong>Company Applications</strong></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="site-section block__62272" id="next-section">
+      
+
+      <div class="container">
+
+        
+        <div class="row justify-content-center mb-5" data-aos="fade-up">
+          <div id="filters" class="filters text-center button-group col-md-7">
+            <button class="btn btn-primary active" data-filter="all">Total</button>
+            <button class="btn btn-primary" data-filter="matched">Matched</button>
+            <button class="btn btn-primary" data-filter="accepted">Accepted</button>
+            <button class="btn btn-primary" data-filter="rejected">Rejected</button>
+            <button class="btn btn-primary" data-filter="archived">Archived</button>
+          </div>
+        </div>  
+
+        <div id="posts" class="row no-gutter">
+        </div>
+
+        </div>
+      </div>
+
+    </section>
+
+{% endblock %}
+
+
+{% block extra_extra_css %}
+<style>
+  /* Force minimum height and prevent overlap */
+  .site-section.block__62272 {
+    min-height: 60vh;  /* Increased from previous attempts */
+    padding-bottom: 6rem;  /* Increased bottom padding */
+    overflow: auto;  /* Prevent content from spilling out */
+  }
+
+  #posts {
+    min-height: 40vh;  /* Ensure minimum height */
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;  /* Additional margin at bottom */
+  }
+
+  /* Ensure footer doesn't interfere */
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .site-section {
+    flex-grow: 1;
+  }
+
+   /* Filter button styles */
+   #filters button {
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 5px;
+    transition: background-color 0.3s, transform 0.2s ease-in-out;
+  }
+
+  /* Button colors */
+  #filters button[data-filter="all"] {
+    background-color: #007bff;  /* Blue for All */
+  }
+
+  #filters button[data-filter="matched"] {
+    background-color: #17a2b8;  /* Teal for Matched */
+  }
+
+  #filters button[data-filter="accepted"] {
+    background-color: #28a745;  /* Green for Accepted */
+  }
+
+  #filters button[data-filter="rejected"] {
+    background-color: #dc3545;  /* Red for Rejected */
+  }
+
+  #filters button[data-filter="archived"] {
+    background-color: #6c757d;  /* Grey for Archived */
+  }
+
+  /* Hover effect for all buttons */
+  #filters button:hover {
+    opacity: 0.8;  /* Slightly reduce opacity on hover */
+    transform: scale(1.05);  /* Slightly increase the size */
+  }
+
+  /* Active button state */
+  #filters button.active {
+    font-weight: bold;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);  /* Subtle shadow for active button */
+  }
+
+</style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // Debug logging for initial data
+  console.log('Raw accepted resumes:', {{ accepted_resumes|tojson }});
+  console.log('Raw rejected resumes:', {{ declined_resumes|tojson }});
+  console.log('Raw matched resumes:', {{ matched_resumes|tojson }});
+
+  // Parse the data with error handling
+  let accepted, rejected, matched;
+  try {
+    accepted = {{ accepted_resumes|tojson|safe }};
+    rejected = {{ declined_resumes|tojson|safe }};
+    matched = {{ matched_resumes|tojson|safe }};
+
+    // Ensure arrays
+    accepted = Array.isArray(accepted) ? accepted : [];
+    rejected = Array.isArray(rejected) ? rejected : [];
+    matched = Array.isArray(matched) ? matched : [];
+
+  } catch (error) {
+    accepted = [];
+    rejected = [];
+    matched = [];
+  }
+
+  // Get the posts container
+  const postsContainer = document.getElementById("posts");
+
+  // Clear any existing content
+  postsContainer.innerHTML = '';
+
+  // Merge all items into a single array with a category
+  const allItems = [
+    ...accepted.map(item => ({ ...item, category: "accepted" })),
+    ...rejected.map(item => ({ ...item, category: "rejected" })),
+    ...matched.map(item => ({ ...item, category: "matched" })),
+  ];
+
+
+  // Dynamically render items
+  allItems.forEach(item => {
+    const div = document.createElement("div");
+    div.className = `col-md-4 item ${item.category}`;
+    div.innerHTML = `
+      <div class="card mb-4">
+        <div class="card-body">
+          <h4 class="card-title">
+          <a href="/resumes/${item.id}" class="text-decoration-none">${item.title || 'No Title'}</a>          <small class="text-muted">Category: ${item.category}</small>
+          </h4>
+        </div>
+      </div>
+    `;
+    postsContainer.appendChild(div);
+  });
+
+
+  // Add filtering logic
+  const filterButtons = document.querySelectorAll("#filters button");
+  filterButtons.forEach(button => {
+    button.addEventListener("click", () => {
+      // Remove active class from all buttons
+      filterButtons.forEach(btn => btn.classList.remove("active"));
+      button.classList.add("active");
+
+      // Get filter category
+      const filter = button.getAttribute("data-filter");
+ 
+
+      // Filter items
+      const items = document.querySelectorAll("#posts .item");
+
+      let visibleItemsExist = false;
+
+
+      items.forEach(item => {
+        const shouldShow = filter === "all" || item.classList.contains(filter);
+        
+        if (shouldShow) {
+          item.style.display = "block";
+          visibleItemsExist = true;
+        } else {
+          item.style.display = "none";
+        }
+      });
+    });
+  });
+
+
+  // Trigger initial filter
+  if (filterButtons.length > 0) {
+    filterButtons[0].click();
+  }
+});
+</script>
+{% endblock %}

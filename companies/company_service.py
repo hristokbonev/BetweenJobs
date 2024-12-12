@@ -113,3 +113,10 @@ def delete_company(target_id: int, session: Session):
 
     session.commit()
     return {"message": f"Company with ID {target_id} and all related data was deleted!"}
+
+
+def get_companies_by_owner_id(user_id: int, session: Session):
+    statement = select(Company).join(User, Company.author_id == User.id).where(User.id == user_id)
+    companies = session.exec(statement).all()
+    return companies
+

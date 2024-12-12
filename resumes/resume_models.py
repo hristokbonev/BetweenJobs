@@ -18,6 +18,7 @@ class ResumeResponse(BaseModel):
     location: str | None = None
     id: int
     skills: list[str] | None = None
+    salary: int | None = None
 
     class Config:
         from_attributes = True
@@ -35,6 +36,7 @@ class ResumeResponseWithIds(BaseModel):
     employment_type: int | None = None
     location: int | None = None
     skills: list[int] | None = None
+    salary: int | None = None
 
     class Config:
         from_attributes = True
@@ -43,13 +45,15 @@ class ResumeResponseWithIds(BaseModel):
 class ResumeRequest(BaseModel):
 
     full_name: str | None = None
-    title: str
+    title: str 
     education: Literal['High school', 'Diploma', 'Undergraduate degree', 'Postgraduate degree', 'PhD'] | None = None
     summary: str | None = None
     status: Literal['Active', 'Hidden', 'Private', 'Matched', 'Archived', 'Busy'] = 'Active'
     employment_type: Literal['Full-time', 'Part-time', 'Temporary', 'Zero-hour contract', 'Casual employment', 'Internship'] | None = None
     location: str | None = None
     skills: list[str] | None = None
+    salary: int | None = None
+    
 
     @field_validator('education')
     @classmethod
@@ -97,6 +101,14 @@ class ResumeRequest(BaseModel):
                     if not skill_exists(skill, session):
                         raise ValueError(f"Skill {skill} does not exist")         
         return value
+    
+    @field_validator('salary')
+    @classmethod
+    def validate_salary(cls, value):
+        if value:
+            if value < 0:
+                raise ValueError("Salary cannot be negative")
+        return value
 
     class Config:
         from_attributes = True
@@ -112,6 +124,7 @@ class ResumeUpdate(BaseModel):
         employment_type: str | None = None
         location: str | None = None
         skills: list[str] | None = None
+        salary: int | None = None
     
         @field_validator('education')
         @classmethod
@@ -157,6 +170,14 @@ class ResumeUpdate(BaseModel):
                     for skill in value:
                         if not skill_exists(skill, session):
                             raise ValueError(f"Skill {skill} does not exist")
+            return value
+        
+        @field_validator('salary')
+        @classmethod
+        def validate_salary(cls, value):
+            if value:
+                if value < 0:
+                    raise ValueError("Salary cannot be negative")
             return value
     
         class Config:

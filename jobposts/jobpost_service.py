@@ -1,12 +1,29 @@
 from fastapi import HTTPException
 from sqlmodel import Session, select
+from typing import Any
 from data.db_models import JobAd, Education, Location, EmploymentType, JobAdView, Status, JobAdSkill, Skill
 from jobposts.jobpost_models import CreateJobAdRequest, JobAdResponseWithSkills, UpdateJobAdRequest, JobAddResponse, JobAdResponseWithNamesNotId
 from sqlalchemy import Text, cast, func
 
 
-def show_all_posts(session: Session):
+def show_all_posts(session: Session, **filters: Any):
     statement = select(JobAd)
+    for field, value in filters.items():
+        if not value:
+            continue
+
+        if field == "location.name":
+            statement = statement.join(JobAd.location).where(Location.name.ilike(f"%{value}%"))
+        elif field == "employment.name":
+            statement = statement.where(JobAd.employment_type).where(EmploymentType.name.ilike(f"%{value}%"))
+        elif field == "region":
+            statement = statement.where(JobAd.region.ilike(f"%{value}%"))
+        else:
+            column = getattr(JobAd, field, None)
+            if column is not None:
+                statement = statement.where(column.ilike(f"%{value}%"))
+
+            
     job_posts = session.exec(statement).all()
 
     return job_posts
@@ -57,7 +74,8 @@ def view_jobs_by_company_id(comp_id: int, session: Session):
         education=row.degree_level,
         salary=row.salary,
         employment=row.Employment,
-        location=row.Location
+        location=row.Location,
+        status=row.status
     ) for row in job_ads]
 
 
@@ -98,6 +116,7 @@ def show_posts_with_names_not_id(session: Session):
     employment=row[3],
     location=row[2],
     status=row[4],
+    id=row[0].id,
     skills=row[5].split(', ') if row[5] else []
     ) for row in job_posts]
    
@@ -182,6 +201,7 @@ def view_post_with_strings_and_skills(ad_id: int, session: Session):
         employment=job_post[3],
         location=job_post[2],
         status=job_post[4],
+        id=job_post[0].id,
         skills=job_post[5].split(', ') if job_post[5] else []
     )
     
@@ -226,3 +246,55 @@ def view_post_with_skills(ad_id: int, session: Session):
     )
     
     return job_post
+
+
+
+def view_jobs_by_company_id_with_strings(comp_id: int, session: Session):
+    statement = (
+        select(
+            JobAd,
+            Education.degree_level,
+            Location.name,
+            EmploymentType.name,
+            Status.name,
+            func.string_agg(Skill.name, ', ')
+        ).join(Education, JobAd.education_id == Education.id, isouter=True).join
+        (Location, JobAd.location_id == Location.id, isouter=True).join
+        (EmploymentType, JobAd.employment_type_id == EmploymentType.id, isouter=True).join
+        (Status, JobAd.status_id == Status.id, isouter=True).join
+        (JobAdSkill, JobAd.id == JobAdSkill.jobad_id, isouter=True).join
+        (Skill, JobAdSkill.skill_id == Skill.id, isouter=True).group_by(
+            JobAd.id,  # Include all JobAd columns
+            JobAd.created_at,
+            JobAd.title,
+            JobAd.company_name,
+            JobAd.description,
+            JobAd.salary,
+            Education.degree_level,
+            Location.name,
+            EmploymentType.name,
+            Status.name)).where(JobAd.company_id == comp_id)
+    
+    job_ads = session.exec(statement).all()
+    
+    job_ads = [JobAdResponseWithNamesNotId(
+        title=row[0].title,
+        created_at=row[0].created_at,
+        company_name=row[0].company_name,
+        description=row[0].description,
+        education=row[1],
+        salary=row[0].salary,
+        employment=row[3],
+        location=row[2],
+        status=row[4],
+        id=row[0].id,
+        skills=row[5].split(', ') if row[5] else []
+    ) for row in job_ads]
+    
+    return job_ads
+
+
+def view_jobs_by_company_id_with_id_included(session: Session, comp_id: int):
+    statement = select(JobAd).where(JobAd.company_id == comp_id)
+    job_ads = session.exec(statement).all()
+    return job_ads

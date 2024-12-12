@@ -1,6 +1,6 @@
 from datetime import timedelta
 import os
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, Form, HTTPException, status
 from itsdangerous import URLSafeTimedSerializer
 from data.db_models import User
 from users.user_service import update_user
@@ -8,7 +8,7 @@ from utils import auth
 from users.user_models import UserCreate, UserSchema, Token, UserUpdate
 from utils.auth import  create_access_token
 from users.user_service import get_password_hash
-from data.database import engine, create_db
+from data.database import get_session
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlmodel import Session, select
 from common.mailjet_functions import send_email
@@ -20,12 +20,6 @@ router = APIRouter(prefix='/api/users', tags=["Users"])
 key = os.getenv("SECRET_KEY")
 algorithm = os.getenv("ALGORITHM")
 access_token_expire_minutes = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
-
-create_db()
-
-def get_session():
-    with Session(engine) as session:
-        yield session
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/users/login', auto_error=False)   
@@ -49,10 +43,13 @@ def create_user(user: UserCreate, session: Session = Depends(get_session)):
 
 
 @router.put('/{user_id}', response_model=UserSchema )
-def update_user_info(user_id: int, user_update: UserUpdate = Depends(), session: Session = Depends(get_session)):
-
+def update_user_info(user_id: int, user_update: UserUpdate = Depends(), session: Session = Depends(get_session), current_user: UserSchema = Depends(auth.get_current_user)):
     updated_user = update_user(user_id, user_update, session)
     
+    if current_user.id != user_id and not current_user.is_admin:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="You are not authorized to update this user")
+
+
     if not updated_user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
@@ -66,7 +63,7 @@ def login(from_data: OAuth2PasswordRequestForm = Depends()):
     if not user:
         raise HTTPException(status_code=401, detail="Incorrect username or password")
     access_token_expires = timedelta(minutes= int(access_token_expire_minutes))
-    access_token = create_access_token(data={'sub': user.username},
+    access_token = create_access_token(data={'sub': user.username, 'user_id': user.id},
                                         expires_delta=access_token_expires)
 
     return Token(access_token=access_token, token_type="bearer")
@@ -80,7 +77,7 @@ def logout(token: str = Depends(oauth2_scheme)):
 
 
 @router.post('/reset_password_request')
-def reset_password_request(email: str, session: Session = Depends(get_session)):
+def reset_password_request(email: str = Form(...), session: Session = Depends(get_session)):
     stm = select(User).where(User.email == email)
     user = session.exec(stm).first()
     
@@ -130,4 +127,4 @@ def reset_password_direct(email: str,  new_password: str, confirm_password: str,
     
     return {"message": "Password successfully updated"}
 
-
+    
