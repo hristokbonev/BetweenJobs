@@ -6,8 +6,9 @@ from dotenv import load_dotenv
 import os
 from numpy import dot
 from numpy.linalg import norm
-from data.db_models import ResumeMatchJobAd
-from sqlmodel import select
+from data.db_models import Company, JobAd, JobAdMatchResume, Resume, ResumeMatchJobAd, User
+from sqlmodel import select, and_
+from resumes.resume_services import get_resume_by_id
 
 load_dotenv()
 
@@ -160,25 +161,44 @@ def suggest_resumes(ad_id: int, session: Session) -> list:
             continue
 
         if ad.salary and resume.salary:
-            if resume.salary*1.3 > ad.salary:
+            if resume.salary > ad.salary*1.3:
                 continue
 
         resume = get_resume_by_id(resume.id, session)
         matching_resumes.append(resume)
 
+    matching_resumes = [match for match in matching_resumes if not jobad_has_matched_resume_already(resume_id=match.id, job_ad_id=ad.id, session=session)]
+
     if matching_resumes:
         return matching_resumes
 
-    
     return None
 
-def insert_match(resume_id: int, job_ad_id: int, accepted: bool, session: Session):
+
+
+def insert_match_resume_to_job(resume_id: int, job_ad_id: int, accepted: bool, session: Session):
     
     match = ResumeMatchJobAd(resume_id=resume_id, jobad_id=job_ad_id, accepted=accepted)
     session.add(match)
     session.commit()
 
     return match
+
+def insert_match_job_to_resume(resume_id: int, job_ad_id: int, accepted: bool, session: Session):
+    
+    match = JobAdMatchResume(resume_id=resume_id, jobad_id=job_ad_id, accepted=accepted)
+    session.add(match)
+    session.commit()
+
+    return match
+
+def its_a_match(resume_id: int, job_ad_id: int, session: Session) -> bool:
+
+    statement = select(JobAdMatchResume).join(ResumeMatchJobAd, JobAdMatchResume.resume_id == ResumeMatchJobAd.resume_id).where(JobAdMatchResume.jobad_id == job_ad_id, ResumeMatchJobAd.jobad_id == job_ad_id).limit(1)
+    match = session.exec(statement).first()
+
+    return bool(match)
+
 
 def resume_has_matched_jobad_already(resume_id: int, job_ad_id: int, session: Session) -> bool:
 
@@ -189,3 +209,59 @@ def resume_has_matched_jobad_already(resume_id: int, job_ad_id: int, session: Se
         return True
 
     return False
+
+def jobad_has_matched_resume_already(resume_id: int, job_ad_id: int, session: Session) -> bool:
+
+    statement = select(JobAdMatchResume).where(JobAdMatchResume.resume_id == resume_id, JobAdMatchResume.jobad_id == job_ad_id).limit(1)
+    match = session.exec(statement).first()
+
+    if match:
+        return True
+
+    return False
+
+
+def matched_jobs(session: Session, user_id: int) -> list:
+
+    statement = (
+        select(JobAd)
+        .join(JobAdMatchResume)
+        .join(Resume)
+        .join(ResumeMatchJobAd)
+        .where(
+            JobAdMatchResume.resume_id == ResumeMatchJobAd.resume_id,
+            JobAdMatchResume.jobad_id == ResumeMatchJobAd.jobad_id,
+            JobAdMatchResume.accepted == True,
+            ResumeMatchJobAd.accepted == True,
+            Resume.user_id == user_id
+        )
+    ).distinct()
+
+    results = session.exec(statement).all()
+    return results
+
+        
+    jobs = session.exec(statement).all()
+
+    return jobs
+
+def matched_resumes(session: Session, user_id: int):
+    
+    statement = (
+        select(Resume)
+        .join(ResumeMatchJobAd)
+        .join(JobAd)
+        .join(JobAdMatchResume)
+        .join(Company, Company.id == JobAd.company_id)
+        .where(
+            ResumeMatchJobAd.resume_id == JobAdMatchResume.resume_id,
+            ResumeMatchJobAd.jobad_id == JobAdMatchResume.jobad_id,
+            ResumeMatchJobAd.accepted == True,
+            JobAdMatchResume.accepted == True,
+            Company.author_id == user_id
+        )
+    ).distinct()
+
+    resumes = session.exec(statement).all()
+    resumes = [get_resume_by_id(resume.id, session) for resume in resumes]
+    return resumes

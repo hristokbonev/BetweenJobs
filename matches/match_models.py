@@ -15,3 +15,8 @@ class JobFeedback(BaseModel):
     job_id: int
     accepted: bool
     resume_id: int
+
+class ResumeFeedback(BaseModel):
+    resume_id: int
+    accepted: bool
+    job_id: int

@@ -29,7 +29,15 @@
                     <li><a href="/companies">Browse Companies</a></li>            
                   </ul>
                 </li>
-                <li><a href="/jobposts" class="nav-link">Job Posts</a></li>
+                  <li class="has-children">
+                  <a class="nav-link">Job Posts</a>
+                  <ul class="dropdown">
+                    <li><a href="/jobposts">Job Posts</a></li>
+                    {% if user and has_company(user.id) %}
+                    <li><a href="/jobposts/my_jobposts">My Job Posts</a></li>
+                    {% endif %}
+                  </ul>
+                </li>
                 <li class="has-children">
                   <a class="nav-link">Applications</a>
                   <ul class="dropdown">
@@ -64,7 +72,7 @@
                           </a>
                           {% endif %}
                           {% if user and not has_company(user.id) %}
-                          <a href="/comapnies/create" class="btn btn-outline-white border-width-2 d-none d-lg-inline-block">
+                          <a href="/companies/create" class="btn btn-outline-white border-width-2 d-none d-lg-inline-block">
                             <span class="mr-2 icon-add"></span>Register a Company
                         </a>
                         {% endif %}
