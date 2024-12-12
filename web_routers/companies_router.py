@@ -94,7 +94,7 @@ def show_jobpost(
 ):
     target_company = cs.view_company_by_id(id, session)
     logo = ats.get_company_logo(id, session)
-    jobs = js.view_jobs_by_company_id(id, session)
+    jobs = js.view_jobs_by_company_id_with_id_included(comp_id=target_company.id, session=session)
 
     token = request.cookies.get('token')
     context={

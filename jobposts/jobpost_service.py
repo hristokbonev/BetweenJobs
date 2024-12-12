@@ -246,3 +246,55 @@ def view_post_with_skills(ad_id: int, session: Session):
     )
     
     return job_post
+
+
+
+def view_jobs_by_company_id_with_strings(comp_id: int, session: Session):
+    statement = (
+        select(
+            JobAd,
+            Education.degree_level,
+            Location.name,
+            EmploymentType.name,
+            Status.name,
+            func.string_agg(Skill.name, ', ')
+        ).join(Education, JobAd.education_id == Education.id, isouter=True).join
+        (Location, JobAd.location_id == Location.id, isouter=True).join
+        (EmploymentType, JobAd.employment_type_id == EmploymentType.id, isouter=True).join
+        (Status, JobAd.status_id == Status.id, isouter=True).join
+        (JobAdSkill, JobAd.id == JobAdSkill.jobad_id, isouter=True).join
+        (Skill, JobAdSkill.skill_id == Skill.id, isouter=True).group_by(
+            JobAd.id,  # Include all JobAd columns
+            JobAd.created_at,
+            JobAd.title,
+            JobAd.company_name,
+            JobAd.description,
+            JobAd.salary,
+            Education.degree_level,
+            Location.name,
+            EmploymentType.name,
+            Status.name)).where(JobAd.company_id == comp_id)
+    
+    job_ads = session.exec(statement).all()
+    
+    job_ads = [JobAdResponseWithNamesNotId(
+        title=row[0].title,
+        created_at=row[0].created_at,
+        company_name=row[0].company_name,
+        description=row[0].description,
+        education=row[1],
+        salary=row[0].salary,
+        employment=row[3],
+        location=row[2],
+        status=row[4],
+        id=row[0].id,
+        skills=row[5].split(', ') if row[5] else []
+    ) for row in job_ads]
+    
+    return job_ads
+
+
+def view_jobs_by_company_id_with_id_included(session: Session, comp_id: int):
+    statement = select(JobAd).where(JobAd.company_id == comp_id)
+    job_ads = session.exec(statement).all()
+    return job_ads
